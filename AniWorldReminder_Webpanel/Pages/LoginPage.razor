@@ -1,6 +1,7 @@
 ﻿@page "/login"
-@inject IApiService ApiService
-@inject NavigationManager NavMan
+@using System.ComponentModel.DataAnnotations
+@inject IAuthenticationService AuthenticationService
+@inject NavigationManager NavigationManager
 
 <PageTitle>Login</PageTitle>
 <h3>Login</h3>
@@ -23,17 +24,26 @@
     string? Username { get; set; }
     string? Password { get; set; }
 
+    private bool Loading { get; set; }
+    private string Error { get; set; }
+
     private async Task Login()
     {
-        (bool success, string? errorMessage) = await ApiService.Login(Username, Password);
+        Loading = true;
 
-        if (!success)
+        try
         {
-            //ErrorMessage = errorMessage;
-            //ShowError = true;
-            return;
+            await AuthenticationService.Login(Username, Password);
+
+        }
+        catch (Exception ex)
+        {
+            Error = ex.Message;
+            Loading = false;
+            StateHasChanged();
         }
 
-        NavMan.NavigateTo("/");
+
+        NavigationManager.NavigateTo("/addreminder");
     }
 }

@@ -2,8 +2,8 @@
 {
     public interface IApiService
     {
-        //Task<List<SeriesInfoModel>?> GetSeriesInfoAsync(string seriesName);
         Task<(bool success, string? errorMessage)> VerifyAsync(VerifyRequestModel verifyRequest);
-        Task<(bool success, string? errorMessage)> Login(string username, string password);
+        Task<T> Get<T>(string uri);
+        Task<T> Post<T>(string uri, object value);
     }
 }

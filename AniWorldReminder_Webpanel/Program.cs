@@ -4,8 +4,8 @@ global using AniWorldReminder_Webpanel.Services;
 global using AniWorldReminder_Webpanel.Models;
 global using AniWorldReminder_Webpanel.Interfaces;
 global using Newtonsoft.Json;
-using Havit.Blazor.Components.Web;           
-using Havit.Blazor.Components.Web.Bootstrap; 
+using Havit.Blazor.Components.Web;
+using Microsoft.Extensions.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
@@ -13,13 +13,15 @@ builder.Services.AddServerSideBlazor();
 
 builder.Services.AddHxServices();
 
-builder.Services.AddHttpClient<IApiService, ApiService>("apiclient", _ =>
-{
-    _.BaseAddress = new Uri("https://localhost:5001/");
-    // _.BaseAddress = new Uri("https://aniworldapi.lucaweidmann.de");
-});
+builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+builder.Services.AddScoped<IApiService, ApiService>();
+builder.Services.AddScoped<ILocalStorageService, LocalStorageService>();
 
-builder.Services.AddSingleton<IApiService, ApiService>();
+builder.Services.AddScoped(_ =>
+{
+    return new HttpClient() { BaseAddress = new Uri("https://localhost:5001/") };
+    // BaseAddress = new Uri("https://aniworldapi.lucaweidmann.de"); };
+});
 
 var app = builder.Build();
 
