@@ -1,0 +1,39 @@
+﻿@page "/login"
+@inject IApiService ApiService
+@inject NavigationManager NavMan
+
+<PageTitle>Login</PageTitle>
+<h3>Login</h3>
+
+<div class="form-group">
+    <label class="form-control-label">Benutzername</label>
+    <input type="text" class="form-control" @bind="@Username">
+</div>
+<div class="form-group">
+    <label class="form-control-label">Passwort</label>
+    <input type="password" class="form-control" @bind="@Password">
+</div>
+
+<div class="form-group">
+    <button @onclick="Login">Login</button>
+</div>
+
+@code {
+
+    string? Username { get; set; }
+    string? Password { get; set; }
+
+    private async Task Login()
+    {
+        (bool success, string? errorMessage) = await ApiService.Login(Username, Password);
+
+        if (!success)
+        {
+            //ErrorMessage = errorMessage;
+            //ShowError = true;
+            return;
+        }
+
+        NavMan.NavigateTo("/");
+    }
+}
