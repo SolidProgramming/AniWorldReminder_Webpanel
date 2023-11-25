@@ -8,7 +8,7 @@ namespace AniWorldReminder_Webpanel.Services
         private NavigationManager NavigationManager;
         private ILocalStorageService LocalStorageService;
 
-        public UserModel User { get; private set; }
+        public UserModel? User { get; private set; }
 
         public AuthenticationService(IApiService apiService, NavigationManager navigationManager, ILocalStorageService localStorageService)
         {
@@ -19,14 +19,17 @@ namespace AniWorldReminder_Webpanel.Services
 
         public async Task Initialize()
         {
-            User = await LocalStorageService.GetItem<UserModel>("user");
-            await Console.Out.WriteLineAsync(User.Username);
+            User = await LocalStorageService.GetItem<UserModel>("user");            
         }
 
         public async Task Login(string username, string password)
         {
-            User = await ApiService.Post<UserModel>("login", new UserModel() { Username = username, Password = password });
-            await LocalStorageService.SetItem("user", User);
+            JwtResponseModel jwtResponse = await ApiService.Post<JwtResponseModel>("login", new UserModel() { Username = username, Password = password });
+
+            if (jwtResponse is null ||string.IsNullOrEmpty(jwtResponse.Token))
+                return;
+
+            await LocalStorageService.SetItem("user", new UserModel() { Token = jwtResponse.Token, Username = username });
         }
 
         public async Task Logout()

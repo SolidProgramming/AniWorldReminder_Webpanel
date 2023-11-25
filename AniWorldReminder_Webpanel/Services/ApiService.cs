@@ -34,13 +34,13 @@ namespace AniWorldReminder_Webpanel.Services
             return (true, content);
         }
 
-        public async Task<T> Get<T>(string uri)
+        public async Task<T?> Get<T>(string uri)
         {
             HttpRequestMessage request = new(HttpMethod.Get, uri);
             return await SendRequest<T>(request);
         }
 
-        public async Task<T> Post<T>(string uri, object value)
+        public async Task<T?> Post<T>(string uri, object value)
         {
             HttpRequestMessage request = new(HttpMethod.Post, uri)
             {
@@ -49,7 +49,7 @@ namespace AniWorldReminder_Webpanel.Services
             return await SendRequest<T>(request);
         }
 
-        private async Task<T> SendRequest<T>(HttpRequestMessage request)
+        private async Task<T?> SendRequest<T>(HttpRequestMessage request)
         {
             // add jwt auth header if user is logged in and request is to the api url
             UserModel? user = await LocalStorageService.GetItem<UserModel>("user");
@@ -63,7 +63,7 @@ namespace AniWorldReminder_Webpanel.Services
             // auto logout on 401 response
             if (response.StatusCode == HttpStatusCode.Unauthorized)
             {
-                //NavigationManager.NavigateTo("logout");
+                NavigationManager.NavigateTo("login");
                 return default;
             }
 

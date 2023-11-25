@@ -1,8 +1,62 @@
-﻿@page "/addreminder"
-@attribute [Authorize]
+﻿@inject NavigationManager NavigationManager
+@page "/addreminder"
 
-<h3>AddReminderPage</h3>
+<PageTitle>Reminder hinzufügen</PageTitle>
+<h3>Login</h3>
 
+<EditForm Model="@Reminder" OnValidSubmit="@(() => AddReminder())">
+    <DataAnnotationsValidator />
+
+    <HxInputText Label="HxInputText" @bind-Value="@Reminder.SeriesName" Placeholder="Serien Name" />
+
+    <HxCheckbox Text="GerDub" @bind-Value="@LangGerDub" />
+    <HxCheckbox Text="GerDub" @bind-Value="@LangGerSub" />
+    <HxCheckbox Text="GerDub" @bind-Value="@LangEngDub" />
+    <HxCheckbox Text="GerDub" @bind-Value="@LangEngSub" />
+
+
+    <HxSubmit Color="ThemeColor.Primary">Hinzufügen</HxSubmit>
+
+</EditForm>
 @code {
+    private bool LangGerDub { get; set; }
+    private bool LangGerSub { get; set; }
+    private bool LangEngDub { get; set; }
+    private bool LangEngSub { get; set; }
 
+    private ReminderModel Reminder = new();
+
+    private void AddReminder()
+    {
+        Reminder.Languages = GetLanguages();
+
+
+    }
+
+    private List<string> GetLanguages()
+    {
+        List<string> languages = new();
+
+        if (LangGerDub)
+        {
+            languages.Add("GerDub");
+        }
+
+        if (LangGerSub)
+        {
+            languages.Add("GerSub");
+        }
+
+        if (LangEngDub)
+        {
+            languages.Add("EngDub");
+        }
+
+        if (LangEngSub)
+        {
+            languages.Add("EngSub");
+        }
+
+        return languages;
+    }
 }
