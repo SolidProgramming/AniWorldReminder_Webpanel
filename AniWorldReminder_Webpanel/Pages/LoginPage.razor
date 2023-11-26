@@ -10,33 +10,38 @@
     <EditForm Model="@User" OnValidSubmit="@(() => Login())">
         <DataAnnotationsValidator />
 
-        <HxInputText Label="Benutzername" @bind-Value="@User.Username"  />
+        <HxInputText Label="Benutzername" @bind-Value="@User.Username" />
         <HxInputText Label="Passwort" @bind-Value="@User.Password" Type="InputType.Password" />
         <HxSubmit Color="ThemeColor.Primary" CssClass="w-100" Spinner="@Loading">Login</HxSubmit>
     </EditForm>
+    @if(ShowError)
+    {
+        <HxAlert Color="ThemeColor.Danger" CssClass="mt-3">
+            <HxIcon Icon="@BootstrapIcon.ExclamationCircleFill" /> 
+            Fehler beim login! Bitte überprüfen Sie ihre Daten!
+        </HxAlert>
+    }
 </div>
 @code {
     private UserModel User = new();
 
     private bool Loading { get; set; }
+    private bool ShowError { get; set; }
     private string Error { get; set; }
 
     private async Task Login()
     {
+        ShowError = false;
         Loading = true;
+        await Task.Delay(800);
+        await AuthenticationService.Login(User.Username, User.Password);
 
-        await Task.Delay(1000);
-        try
+        if (AuthenticationService.User == null)
         {
-            await AuthenticationService.Login(User.Username, User.Password);
-
-        }
-        catch (Exception ex)
-        {
-            Error = ex.Message;
             Loading = false;
+            ShowError = true;
+            return;
         }
-
 
         NavigationManager.NavigateTo("/");
     }

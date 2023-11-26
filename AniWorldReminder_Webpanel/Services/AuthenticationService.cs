@@ -30,9 +30,15 @@ namespace AniWorldReminder_Webpanel.Services
             {
                 User = null;
                 return;
-            }              
+            }
 
-            await LocalStorageService.SetItem("user", new UserModel() { Token = jwtResponse.Token, Username = username });
+            User = new UserModel()
+            { 
+                Token = jwtResponse.Token,
+                Username = username
+            };
+
+            await LocalStorageService.SetItem("user", User);
         }
 
         public async Task Logout()
