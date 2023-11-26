@@ -2,22 +2,33 @@
 @page "/addreminder"
 
 <PageTitle>Reminder hinzufügen</PageTitle>
-<h3>Login</h3>
 
-<EditForm Model="@Reminder" OnValidSubmit="@(() => AddReminder())">
-    <DataAnnotationsValidator />
+<div class="container">
+    <h3>Reminder hinzufügen</h3>
+    <div class="row mt-5">
+        <div class="col-md-6 ">
+            <EditForm Model="@Reminder" OnValidSubmit="@(() => AddReminder())">
+                <DataAnnotationsValidator />
 
-    <HxInputText Label="HxInputText" @bind-Value="@Reminder.SeriesName" Placeholder="Serien Name" />
+                <HxInputText Label="HxInputText" @bind-Value="@Reminder.SeriesName" Placeholder="Serien Name" />
+            </EditForm>
+        </div>
+        <div class="col col-2 mt-3">
+            <HxCheckbox Text="German Dubbed" CssClass="pb-1" @bind-Value="@LangGerDub" />
+            <HxCheckbox Text="German Subbed" @bind-Value="@LangGerSub" />
+        </div>
+        <div class="col mt-3">
+            <HxCheckbox Text="English Dubbed" CssClass="pb-1" @bind-Value="@LangEngDub" />
+            <HxCheckbox Text="English Subbed" @bind-Value="@LangEngSub" />
+        </div> 
+    </div>
+    <div class="row">
+        <div class="col col-10">
+            <HxSubmit Color="ThemeColor.Primary" CssClass="mt-5 w-100">Hinzufügen</HxSubmit>
 
-    <HxCheckbox Text="GerDub" @bind-Value="@LangGerDub" />
-    <HxCheckbox Text="GerDub" @bind-Value="@LangGerSub" />
-    <HxCheckbox Text="GerDub" @bind-Value="@LangEngDub" />
-    <HxCheckbox Text="GerDub" @bind-Value="@LangEngSub" />
-
-
-    <HxSubmit Color="ThemeColor.Primary">Hinzufügen</HxSubmit>
-
-</EditForm>
+        </div>
+    </div>
+</div>
 @code {
     private bool LangGerDub { get; set; }
     private bool LangGerSub { get; set; }

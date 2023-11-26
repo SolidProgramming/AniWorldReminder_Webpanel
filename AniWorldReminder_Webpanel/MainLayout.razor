@@ -3,24 +3,30 @@
 
 <div class="p-4 d-md-flex min-vh-100">
     <HxSidebar CssClass="sticky-top">
-        <ItemsTemplate>
+        <ItemsTemplate>     
+            <HxSidebarItem Icon="BootstrapIcon.Person" Href="/" CssClass="pb-4">
+                <ContentTemplate>
+                    Profil
+                </ContentTemplate>
+            </HxSidebarItem>
             <HxSidebarItem Icon="BootstrapIcon.Columns" Href="/">
                 <ContentTemplate>
                     Dashboard
                 </ContentTemplate>
             </HxSidebarItem>
-            <HxSidebarItem Icon="BootstrapIcon.Activity" Href="/">
+            <HxSidebarItem Icon="BootstrapIcon.PlusCircle" Href="/addreminder">
                 <ContentTemplate>
-                    Reminders <HxBadge Color="ThemeColor.Secondary" CssClass="ms-2">5</HxBadge>
+                    Reminder <HxBadge Color="ThemeColor.Secondary" CssClass="ms-2">5</HxBadge>
                 </ContentTemplate>
-            </HxSidebarItem>               
+            </HxSidebarItem>
+
             <HxSidebarItem Icon="BootstrapIcon.Gear" Href="/" CssClass="border-top mt-5 pt-2 ">
-                <ContentTemplate>                       
-                    Einstellungen 
+                <ContentTemplate>
+                    Einstellungen
                 </ContentTemplate>
             </HxSidebarItem>
         </ItemsTemplate>
-         <TogglerTemplate></TogglerTemplate>        
+        <TogglerTemplate></TogglerTemplate>
     </HxSidebar>
     <div class="main p-4 flex-grow-1 overflow-hidden">
         @Body

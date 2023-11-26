@@ -16,3 +16,8 @@
         right: 0.75rem;
         top: 0.5rem;
     }
+.circle-icon {
+    background: #ffc0c0;
+    padding: 30px;
+    border-radius: 50%;
+}
