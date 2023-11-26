@@ -11,8 +11,8 @@
         <DataAnnotationsValidator />
 
         <HxInputText Label="Benutzername" @bind-Value="@User.Username"  />
-        <HxInputText Label="Passwort" @bind-Value="@User.Password" />
-        <HxSubmit Color="ThemeColor.Primary" CssClass="w-100">Login</HxSubmit>
+        <HxInputText Label="Passwort" @bind-Value="@User.Password" Type="InputType.Password" />
+        <HxSubmit Color="ThemeColor.Primary" CssClass="w-100" Spinner="@Loading">Login</HxSubmit>
     </EditForm>
 </div>
 @code {
@@ -25,6 +25,7 @@
     {
         Loading = true;
 
+        await Task.Delay(1000);
         try
         {
             await AuthenticationService.Login(User.Username, User.Password);

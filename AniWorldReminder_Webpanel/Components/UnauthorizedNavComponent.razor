@@ -1,0 +1,30 @@
+﻿<HxSidebar CssClass="sticky-top">
+    <HeaderTemplate>
+        <div class="userWrap">
+            <div class="user-image">
+                <i class="bi-question-lg" style="font-size: 46px;"></i>
+            </div>
+        </div>
+    </HeaderTemplate>
+    <ItemsTemplate>
+        <HxSidebarItem Href="/login" Enabled="@(!InProgress)">
+            <ContentTemplate>
+                @if (@InProgress)
+                {
+                    <HxSpinner Size="SpinnerSize.Small" />
+                }
+                else
+                {
+                    <HxIcon Icon="BootstrapIcon.Send" />
+                }
+                Login
+            </ContentTemplate>
+        </HxSidebarItem>
+    </ItemsTemplate>
+    <TogglerTemplate></TogglerTemplate>
+</HxSidebar>
+
+@code{
+    [Parameter]
+    public bool InProgress { get; set; }
+}

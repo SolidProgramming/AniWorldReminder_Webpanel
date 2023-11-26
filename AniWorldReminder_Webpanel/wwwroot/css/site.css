@@ -16,8 +16,25 @@
         right: 0.75rem;
         top: 0.5rem;
     }
-.circle-icon {
-    background: #ffc0c0;
-    padding: 30px;
+
+.userWrap {    
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+
+.user-image {
+    /*   outline: 3px solid tomato; */
+    border: 3px outset #66c4ec;
+    position: relative;
+    width: 75px;
+    height: 75px;
+    align-self: center;
+    margin-bottom: 15px;
     border-radius: 50%;
+    overflow: hidden;
+    text-align: center;
 }

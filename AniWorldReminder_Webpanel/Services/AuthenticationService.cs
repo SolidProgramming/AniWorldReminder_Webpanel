@@ -26,8 +26,11 @@ namespace AniWorldReminder_Webpanel.Services
         {
             JwtResponseModel jwtResponse = await ApiService.Post<JwtResponseModel>("login", new UserModel() { Username = username, Password = password });
 
-            if (jwtResponse is null ||string.IsNullOrEmpty(jwtResponse.Token))
+            if (jwtResponse is null || string.IsNullOrEmpty(jwtResponse.Token))
+            {
+                User = null;
                 return;
+            }              
 
             await LocalStorageService.SetItem("user", new UserModel() { Token = jwtResponse.Token, Username = username });
         }
