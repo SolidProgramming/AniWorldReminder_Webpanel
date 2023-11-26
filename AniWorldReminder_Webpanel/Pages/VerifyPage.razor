@@ -1,0 +1,70 @@
+﻿@page "/verify"
+@using System.ComponentModel.DataAnnotations
+@inject NavigationManager NavigationManager
+@inject IApiService ApiService
+@inject IAuthenticationService AuthenticationService
+
+<PageTitle>Verifizierung</PageTitle>
+
+<div class="container w-50">
+    <h3>Verifizierung</h3>
+    <EditForm Model="@VerifyRequest" OnValidSubmit="@(() => Verify())">
+        <DataAnnotationsValidator />
+
+        <HxInputText Label="Benutzername" @bind-Value="@VerifyRequest.Username" />
+        <HxInputText Label="Passwort" @bind-Value="@VerifyRequest.Password" Type="InputType.Password" />
+        <HxInputText Label="Passwort" @bind-Value="@RetypePassword" Type="InputType.Password" />
+        <HxInputText Label="Token" @bind-Value="@VerifyRequest.VerifyToken" />
+        <HxSubmit Color="ThemeColor.Primary" CssClass="w-100" Spinner="@Loading" Enabled="@(!Loading || !ShowSuccess)">Verifizieren</HxSubmit>
+    </EditForm>
+    @if (ShowError)
+    {
+        <HxAlert Color="ThemeColor.Danger" CssClass="mt-3">
+            <HxIcon Icon="@BootstrapIcon.ExclamationCircleFill" />
+            Fehler beim verifizieren! Bitte überprüfen Sie ihre Daten!
+        </HxAlert>      
+    }
+    @if (ShowSuccess)
+    {
+        <HxAlert Color="ThemeColor.Success" CssClass="mt-3">
+            <HxIcon Icon="@BootstrapIcon.Check" />
+            Danke fürs verifizieren, @VerifyRequest.Username! Du wirst gleich eingeloggt!
+        </HxAlert>
+    }
+</div>
+
+@code {
+    private string? RetypePassword { get; set; }
+    private bool Loading { get; set; }
+    private bool ShowError { get; set; }
+    private bool ShowSuccess { get; set; }
+
+    private VerifyRequestModel VerifyRequest = new();
+
+    private async Task Verify()
+    {
+        Loading = true;
+        (bool success, string? error) = await ApiService.VerifyAsync(VerifyRequest);
+
+        ShowError = !success;
+        ShowSuccess = success;
+        StateHasChanged();
+        if (success)
+        {
+            await Task.Delay(2500);
+            await AuthenticationService.Login(VerifyRequest.Username, VerifyRequest.Password);
+
+            if (AuthenticationService.User == null)
+            {
+                Loading = false;
+                ShowError = true;
+                return;
+            }
+
+            Loading = false;
+            NavigationManager.NavigateTo("/");
+        }
+
+        Loading = false;
+    }
+}

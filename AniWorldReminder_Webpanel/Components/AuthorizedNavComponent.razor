@@ -1,9 +1,12 @@
-﻿<HxSidebar CssClass="sticky-top">
+﻿@inject IAuthenticationService AuthService
+
+<HxSidebar CssClass="sticky-top">
     <HeaderTemplate>
         <div class="userWrap">
             <div class="user-image">
                 <img src="https://i.pravatar.cc/75" alt="">
             </div>
+            <span>@Username</span>
         </div>
     </HeaderTemplate>
     <ItemsTemplate>
@@ -31,3 +34,15 @@
     </ItemsTemplate>
     <TogglerTemplate></TogglerTemplate>
 </HxSidebar>
+
+@code {
+    private string? Username { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Username = AuthService.User.Username;
+        StateHasChanged();
+
+        base.OnInitialized();
+    }
+}

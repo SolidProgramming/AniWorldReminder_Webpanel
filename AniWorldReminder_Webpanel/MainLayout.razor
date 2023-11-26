@@ -44,9 +44,11 @@
 
     private async Task CheckLogin()
     {
+        if (NavManager.Uri.Contains("/verify"))
+            return;
+
         InProgress = true;
         StateHasChanged();
-        await Task.Delay(500);
         await AuthService.Initialize();
 
         InProgress = false;
@@ -60,14 +62,5 @@
         }
 
         StateHasChanged();
-    }
-
-    private void StateChangeOnFirstRender(bool firstRender)
-    {
-        if (firstRender)
-        {
-            StateHasChanged();
-        }
-       
     }
 }

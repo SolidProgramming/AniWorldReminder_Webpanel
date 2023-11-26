@@ -11,14 +11,21 @@ namespace AniWorldReminder_Webpanel.Services
             _jsRuntime = jsRuntime;
         }
 
-        public async Task<T> GetItem<T>(string key)
+        public async Task<T?> GetItem<T>(string key)
         {
-            var json = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", key);
+            try
+            {
+                var json = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", key);
 
-            if (json == null)
+                if (json == null)
+                    return default;
+
+                return System.Text.Json.JsonSerializer.Deserialize<T>(json);
+            }
+            catch (Exception)
+            {
                 return default;
-
-            return System.Text.Json.JsonSerializer.Deserialize<T>(json);
+            }
         }
 
         public async Task SetItem<T>(string key, T value)
