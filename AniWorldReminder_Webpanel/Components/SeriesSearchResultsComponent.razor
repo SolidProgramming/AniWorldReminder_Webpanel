@@ -1,24 +1,30 @@
-﻿<div class="container">
-    <div class="row pb-2 d-flex justify-content-center">
-        @foreach (SearchResultModel searchResult in SearchResults)
-        {
-            <HxCard ImageAlt=""
-                    ImageSrc="@searchResult.CoverArtUrl"
-                    ImageHeight="330"
-                    ImageWidth="220"
-                    style="width: 256px;"
-                    CssClass="pt-2 mt-4 mx-2">
-                <BodyTemplate>
-                    <HxCardTitle>@searchResult.Title</HxCardTitle>
-                        <HxCardText>@searchResult.Description</HxCardText>
-                        <HxButton Color="ThemeColor.Primary" CssClass="w-100">Auswählen</HxButton>
-                    </BodyTemplate>
-                </HxCard>
-        }
-    </div>
+﻿@inject NavigationManager NavManager
+
+<div class="row pb-2">
+    @foreach (SearchResultModel searchResult in SearchResults)
+    {
+        <HxCard ImageAlt=""
+                ImageSrc="@searchResult.CoverArtUrl"
+                ImageHeight="330"
+                ImageWidth="220"
+                style="width: 256px;"
+                CssClass="pt-2 mt-4 mx-2">
+            <BodyTemplate>
+                <HxCardTitle>@searchResult.Title</HxCardTitle>
+                    <HxCardText>@searchResult.Description</HxCardText>
+                    <HxButton @onclick="@(() => NavigateToSeriesDetail(searchResult.Title))" Color="ThemeColor.Primary" CssClass="w-100">Auswählen</HxButton>
+                </BodyTemplate>
+            </HxCard>
+    }
 </div>
 
 @code {
     [Parameter]
     public List<SearchResultModel> SearchResults { get; set; }
+
+    private void NavigateToSeriesDetail(string seriesName)
+    {
+        seriesName = seriesName.ToLower().UrlSanitize();
+        NavManager.NavigateTo($"{Routes.SeriesDetail}/{seriesName}");
+    }
 }

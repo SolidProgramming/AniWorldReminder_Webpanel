@@ -1,6 +1,6 @@
-﻿@inject IApiService ApiService
+﻿@attribute [Route(Routes.Search)]
+@inject IApiService ApiService
 @inject NavigationManager NavigationManager
-@page "/addreminder"
 
 <PageTitle>Reminder hinzufügen</PageTitle>
 
@@ -10,20 +10,10 @@
         <h3>Reminder hinzufügen</h3>
         <div class="row mt-5">
             <div class="col-md-6">
-                <HxInputText Label="HxInputText" @bind-Value="@Reminder.SeriesName" Placeholder="Serien Name" />
-            </div>
-            <div class="col mt-3">
-                <HxCheckbox Text="German Dubbed" CssClass="pb-1" @bind-Value="@LangGerDub" />
-                <HxCheckbox Text="German Subbed" @bind-Value="@LangGerSub" />
-            </div>
-            <div class="col mt-3">
-                <HxCheckbox Text="English Dubbed" CssClass="pb-1" @bind-Value="@LangEngDub" />
-                <HxCheckbox Text="English Subbed" @bind-Value="@LangEngSub" />
-            </div>
-        </div>
-        <div class="row">
-            <div class="col">
-                <HxSubmit Color="ThemeColor.Primary" CssClass="mt-5 w-100" Spinner="Loading" Enabled="@(!Loading)">Serie suchen</HxSubmit>
+                <HxInputText Label="Serien Name" @bind-Value="@Reminder.SeriesName" Placeholder="Jujutsu Kaisen" />
+            </div>    
+            <div class="col-md-2" style="margin-top: 26px;">
+                <HxSubmit  Color="ThemeColor.Primary" CssClass="w-100" Spinner="Loading" Enabled="@(!Loading)">Serie suchen</HxSubmit>
             </div>
         </div>
         @if (SearchResults is not null && SearchResults.Any())

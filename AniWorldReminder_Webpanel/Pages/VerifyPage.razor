@@ -1,4 +1,4 @@
-﻿@page "/verify"
+﻿@attribute [Route(Routes.Verify)]
 @using System.ComponentModel.DataAnnotations
 @inject NavigationManager NavigationManager
 @inject IApiService ApiService
@@ -15,7 +15,7 @@
         <HxInputText Label="Passwort" @bind-Value="@VerifyRequest.Password" Type="InputType.Password" />
         <HxInputText Label="Passwort" @bind-Value="@RetypePassword" Type="InputType.Password" />
         <HxInputText Label="Token" @bind-Value="@VerifyRequest.VerifyToken" />
-        <HxSubmit Color="ThemeColor.Primary" CssClass="w-100" Spinner="@Loading" Enabled="@(!Loading || !ShowSuccess)">Verifizieren</HxSubmit>
+        <HxSubmit Color="ThemeColor.Primary" CssClass="w-100" Spinner="@Loading" Enabled="@(!Loading)">@ButtonText</HxSubmit>
     </EditForm>
     @if (ShowError)
     {
@@ -38,12 +38,17 @@
     private bool Loading { get; set; }
     private bool ShowError { get; set; }
     private bool ShowSuccess { get; set; }
+    private string? ButtonText { get; set; } = ButtonTextVerifizieren;
+    private const string ButtonTextLogin = "Einloggen";
+    private const string ButtonTextVerifizieren = "Verifizieren";
 
     private VerifyRequestModel VerifyRequest = new();
 
     private async Task Verify()
     {
         Loading = true;
+        ButtonText = ButtonTextVerifizieren;
+
         (bool success, string? error) = await ApiService.VerifyAsync(VerifyRequest);
 
         ShowError = !success;
@@ -51,13 +56,16 @@
         StateHasChanged();
         if (success)
         {
+            ButtonText = ButtonTextLogin;
+            StateHasChanged();
             await Task.Delay(2500);
             await AuthenticationService.Login(VerifyRequest.Username, VerifyRequest.Password);
 
             if (AuthenticationService.User == null)
-            {
+            {                
                 Loading = false;
                 ShowError = true;
+                NavigationManager.NavigateTo("/login");
                 return;
             }
 

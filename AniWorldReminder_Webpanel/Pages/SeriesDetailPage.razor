@@ -1,0 +1,23 @@
+﻿@attribute [Route(Routes.SeriesDetail + "/{SeriesName}")]
+@inject NavigationManager NavigationManager
+@inject IApiService ApiService
+
+<PageTitle>Serie: @SeriesName</PageTitle>
+
+<HxButton Outline="true" Color="ThemeColor.Warning" OnClick="@NavigateBack" Icon="BootstrapIcon.Backspace">Zurück</HxButton>
+
+    @code {
+    [Parameter]
+    public string? SeriesName { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        if (string.IsNullOrEmpty(SeriesName))
+            NavigationManager.NavigateTo("");
+    }
+
+    private void NavigateBack()
+    {
+        NavigationManager.NavigateTo(Routes.Search);
+    }
+}
