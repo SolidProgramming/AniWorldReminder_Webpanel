@@ -42,7 +42,7 @@ namespace AniWorldReminder_Webpanel.Services
         }
         public async Task<T?> GetAsync<T>(string uri, Dictionary<string, string> queryData)
         {
-            HttpRequestMessage request = new(HttpMethod.Get, new Uri(QueryHelpers.AddQueryString(HttpClient.BaseAddress + uri, queryData!)));            
+            HttpRequestMessage request = new(HttpMethod.Get, new Uri(QueryHelpers.AddQueryString(HttpClient.BaseAddress + uri, queryData!)));
             return await SendRequest<T>(request);
         }
 
@@ -55,11 +55,18 @@ namespace AniWorldReminder_Webpanel.Services
             return await SendRequest<T>(request);
         }
 
+        public async Task<bool> PostAsync(string uri, object value)
+        {
+            HttpRequestMessage request = new(HttpMethod.Post, uri)
+            {
+                Content = new StringContent(System.Text.Json.JsonSerializer.Serialize(value), Encoding.UTF8, "application/json")
+            };
+            return await SendRequest<bool>(request);
+        }
+
         private async Task<T?> SendRequest<T>(HttpRequestMessage request)
         {
-            // add jwt auth header if user is logged in and request is to the api url
             UserModel? user = await LocalStorageService.GetItem<UserModel>("user");
-            bool isApiUrl = !request.RequestUri.IsAbsoluteUri;
 
             if (user != null && !string.IsNullOrEmpty(user.Token))
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", user.Token);
@@ -75,9 +82,11 @@ namespace AniWorldReminder_Webpanel.Services
 
             // throw exception on error response
             if (!response.IsSuccessStatusCode)
+                return default;
+
+            if (typeof(T) == typeof(bool))
             {
-                var error = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>();
-                throw new Exception(error["message"]);
+                return (T)Convert.ChangeType(response.IsSuccessStatusCode, typeof(T));
             }
 
             return await response.Content.ReadFromJsonAsync<T>();

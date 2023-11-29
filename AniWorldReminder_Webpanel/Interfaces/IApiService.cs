@@ -6,5 +6,6 @@
         Task<T?> GetAsync<T>(string uri);
         Task<T?> GetAsync<T>(string uri, Dictionary<string, string> queryData);
         Task<T?> PostAsync<T>(string uri, object value);
+        Task<bool> PostAsync(string uri, object value);
     }
 }

@@ -1,6 +1,7 @@
 ﻿@attribute [Route(Routes.SeriesDetail + "/{SeriesName}")]
 @inject NavigationManager NavigationManager
 @inject IApiService ApiService
+@inject IAuthenticationService AuthService
 
 <PageTitle>Serie: @SeriesName</PageTitle>
 
@@ -26,12 +27,12 @@
                     <HxCardTitle CssClass="text-center text-decoration-underline">@SeriesInfo?.Name</HxCardTitle>
                     <HxCardText CssClass="text-center">Staffeln: @SeriesInfo?.SeasonCount</HxCardText>
                     <HxCardSubtitle>
-                        <HxButton Outline="true" Color="ThemeColor.Success" Icon="BootstrapIcon.PlusCircleFill" Spinner="@Loading" Enabled="@(!Loading)" CssClass="w-100 mt-2">Hinzufügen</HxButton>
+                        <HxButton OnClick="@AddReminder" Outline="@(!AddSuccess)" Color="ThemeColor.Success" Icon="@(AddSuccess ? BootstrapIcon.Check : BootstrapIcon.PlusCircleFill)" Spinner="@Loading" Enabled="@(!Loading)" CssClass="w-100 mt-2">Hinzufügen</HxButton>
                     </HxCardSubtitle>
                 }
             </BodyTemplate>
         </HxCard>
-    </div>    
+    </div>
 </div>
 
 @code {
@@ -47,6 +48,8 @@
     private bool LangGerSub { get; set; }
     private bool LangEngDub { get; set; }
     private bool LangEngSub { get; set; }
+
+    private bool AddSuccess { get; set; }
 
     protected override void OnParametersSet()
     {
@@ -99,4 +102,31 @@
     {
         NavigationManager.NavigateTo(Routes.Search);
     }
+
+    private async Task AddReminder()
+    {
+        Loading = true;
+        StateHasChanged();
+
+        if (string.IsNullOrEmpty(AuthService?.User?.Username))
+        {
+            Loading = false;
+            StateHasChanged();
+            return;
+        }
+
+        AddReminderRequestModel addReminderRequest = new()
+            {
+                SeriesName = SeriesName,
+                Username = AuthService?.User?.Username
+            };
+
+        bool success = await ApiService.PostAsync<bool>("addReminder", addReminderRequest);
+
+        AddSuccess = success;
+
+        Loading = false;
+        StateHasChanged();
+    }
 }
+
