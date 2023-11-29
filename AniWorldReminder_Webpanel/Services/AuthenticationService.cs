@@ -24,7 +24,7 @@ namespace AniWorldReminder_Webpanel.Services
 
         public async Task Login(string username, string password)
         {
-            JwtResponseModel jwtResponse = await ApiService.Post<JwtResponseModel>("login", new UserModel() { Username = username, Password = password });
+            JwtResponseModel jwtResponse = await ApiService.PostAsync<JwtResponseModel>("login", new UserModel() { Username = username, Password = password });
 
             if (jwtResponse is null || string.IsNullOrEmpty(jwtResponse.Token))
             {

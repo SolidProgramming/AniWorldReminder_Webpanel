@@ -5,7 +5,6 @@ global using AniWorldReminder_Webpanel.Models;
 global using AniWorldReminder_Webpanel.Interfaces;
 global using Newtonsoft.Json;
 using Havit.Blazor.Components.Web;
-using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddHsts(_ =>

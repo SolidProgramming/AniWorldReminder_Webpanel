@@ -3,7 +3,8 @@
     public interface IApiService
     {
         Task<(bool success, string? errorMessage)> VerifyAsync(VerifyRequestModel verifyRequest);
-        Task<T?> Get<T>(string uri);
-        Task<T?> Post<T>(string uri, object value);
+        Task<T?> GetAsync<T>(string uri);
+        Task<T?> GetAsync<T>(string uri, Dictionary<string, string> queryData);
+        Task<T?> PostAsync<T>(string uri, object value);
     }
 }

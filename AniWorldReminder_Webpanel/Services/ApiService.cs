@@ -5,12 +5,13 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
 using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.WebUtilities;
 
 namespace AniWorldReminder_Webpanel.Services
 {
     public class ApiService : IApiService
     {
-        private HttpClient HttpClient;
+        private readonly HttpClient HttpClient;
         private NavigationManager NavigationManager;
         private ILocalStorageService LocalStorageService;
 
@@ -34,13 +35,18 @@ namespace AniWorldReminder_Webpanel.Services
             return (true, content);
         }
 
-        public async Task<T?> Get<T>(string uri)
+        public async Task<T?> GetAsync<T>(string uri)
         {
             HttpRequestMessage request = new(HttpMethod.Get, uri);
             return await SendRequest<T>(request);
         }
+        public async Task<T?> GetAsync<T>(string uri, Dictionary<string, string> queryData)
+        {
+            HttpRequestMessage request = new(HttpMethod.Get, new Uri(QueryHelpers.AddQueryString(HttpClient.BaseAddress + uri, queryData!)));            
+            return await SendRequest<T>(request);
+        }
 
-        public async Task<T?> Post<T>(string uri, object value)
+        public async Task<T?> PostAsync<T>(string uri, object value)
         {
             HttpRequestMessage request = new(HttpMethod.Post, uri)
             {
@@ -55,7 +61,7 @@ namespace AniWorldReminder_Webpanel.Services
             UserModel? user = await LocalStorageService.GetItem<UserModel>("user");
             bool isApiUrl = !request.RequestUri.IsAbsoluteUri;
 
-            if (user != null && isApiUrl)
+            if (user != null && !string.IsNullOrEmpty(user.Token))
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", user.Token);
 
             using HttpResponseMessage? response = await HttpClient.SendAsync(request);
