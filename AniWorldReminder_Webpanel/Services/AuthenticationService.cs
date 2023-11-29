@@ -45,7 +45,6 @@ namespace AniWorldReminder_Webpanel.Services
         {
             User = null;
             await LocalStorageService.RemoveItem("user");
-            NavigationManager.NavigateTo("login");
         }
     }
 }

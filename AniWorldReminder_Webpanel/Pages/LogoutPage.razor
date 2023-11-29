@@ -1,0 +1,35 @@
+﻿@inject IAuthenticationService AuthService
+@inject NavigationManager NavManager
+@page "/logout"
+
+<div class="row">
+    <div class="col">
+    </div>
+    <div class="col">
+        <div class="container-fluid text-center">
+            <i class="bi bi-person-raised-hand" style="font-size: 128px;"></i>
+        </div>      
+            <HxAlert Color="ThemeColor.Success" CssClass="mx-auto text-center">Du wurdest erfolgreich ausgeloggt!</HxAlert>       
+    </div>
+    <div class="col">
+    </div>
+
+</div>
+
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await Logout();
+        }       
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private async Task Logout()
+    {
+        await AuthService.Logout();       
+        NavManager.NavigateTo("/logout");
+    }
+}

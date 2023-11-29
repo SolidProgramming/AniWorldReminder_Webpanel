@@ -26,7 +26,12 @@
             </ContentTemplate>
         </HxSidebarItem>
 
-        <HxSidebarItem Icon="BootstrapIcon.Gear" Href="/" CssClass="border-top mt-5 pt-2 ">
+        <HxSidebarItem Icon="BootstrapIcon.BoxArrowLeft" CssClass="mt-5 text-danger" Href="/logout">
+            <ContentTemplate>               
+               Ausloggen
+            </ContentTemplate>
+        </HxSidebarItem>
+        <HxSidebarItem Icon="BootstrapIcon.Gear" Href="/" CssClass="border-top pt-2 text-warning">
             <ContentTemplate>
                 Einstellungen
             </ContentTemplate>
@@ -36,6 +41,7 @@
 </HxSidebar>
 
 @code {
+    private bool LogoutInProgress { get; set; }
     private string? Username { get; set; }
 
     protected override void OnInitialized()
