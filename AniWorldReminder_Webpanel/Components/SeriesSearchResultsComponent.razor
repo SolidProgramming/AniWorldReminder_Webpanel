@@ -8,7 +8,7 @@
                 ImageHeight="330"
                 ImageWidth="220"
                 style="width: 256px;"
-                CssClass="pt-2 mt-4 mx-2">
+                CssClass="pt-2 mt-4 mx-2 rounded">
             <BodyTemplate>
                 <HxCardTitle>@searchResult.Title</HxCardTitle>
                     <HxCardText>@searchResult.Description</HxCardText>
@@ -21,6 +21,7 @@
 @code {
     [Parameter]
     public List<SearchResultModel> SearchResults { get; set; }
+
 
     private void NavigateToSeriesDetail(string seriesName)
     {

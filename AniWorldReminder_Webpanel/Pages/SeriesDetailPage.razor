@@ -4,16 +4,95 @@
 
 <PageTitle>Serie: @SeriesName</PageTitle>
 
-<HxButton Outline="true" Color="ThemeColor.Warning" OnClick="@NavigateBack" Icon="BootstrapIcon.Backspace">Zurück</HxButton>
+    <HxButton Outline="true" Color="ThemeColor.Warning" OnClick="@NavigateBack" Icon="BootstrapIcon.Backspace">Zurück</HxButton>
 
-    @code {
+    <div class="row">
+        <div class="col col-3">
+            <HxCard ImageAlt=""
+                    ImageSrc="@SeriesInfo?.CoverArtUrl"
+                    ImageHeight="330"
+                    ImageWidth="220"
+                    style="width: 256px;"
+                    CssClass="pt-2 mt-4 px-2 rounded ">
+                <BodyTemplate>
+                    @if (LoadingInfo)
+                {
+                    <div class="text-center">
+                        <HxSpinner Size="SpinnerSize.Regular"></HxSpinner>
+                    </div>
+                }
+                else
+                {
+                    <HxCardTitle CssClass="text-center text-decoration-underline">@SeriesInfo?.Name</HxCardTitle>
+                    <HxCardText CssClass="text-center">Staffeln: @SeriesInfo?.SeasonCount</HxCardText>
+                    <HxCardSubtitle>
+                        <HxButton Outline="true" Color="ThemeColor.Success" Icon="BootstrapIcon.PlusCircleFill" Spinner="@Loading" Enabled="@(!Loading)" CssClass="w-100 mt-2">Hinzufügen</HxButton>
+                    </HxCardSubtitle>
+                }
+            </BodyTemplate>
+        </HxCard>
+    </div>    
+</div>
+
+@code {
     [Parameter]
     public string? SeriesName { get; set; }
+
+    private bool LoadingInfo { get; set; }
+    private bool Loading { get; set; }
+
+    private SeriesInfoModel? SeriesInfo;
+
+    private bool LangGerDub { get; set; }
+    private bool LangGerSub { get; set; }
+    private bool LangEngDub { get; set; }
+    private bool LangEngSub { get; set; }
 
     protected override void OnParametersSet()
     {
         if (string.IsNullOrEmpty(SeriesName))
             NavigationManager.NavigateTo("");
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            Loading = true;
+            StateHasChanged();
+            SeriesInfo = await ApiService.GetAsync<SeriesInfoModel?>("getSeriesInfo", new() { { "seriesName", SeriesName } });
+            Loading = false;
+            StateHasChanged();
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private List<string> GetLanguages()
+    {
+        List<string> languages = new();
+
+        if (LangGerDub)
+        {
+            languages.Add("GerDub");
+        }
+
+        if (LangGerSub)
+        {
+            languages.Add("GerSub");
+        }
+
+        if (LangEngDub)
+        {
+            languages.Add("EngDub");
+        }
+
+        if (LangEngSub)
+        {
+            languages.Add("EngSub");
+        }
+
+        return languages;
     }
 
     private void NavigateBack()

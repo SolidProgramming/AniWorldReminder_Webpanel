@@ -11,9 +11,9 @@
         <div class="row mt-5">
             <div class="col-md-6">
                 <HxInputText Label="Serien Name" @bind-Value="@Reminder.SeriesName" Placeholder="Jujutsu Kaisen" />
-            </div>    
+            </div>
             <div class="col-md-2" style="margin-top: 26px;">
-                <HxSubmit  Color="ThemeColor.Primary" CssClass="w-100" Spinner="Loading" Enabled="@(!Loading)">Serie suchen</HxSubmit>
+                <HxSubmit Color="ThemeColor.Primary" CssClass="w-100" Spinner="Loading" Enabled="@(!Loading)">Serie suchen</HxSubmit>
             </div>
         </div>
         @if (SearchResults is not null && SearchResults.Any())
@@ -23,13 +23,10 @@
     </div>
 </EditForm>
 @code {
+    [Parameter]
+    public string? SeriesName { get; set; }
 
     private bool Loading { get; set; }
-
-    private bool LangGerDub { get; set; }
-    private bool LangGerSub { get; set; }
-    private bool LangEngDub { get; set; }
-    private bool LangEngSub { get; set; }
 
     private ReminderModel Reminder = new();
     private List<SearchResultModel>? SearchResults;
@@ -46,32 +43,5 @@
             return;
 
         SearchResults = searchResults;
-    }
-
-    private List<string> GetLanguages()
-    {
-        List<string> languages = new();
-
-        if (LangGerDub)
-        {
-            languages.Add("GerDub");
-        }
-
-        if (LangGerSub)
-        {
-            languages.Add("GerSub");
-        }
-
-        if (LangEngDub)
-        {
-            languages.Add("EngDub");
-        }
-
-        if (LangEngSub)
-        {
-            languages.Add("EngSub");
-        }
-
-        return languages;
     }
 }
