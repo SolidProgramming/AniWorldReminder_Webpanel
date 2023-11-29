@@ -5,6 +5,7 @@ global using AniWorldReminder_Webpanel.Models;
 global using AniWorldReminder_Webpanel.Interfaces;
 global using Newtonsoft.Json;
 using Havit.Blazor.Components.Web;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
@@ -16,10 +17,17 @@ builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<IApiService, ApiService>();
 builder.Services.AddScoped<ILocalStorageService, LocalStorageService>();
 
+SettingsModel? settings = SettingsHelper.ReadSettings<SettingsModel>();
+
+if(settings is null)
+{
+    Console.WriteLine("Couldn't read or find Settings file!. Shutting down!");
+    return;
+}
+
 builder.Services.AddScoped(_ =>
 {
-    return new HttpClient() { BaseAddress = new Uri("https://localhost:5001/") };
-    // BaseAddress = new Uri("https://aniworldapi.lucaweidmann.de"); };
+    return new HttpClient() { BaseAddress = new Uri(settings.ApiUrl) };
 });
 
 var app = builder.Build();
