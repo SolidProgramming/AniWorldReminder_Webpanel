@@ -8,5 +8,6 @@
         public const string Logout = "/logout";
         public const string Verify = "/verify";
         public const string SeriesDetail = "/series";
+        public const string Dashboard = "/dashboard";
     }
 }

@@ -1,0 +1,79 @@
+﻿@attribute [Route(Routes.Dashboard)]
+@inject IHxMessengerService ToastService
+@inject IApiService ApiService
+@inject IAuthenticationService AuthService
+
+<div class="container">
+    <h3 class="d-inline">Dashboard - </h3><h5 class="d-inline">Reminder</h5>
+    <div class="row">
+        @if (UserSeries is not null)
+        {
+            foreach (SeriesModel series in UserSeries)
+            {
+                <HxCard ImageAlt=""
+                        ImageSrc="@series.CoverArtUrl"
+                        ImageHeight="330"
+                        ImageWidth="220"
+                        style="width: 256px;"
+                        CssClass="pt-2 mt-4 mx-2 rounded">
+                    <BodyTemplate>
+                        <HxCardTitle>@series.Name</HxCardTitle>
+                            <HxCardSubtitle>
+                                <HxButton OnClick="@(() => RemoveReminder(series.Name))" Spinner="@Loading" Enabled="@(!Loading)" Color="ThemeColor.Warning" Outline="true" Icon="BootstrapIcon.XCircleFill" CssClass="w-100 mt-2">Entfernen</HxButton>
+                            </HxCardSubtitle>
+                        </BodyTemplate>
+                    </HxCard>
+            }
+        }
+        else
+        {
+            <div class="text-center">
+                <HxSpinner Size="SpinnerSize.Regular"></HxSpinner>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private List<SeriesModel>? UserSeries { get; set; }
+
+    private bool Loading { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            Loading = true;
+            StateHasChanged();
+            UserSeries = await ApiService.GetAsync<List<SeriesModel>?>("getAllUserSeries", new() { { "username", AuthService?.User?.Username! } });
+            Loading = false;
+            StateHasChanged();
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private async Task RemoveReminder(string seriesName)
+    {
+        ToastService.Clear();
+        Loading = true;
+        StateHasChanged();
+
+        bool deleteSuccess = await ApiService.GetAsync<bool>("removeReminder", new() { { "username", AuthService?.User?.Username! }, { "seriesName", seriesName } });
+
+        if (deleteSuccess)
+        {
+            UserSeries?.RemoveAll(_ => _.Name == seriesName);
+            ToastService.AddInformation("Erfolg", $"Dein Reminder für {seriesName} wurde gelöscht!");
+        }
+        else
+        {
+            ToastService.AddError("Fehler", $"Beim löschen des Reminders für {seriesName} ist ein Fehler aufgetreten und konnte nicht gelöscht werden!");
+        }
+
+        Loading = false;
+        StateHasChanged();
+    }
+}
+
+
