@@ -34,7 +34,7 @@
                         else
                         {
                             <HxButton Color="ThemeColor.Success" Icon="BootstrapIcon.Check" Enabled="false" CssClass="w-100 mt-2">Hinzugefügt</HxButton>
-                            <HxButton Color="ThemeColor.Warning" Outline="true" Icon="BootstrapIcon.XCircleFill" CssClass="w-100 mt-2">Entfernen</HxButton>
+                            <HxButton OnClick="@RemoveReminder" Spinner="@Loading" Enabled="@(!Loading)" Color="ThemeColor.Warning" Outline="true" Icon="BootstrapIcon.XCircleFill" CssClass="w-100 mt-2">Entfernen</HxButton>
                         }
                     </HxCardSubtitle>
                 }
@@ -135,6 +135,23 @@
 
         AddSuccess = success;
 
+        Loading = false;
+        StateHasChanged();
+    }
+
+    private async Task RemoveReminder()
+    {
+        Loading = true;
+        StateHasChanged();
+
+        bool deleteSuccess = await ApiService.GetAsync<bool>("removeReminder", new() { { "username", AuthService?.User?.Username! }, { "seriesName", SeriesInfo?.Name! } });
+
+        if (deleteSuccess)
+        {
+            UserSeries = null;
+            AddSuccess = false;
+        }
+        
         Loading = false;
         StateHasChanged();
     }
