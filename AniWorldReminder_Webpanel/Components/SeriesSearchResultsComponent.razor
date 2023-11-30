@@ -24,8 +24,7 @@
 
 
     private void NavigateToSeriesDetail(string seriesName)
-    {
-        seriesName = seriesName.ToLower().UrlSanitize();
+    {        
         NavManager.NavigateTo($"{Routes.SeriesDetail}/{seriesName}");
     }
 }

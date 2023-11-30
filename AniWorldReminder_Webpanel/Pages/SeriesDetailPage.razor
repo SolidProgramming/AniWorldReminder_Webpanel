@@ -1,9 +1,9 @@
-﻿@attribute [Route(Routes.SeriesDetail + "/{SeriesName}")]
+﻿@attribute [Route(Routes.SeriesDetail + "/{SeriesSearchName}")]
 @inject NavigationManager NavigationManager
 @inject IApiService ApiService
 @inject IAuthenticationService AuthService
 
-<PageTitle>Serie: @SeriesName</PageTitle>
+<PageTitle>Serie: @SeriesInfo?.Name</PageTitle>
 
     <HxButton Outline="true" Color="ThemeColor.Warning" OnClick="@NavigateBack" Icon="BootstrapIcon.Backspace">Zurück</HxButton>
 
@@ -27,7 +27,15 @@
                     <HxCardTitle CssClass="text-center text-decoration-underline">@SeriesInfo?.Name</HxCardTitle>
                     <HxCardText CssClass="text-center">Staffeln: @SeriesInfo?.SeasonCount</HxCardText>
                     <HxCardSubtitle>
-                        <HxButton OnClick="@AddReminder" Outline="@(!AddSuccess)" Color="ThemeColor.Success" Icon="@(AddSuccess ? BootstrapIcon.Check : BootstrapIcon.PlusCircleFill)" Spinner="@Loading" Enabled="@(!Loading)" CssClass="w-100 mt-2">Hinzufügen</HxButton>
+                        @if (UserSeries is null && !AddSuccess)
+                        {
+                            <HxButton OnClick="@AddReminder" Outline="true" Color="ThemeColor.Success" Icon="BootstrapIcon.PlusCircleFill" Spinner="@Loading" Enabled="@(!Loading)" CssClass="w-100 mt-2">Hinzufügen</HxButton>
+                        }
+                        else
+                        {
+                            <HxButton Color="ThemeColor.Success" Icon="BootstrapIcon.Check" Enabled="false" CssClass="w-100 mt-2">Hinzugefügt</HxButton>
+                            <HxButton Color="ThemeColor.Warning" Outline="true" Icon="BootstrapIcon.XCircleFill" CssClass="w-100 mt-2">Entfernen</HxButton>
+                        }
                     </HxCardSubtitle>
                 }
             </BodyTemplate>
@@ -37,12 +45,13 @@
 
 @code {
     [Parameter]
-    public string? SeriesName { get; set; }
+    public string? SeriesSearchName { get; set; }
 
     private bool LoadingInfo { get; set; }
     private bool Loading { get; set; }
 
     private SeriesInfoModel? SeriesInfo;
+    private SeriesModel? UserSeries;
 
     private bool LangGerDub { get; set; }
     private bool LangGerSub { get; set; }
@@ -53,7 +62,7 @@
 
     protected override void OnParametersSet()
     {
-        if (string.IsNullOrEmpty(SeriesName))
+        if (string.IsNullOrEmpty(SeriesSearchName))
             NavigationManager.NavigateTo("");
     }
 
@@ -63,7 +72,8 @@
         {
             Loading = true;
             StateHasChanged();
-            SeriesInfo = await ApiService.GetAsync<SeriesInfoModel?>("getSeriesInfo", new() { { "seriesName", SeriesName } });
+            SeriesInfo = await ApiService.GetAsync<SeriesInfoModel?>("getSeriesInfo", new() { { "seriesName", SeriesSearchName! } });
+            UserSeries = await ApiService.GetAsync<SeriesModel?>("getUserSeries", new() { { "username", AuthService?.User?.Username! }, { "seriesName", SeriesInfo?.Name! } });
             Loading = false;
             StateHasChanged();
         }
@@ -117,7 +127,7 @@
 
         AddReminderRequestModel addReminderRequest = new()
             {
-                SeriesName = SeriesName,
+                SeriesName = SeriesInfo?.Name,
                 Username = AuthService?.User?.Username
             };
 
