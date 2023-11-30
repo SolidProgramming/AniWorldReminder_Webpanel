@@ -1,4 +1,5 @@
 ﻿@inject IAuthenticationService AuthService
+@inject IApiService ApiService
 
 <HxSidebar CssClass="sticky-top">
     <HeaderTemplate>
@@ -22,13 +23,19 @@
         </HxSidebarItem>
         <HxSidebarItem Icon="BootstrapIcon.PlusCircle" Href="/search">
             <ContentTemplate>
-                Reminder <HxBadge Color="ThemeColor.Secondary" CssClass="ms-2">5</HxBadge>
+                Reminder
+                <HxBadge Color="ThemeColor.Secondary" CssClass="ms-2">
+                    @if (UserSeries is not null && UserSeries.Any())
+                    {
+                        @UserSeries.Count
+                    }
+                </HxBadge>
             </ContentTemplate>
         </HxSidebarItem>
 
         <HxSidebarItem Icon="BootstrapIcon.BoxArrowLeft" CssClass="mt-5 text-danger" Href="/logout">
-            <ContentTemplate>               
-               Ausloggen
+            <ContentTemplate>
+                Ausloggen
             </ContentTemplate>
         </HxSidebarItem>
         <HxSidebarItem Icon="BootstrapIcon.Gear" Href="/" CssClass="border-top pt-2 text-warning">
@@ -41,12 +48,29 @@
 </HxSidebar>
 
 @code {
-    private bool LogoutInProgress { get; set; }
     private string? Username { get; set; }
+
+    private List<SeriesModel>? UserSeries;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await RefreshUserSeries();
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private async Task RefreshUserSeries()
+    {
+        UserSeries = await ApiService.GetAsync<List<SeriesModel>?>("getAllUserSeries", new() { { "username", AuthService?.User?.Username! } });
+        StateHasChanged();
+    }
 
     protected override void OnInitialized()
     {
-        Username = AuthService.User.Username;
+        Username = AuthService?.User?.Username;
         StateHasChanged();
 
         base.OnInitialized();

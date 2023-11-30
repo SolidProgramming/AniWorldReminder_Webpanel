@@ -45,9 +45,18 @@
         </div>
         <div class="col mt-4">
             <div class="text-warning border rounded">
-                @if (SeriesInfo is not null && !string.IsNullOrWhiteSpace(SeriesInfo.DirectLink))
+                @if (Loading)
                 {
-                    <p class="p-3 pb-0">@SeriesInfo.Description<a href="@SeriesInfo.DirectLink" class="text-primary d-inline mx-2">mehr anzeigen</a></p>
+                    <div class="text-center my-2">
+                        <HxSpinner CssClass="text-center" Size="SpinnerSize.Regular"></HxSpinner>
+                    </div>
+                }
+                else
+                {
+                    if (SeriesInfo is not null && !string.IsNullOrWhiteSpace(SeriesInfo.DirectLink))
+                    {
+                        <p class="p-3 pb-0">@SeriesInfo.Description<a href="@SeriesInfo.DirectLink" class="text-primary d-inline mx-2">mehr anzeigen</a></p>
+                    }
                 }
             </div>
         </div>
