@@ -2,6 +2,7 @@
 @inject NavigationManager NavigationManager
 @inject IApiService ApiService
 @inject IAuthenticationService AuthService
+@inject IHxMessengerService ToastService
 
 <PageTitle>Serie: @SeriesInfo?.Name</PageTitle>
 
@@ -115,6 +116,7 @@
 
     private async Task AddReminder()
     {
+        ToastService.Clear();
         Loading = true;
         StateHasChanged();
 
@@ -126,12 +128,17 @@
         }
 
         AddReminderRequestModel addReminderRequest = new()
-            {
-                SeriesName = SeriesInfo?.Name,
-                Username = AuthService?.User?.Username
-            };
+        {
+            SeriesName = SeriesInfo?.Name,
+            Username = AuthService?.User?.Username
+        };
 
         bool success = await ApiService.PostAsync<bool>("addReminder", addReminderRequest);
+
+        if (!success)
+        {
+            ToastService.AddError("Fehler", $"Beim hinzufügen des Reminders für {SeriesInfo?.Name!} ist ein Fehler aufgetreten!");
+        }
 
         AddSuccess = success;
 
@@ -141,6 +148,7 @@
 
     private async Task RemoveReminder()
     {
+        ToastService.Clear();
         Loading = true;
         StateHasChanged();
 
@@ -151,7 +159,11 @@
             UserSeries = null;
             AddSuccess = false;
         }
-        
+        else
+        {
+            ToastService.AddError("Fehler", $"Beim löschen des Reminders für {SeriesInfo?.Name!} ist ein Fehler aufgetreten und konnte nicht gelöscht werden!");
+        }
+
         Loading = false;
         StateHasChanged();
     }

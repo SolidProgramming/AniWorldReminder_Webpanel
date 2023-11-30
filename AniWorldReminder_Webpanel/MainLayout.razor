@@ -1,6 +1,7 @@
 ﻿@inherits LayoutComponentBase
 @inject IAuthenticationService AuthService
 @inject NavigationManager NavManager
+@inject IHxMessengerService ToastService
 
 <div class="p-4 d-md-flex min-vh-100">
     @if (!NavManager.Uri.Contains("/login"))
@@ -14,6 +15,7 @@
             <UnauthorizedNavComponent InProgress="@InProgress"></UnauthorizedNavComponent>
         }
     }
+    <HxMessenger CssClass="mx-3 my-3" Position="ToastContainerPosition.BottomEnd" />
     <div class="main p-4 flex-grow-1 overflow-hidden">
         @Body
     </div>
@@ -39,6 +41,7 @@
 
     private async void OnNavManagerLocationChanged(object? sender, LocationChangedEventArgs e)
     {
+        ToastService.Clear();
         await CheckLogin();
     }
 
