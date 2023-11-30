@@ -19,17 +19,17 @@
         <HxSidebarItem Icon="BootstrapIcon.Columns" Href="/dashboard">
             <ContentTemplate>
                 Dashboard
-            </ContentTemplate>
-        </HxSidebarItem>
-        <HxSidebarItem Icon="BootstrapIcon.PlusCircle" Href="@Routes.Search">
-            <ContentTemplate>
-                Reminder
                 <HxBadge Color="ThemeColor.Secondary" CssClass="ms-2">
                     @if (UserSeries is not null && UserSeries.Any())
                     {
                         @UserSeries.Count
                     }
                 </HxBadge>
+            </ContentTemplate>
+        </HxSidebarItem>
+        <HxSidebarItem Icon="BootstrapIcon.PlusCircle" Href="@Routes.Search">
+            <ContentTemplate>
+                Reminder                
             </ContentTemplate>
         </HxSidebarItem>
 
