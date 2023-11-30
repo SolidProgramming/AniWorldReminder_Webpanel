@@ -3,44 +3,54 @@
 @inject IApiService ApiService
 @inject IAuthenticationService AuthService
 @inject IHxMessengerService ToastService
+@inject IJSRuntime JSRuntime;
 
 <PageTitle>Serie: @SeriesInfo?.Name</PageTitle>
 
-    <HxButton Outline="true" Color="ThemeColor.Warning" OnClick="@NavigateBack" Icon="BootstrapIcon.Backspace">Zurück</HxButton>
-
-    <div class="row">
-        <div class="col col-3">
-            <HxCard ImageAlt=""
-                    ImageSrc="@SeriesInfo?.CoverArtUrl"
-                    ImageHeight="330"
-                    ImageWidth="220"
-                    style="width: 256px;"
-                    CssClass="pt-2 mt-4 px-2 rounded ">
-                <BodyTemplate>
-                    @if (LoadingInfo)
+    <div class="container">
+        <HxButton Outline="true" Color="ThemeColor.Warning" OnClick="@NavigateBack" Icon="BootstrapIcon.Backspace">Zurück</HxButton>
+        <div class="row">
+            <div class="col-sm-auto pb-2">
+                <HxCard ImageAlt=""
+                        ImageSrc="@SeriesInfo?.CoverArtUrl"
+                        ImageHeight="330"
+                        ImageWidth="220"
+                        style="width: 256px;"
+                        CssClass="pt-2 mt-4 px-2 rounded">
+                    <BodyTemplate>
+                        @if (LoadingInfo)
+                    {
+                        <div class="text-center">
+                            <HxSpinner Size="SpinnerSize.Regular"></HxSpinner>
+                        </div>
+                    }
+                    else
+                    {
+                        <HxCardTitle CssClass="text-center text-decoration-underline">@SeriesInfo?.Name</HxCardTitle>
+                        <HxCardText CssClass="text-center">Staffeln: @SeriesInfo?.SeasonCount</HxCardText>
+                        <HxCardSubtitle>
+                            @if (UserSeries is null && !AddSuccess)
+                            {
+                                <HxButton OnClick="@AddReminder" Outline="true" Color="ThemeColor.Success" Icon="BootstrapIcon.PlusCircleFill" Spinner="@Loading" Enabled="@(!Loading)" CssClass="w-100 mt-2">Hinzufügen</HxButton>
+                            }
+                            else
+                            {
+                                <HxButton Color="ThemeColor.Success" Icon="BootstrapIcon.Check" Enabled="false" CssClass="w-100 mt-2">Hinzugefügt</HxButton>
+                                <HxButton OnClick="@RemoveReminder" Spinner="@Loading" Enabled="@(!Loading)" Color="ThemeColor.Warning" Outline="true" Icon="BootstrapIcon.XCircleFill" CssClass="w-100 mt-2">Entfernen</HxButton>
+                            }
+                        </HxCardSubtitle>
+                    }
+                </BodyTemplate>
+            </HxCard>
+        </div>
+        <div class="col mt-4">
+            <div class="text-warning border rounded">
+                @if (SeriesInfo is not null && !string.IsNullOrWhiteSpace(SeriesInfo.DirectLink))
                 {
-                    <div class="text-center">
-                        <HxSpinner Size="SpinnerSize.Regular"></HxSpinner>
-                    </div>
+                    <p class="p-3 pb-0">@SeriesInfo.Description<a href="@SeriesInfo.DirectLink" class="text-primary d-inline mx-2">mehr anzeigen</a></p>
                 }
-                else
-                {
-                    <HxCardTitle CssClass="text-center text-decoration-underline">@SeriesInfo?.Name</HxCardTitle>
-                    <HxCardText CssClass="text-center">Staffeln: @SeriesInfo?.SeasonCount</HxCardText>
-                    <HxCardSubtitle>
-                        @if (UserSeries is null && !AddSuccess)
-                        {
-                            <HxButton OnClick="@AddReminder" Outline="true" Color="ThemeColor.Success" Icon="BootstrapIcon.PlusCircleFill" Spinner="@Loading" Enabled="@(!Loading)" CssClass="w-100 mt-2">Hinzufügen</HxButton>
-                        }
-                        else
-                        {
-                            <HxButton Color="ThemeColor.Success" Icon="BootstrapIcon.Check" Enabled="false" CssClass="w-100 mt-2">Hinzugefügt</HxButton>
-                            <HxButton OnClick="@RemoveReminder" Spinner="@Loading" Enabled="@(!Loading)" Color="ThemeColor.Warning" Outline="true" Icon="BootstrapIcon.XCircleFill" CssClass="w-100 mt-2">Entfernen</HxButton>
-                        }
-                    </HxCardSubtitle>
-                }
-            </BodyTemplate>
-        </HxCard>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -128,10 +138,10 @@
         }
 
         AddReminderRequestModel addReminderRequest = new()
-        {
-            SeriesName = SeriesInfo?.Name,
-            Username = AuthService?.User?.Username
-        };
+            {
+                SeriesName = SeriesInfo?.Name,
+                Username = AuthService?.User?.Username
+            };
 
         bool success = await ApiService.PostAsync<bool>("addReminder", addReminderRequest);
 
@@ -166,6 +176,11 @@
 
         Loading = false;
         StateHasChanged();
+    }
+
+    private async Task OpenDirectLink()
+    {
+        await JSRuntime.InvokeAsync<string>("open", SeriesInfo?.DirectLink, "_blank");
     }
 }
 
