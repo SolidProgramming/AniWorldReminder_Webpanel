@@ -26,6 +26,19 @@
                         ImageWidth="220"
                         style="width: 256px;"
                         CssClass="pt-2 mt-4 px-2 rounded">
+                    <HeaderTemplate>
+                        @switch (SeriesInfo.StreamingPortal)
+                        {
+                            case StreamingPortal.AniWorld:
+                                <div class="text-warning fw-light text-center" style="font-family: 'Roboto', sans-serif;"><HxIcon CssClass="px-2 fs-4 align-middle" Icon="BootstrapIcon.Cloud"></HxIcon>AniWorld</div>
+                                break;
+                            case StreamingPortal.STO:
+                                <div class="text-warning fw-light text-center" style="font-family: 'Roboto', sans-serif;"><HxIcon CssClass="px-2 fs-4 align-middle" Icon="BootstrapIcon.Cloud"></HxIcon>S.TO</div>
+                                break;
+                            default:
+                                break;
+                        }
+                    </HeaderTemplate>
                     <BodyTemplate>
                         @if (LoadingInfo)
                         {
