@@ -45,7 +45,7 @@
         </div>
         <div class="col mt-4">
             <div class="text-warning border rounded">
-                @if (Loading)
+                @if (LoadingInfo)
                 {
                     <div class="text-center my-2">
                         <HxSpinner CssClass="text-center" Size="SpinnerSize.Regular"></HxSpinner>
@@ -90,11 +90,11 @@
     {
         if (firstRender)
         {
-            Loading = true;
+            LoadingInfo = true;
             StateHasChanged();
             SeriesInfo = await ApiService.GetAsync<SeriesInfoModel?>("getSeriesInfo", new() { { "seriesName", SeriesSearchName! } });
             UserSeries = await ApiService.GetAsync<SeriesModel?>("getUserSeries", new() { { "username", AuthService?.User?.Username! }, { "seriesName", SeriesInfo?.Name! } });
-            Loading = false;
+            LoadingInfo = false;
             StateHasChanged();
         }
 
