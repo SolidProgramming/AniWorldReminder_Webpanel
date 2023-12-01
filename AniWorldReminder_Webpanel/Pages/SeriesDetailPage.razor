@@ -25,9 +25,10 @@
                         ImageHeight="330"
                         ImageWidth="220"
                         style="width: 256px;"
-                        CssClass="pt-2 mt-4 px-2 rounded">
+                        CssClass="pt-2 mt-4 px-2 rounded"
+                        HeaderCssClass="bg-transparent">
                     <HeaderTemplate>
-                        @switch (SeriesInfo.StreamingPortal)
+                        @switch (SeriesInfo?.StreamingPortal)
                         {
                             case StreamingPortal.AniWorld:
                                 <div class="text-warning fw-light text-center" style="font-family: 'Roboto', sans-serif;"><HxIcon CssClass="px-2 fs-4 align-middle" Icon="BootstrapIcon.Cloud"></HxIcon>AniWorld</div>
