@@ -173,7 +173,8 @@
         AddReminderRequestModel addReminderRequest = new()
             {
                 SeriesName = SeriesInfo?.Name,
-                Username = AuthService?.User?.Username
+                Username = AuthService?.User?.Username,
+                StreamingPortal = SeriesInfo.StreamingPortal
             };
 
         bool success = await ApiService.PostAsync<bool>("addReminder", addReminderRequest);

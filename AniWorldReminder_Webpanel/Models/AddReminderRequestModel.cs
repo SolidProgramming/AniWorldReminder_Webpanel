@@ -8,5 +8,7 @@ namespace AniWorldReminder_Webpanel.Models
         public string Username { get; set; }
         [JsonPropertyName("seriesName")]
         public string SeriesName { get; set; }
+
+        public StreamingPortal StreamingPortal { get; set; }
     }
 }
