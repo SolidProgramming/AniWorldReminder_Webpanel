@@ -82,6 +82,18 @@
                         }
                     }
                 </div>
+                <div class="col-6 mt-4">
+                    <div class="px-3 py-2 border rounded">
+                        <div class="my-2">
+                            <HxIcon CssClass="d-inline fs-5" Icon="BootstrapIcon.Translate"></HxIcon>
+                            <h5 class="d-inline px-2">Sprache:</h5>
+                        </div>
+                        <HxCheckbox TextCssClass="text-warning" Inline="true" @bind-Value="GerDub" Text="Deutsch" />
+                        <HxCheckbox TextCssClass="text-warning" Inline="true" CssClass="mt-2" @bind-Value="GerSub" Text="Deutsch Untertitel" />
+                        <HxCheckbox TextCssClass="text-warning" Inline="true" CssClass="mt-2" @bind-Value="EngDub" Text="Englisch" />
+                        <HxCheckbox TextCssClass="text-warning" Inline="true" CssClass="mt-2" @bind-Value="EngSub" Text="Englisch Untertitel" />
+                    </div>
+                </div>
             </div>
         </div>
     }
@@ -90,6 +102,11 @@
 @code {
     [Parameter]
     public string? SeriesSearchName { get; set; }
+
+    private bool GerDub { get; set; }
+    private bool GerSub { get; set; }
+    private bool EngDub { get; set; }
+    private bool EngSub { get; set; }
 
     private bool LoadingInfo { get; set; }
     private bool Loading { get; set; }
