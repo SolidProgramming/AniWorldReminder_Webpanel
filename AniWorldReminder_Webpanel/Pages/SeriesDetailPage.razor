@@ -152,7 +152,10 @@
 
             UserSeries = await ApiService.GetAsync<SeriesModel?>("getUserSeries", new() { { "username", AuthService?.User?.Username! }, { "seriesName", SeriesInfo?.Name! } });
 
-            SetLanguages(UserSeries);
+            if (UserSeries is not null)
+            {
+                SetLanguages(UserSeries);
+            }
 
             LoadingInfo = false;
             StateHasChanged();
