@@ -152,6 +152,8 @@
 
             UserSeries = await ApiService.GetAsync<SeriesModel?>("getUserSeries", new() { { "username", AuthService?.User?.Username! }, { "seriesName", SeriesInfo?.Name! } });
 
+            SetLanguages(UserSeries);
+
             LoadingInfo = false;
             StateHasChanged();
         }
@@ -189,6 +191,14 @@
         }
 
         return language;
+    }
+
+    private void SetLanguages(SeriesModel series)
+    {
+        GerDub = series.LanguageFlag.HasFlag(Language.GerDub);
+        EngSub = series.LanguageFlag.HasFlag(Language.EngSub);
+        GerSub = series.LanguageFlag.HasFlag(Language.GerSub);
+        EngDub = series.LanguageFlag.HasFlag(Language.EngDub);
     }
 
     private void NavigateBack()
