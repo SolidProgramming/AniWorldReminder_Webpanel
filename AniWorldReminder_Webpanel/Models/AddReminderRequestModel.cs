@@ -10,5 +10,7 @@ namespace AniWorldReminder_Webpanel.Models
         public string SeriesName { get; set; }
 
         public StreamingPortal StreamingPortal { get; set; }
+
+        public Language Language { get; set; }
     }
 }

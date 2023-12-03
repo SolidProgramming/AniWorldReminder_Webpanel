@@ -89,9 +89,16 @@
                             <h5 class="d-inline px-2">Sprache:</h5>
                         </div>
                         <HxCheckbox TextCssClass="text-warning" Inline="true" @bind-Value="GerDub" Text="Deutsch" />
-                        <HxCheckbox TextCssClass="text-warning" Inline="true" CssClass="mt-2" @bind-Value="GerSub" Text="Deutsch Untertitel" />
-                        <HxCheckbox TextCssClass="text-warning" Inline="true" CssClass="mt-2" @bind-Value="EngDub" Text="Englisch" />
-                        <HxCheckbox TextCssClass="text-warning" Inline="true" CssClass="mt-2" @bind-Value="EngSub" Text="Englisch Untertitel" />
+                        <HxCheckbox TextCssClass="text-warning" Inline="true" @bind-Value="GerSub" CssClass="mt-2" Text="Deutsch Untertitel" />
+                        <HxCheckbox TextCssClass="text-warning" Inline="true" @bind-Value="EngDub" CssClass="mt-2" Text="Englisch" />
+                        <HxCheckbox TextCssClass="text-warning" Inline="true" @bind-Value="EngSub" CssClass="mt-2" Text="Englisch Untertitel" />
+                        @if (ShowLanguageError)
+                        {
+                            <HxAlert Color="ThemeColor.Danger" CssClass="mt-3">
+                                <HxIcon Icon="@BootstrapIcon.ExclamationCircleFill" />
+                                Es muss mindestens eine Sprachoption gewählt werden!
+                            </HxAlert>
+                        }
                     </div>
                 </div>
             </div>
@@ -114,14 +121,10 @@
     private SeriesInfoModel? SeriesInfo;
     private SeriesModel? UserSeries;
 
-    private bool LangGerDub { get; set; }
-    private bool LangGerSub { get; set; }
-    private bool LangEngDub { get; set; }
-    private bool LangEngSub { get; set; }
-
     private bool AddSuccess { get; set; }
 
     private bool ShowInfoError { get; set; }
+    private bool ShowLanguageError { get; set; }
 
     protected override void OnParametersSet()
     {
@@ -156,31 +159,36 @@
         await base.OnAfterRenderAsync(firstRender);
     }
 
-    private List<string> GetLanguages()
+    private Language GetLanguages()
     {
-        List<string> languages = new();
+        Language language = Language.None;
 
-        if (LangGerDub)
+        if (GerDub)
         {
-            languages.Add("GerDub");
+            language |= Language.GerDub;
         }
 
-        if (LangGerSub)
+        if (GerSub)
         {
-            languages.Add("GerSub");
+            language |= Language.GerSub;
         }
 
-        if (LangEngDub)
+        if (EngDub)
         {
-            languages.Add("EngDub");
+            language |= Language.EngDub;
         }
 
-        if (LangEngSub)
+        if (EngSub)
         {
-            languages.Add("EngSub");
+            language |= Language.EngSub;
         }
 
-        return languages;
+        if (language == Language.None)
+        {
+            ShowLanguageError = true;
+        }
+
+        return language;
     }
 
     private void NavigateBack()
@@ -191,6 +199,7 @@
     private async Task AddReminder()
     {
         ToastService.Clear();
+        ShowLanguageError = false;
         Loading = true;
         StateHasChanged();
 
@@ -201,8 +210,18 @@
             return;
         }
 
+        Language language = GetLanguages();
+
+        if (language == Language.None)
+        {
+            Loading = false;
+            StateHasChanged();
+            return;
+        }
+
         AddReminderRequestModel addReminderRequest = new()
             {
+                Language = language,
                 SeriesName = SeriesInfo?.Name,
                 Username = AuthService?.User?.Username,
                 StreamingPortal = SeriesInfo.StreamingPortal
