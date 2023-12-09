@@ -1,4 +1,5 @@
 ﻿@attribute [Route(Routes.Search)]
+@attribute [Route(Routes.Search + "/{SeriesSearchName}")]
 @inject IApiService ApiService
 @inject NavigationManager NavigationManager
 
@@ -26,22 +27,37 @@
     [Parameter]
     public string? SeriesName { get; set; }
 
+    [Parameter]
+    public string? SeriesSearchName { get; set; }
+
     private bool Loading { get; set; }
 
     private ReminderModel Reminder = new();
     private List<SearchResultModel>? SearchResults;
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !string.IsNullOrEmpty(SeriesSearchName))
+        {
+            Reminder.SeriesName = SeriesSearchName;
+            await SearchSeries();
+        }
+    }
+
     private async Task SearchSeries()
     {
         Loading = true;
+        StateHasChanged();
 
         List<SearchResultModel>? searchResults = await ApiService.GetAsync<List<SearchResultModel>?>("getSeries", new() { { "seriesName", Reminder.SeriesName } });
 
         Loading = false;
+        StateHasChanged();
 
         if (searchResults is null || !searchResults.Any())
             return;
 
         SearchResults = searchResults;
+        StateHasChanged();
     }
 }
