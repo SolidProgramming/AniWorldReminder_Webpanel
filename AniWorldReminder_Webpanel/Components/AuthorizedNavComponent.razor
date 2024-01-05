@@ -11,12 +11,12 @@
         </div>
     </HeaderTemplate>
     <ItemsTemplate>
-        <HxSidebarItem Icon="BootstrapIcon.Person" Href="/" CssClass="pb-4">
+        <HxSidebarItem Icon="BootstrapIcon.Person" Href="@Routes.Index" CssClass="pb-4">
             <ContentTemplate>
                 Profil
             </ContentTemplate>
         </HxSidebarItem>
-        <HxSidebarItem Icon="BootstrapIcon.Columns" Href="/dashboard">
+        <HxSidebarItem Icon="BootstrapIcon.Columns" Href="@Routes.Dashboard">
             <ContentTemplate>
                 Dashboard
                 <HxBadge Color="ThemeColor.Secondary" CssClass="ms-2">
@@ -33,12 +33,12 @@
             </ContentTemplate>
         </HxSidebarItem>
 
-        <HxSidebarItem Icon="BootstrapIcon.BoxArrowLeft" CssClass="mt-5 text-danger" Href="/logout">
+        <HxSidebarItem Icon="BootstrapIcon.BoxArrowLeft" CssClass="mt-5 text-danger" Href="@Routes.Logout">
             <ContentTemplate>
                 Ausloggen
             </ContentTemplate>
         </HxSidebarItem>
-        <HxSidebarItem Icon="BootstrapIcon.Gear" Href="/" CssClass="border-top pt-2 text-warning">
+        <HxSidebarItem Icon="BootstrapIcon.Gear" Href="@Routes.Settings" CssClass="border-top pt-2 text-warning">
             <ContentTemplate>
                 Einstellungen
             </ContentTemplate>

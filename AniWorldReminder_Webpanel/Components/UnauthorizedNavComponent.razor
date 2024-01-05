@@ -7,7 +7,7 @@
         </div>
     </HeaderTemplate>
     <ItemsTemplate>
-        <HxSidebarItem Href="/login" Enabled="@(!InProgress)">
+        <HxSidebarItem Href="@Routes.Login" Enabled="@(!InProgress)">
             <ContentTemplate>
                 @if (@InProgress)
                 {
@@ -20,7 +20,7 @@
                 Login
             </ContentTemplate>
         </HxSidebarItem>
-        <HxSidebarItem Icon="BootstrapIcon.PlusLg" Href="/verify">
+        <HxSidebarItem Icon="BootstrapIcon.PlusLg" Href="@Routes.Verify">
             <ContentTemplate>
                 Verifizieren
             </ContentTemplate>

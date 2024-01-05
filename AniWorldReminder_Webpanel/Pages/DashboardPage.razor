@@ -45,6 +45,8 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        await AuthService.Initialize();
+
         if (firstRender)
         {
             Loading = true;

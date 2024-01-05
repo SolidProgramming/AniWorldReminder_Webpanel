@@ -1,0 +1,105 @@
+﻿@attribute [Route(Routes.Settings)]
+@inject IApiService ApiService
+@inject NavigationManager NavigationManager
+@inject IHxMessengerService ToastService
+@inject IAuthenticationService AuthService
+
+<PageTitle>Einstellungen</PageTitle>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-auto mt-4">
+            <div class="px-3 py-2 border rounded">
+                <div class="my-2">
+                    <HxIcon CssClass="d-inline fs-5 text-primary" Icon="BootstrapIcon.Telegram"></HxIcon>
+                    <h5 class="d-inline px-2">Telegram:</h5>
+                </div>
+                <HxCheckbox CssClass="mt-2" TextCssClass="text-warning" Inline="true" @oninput="@ChangedSettings" @bind-Value="TelegramDisableNotification" Text="Stille Nachrichten" />
+                <HxCheckbox CssClass="mt-2" TextCssClass="text-warning" Inline="true" @oninput="@ChangedSettings" @bind-Value="DisableWebsitePreview" Text="Keine Cover Art in Nachrichten" />
+            </div>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col-6">
+            <HxButton OnClick="@SaveSettings" Color="ThemeColor.Success" Icon="BootstrapIcon.Check" Enabled="@(CanSave)" CssClass="w-100">Speichern</HxButton>
+        </div>
+        <div class="col-6">
+            <HxButton Outline="true" Color="ThemeColor.Warning" OnClick="@NavigateBack" Icon="BootstrapIcon.XCircle" CssClass="w-100">Abbrechen</HxButton>
+        </div>
+    </div>
+</div>
+
+
+
+@code {
+    private bool TelegramDisableNotification { get; set; }
+    private bool DisableWebsitePreview { get; set; }
+
+    private bool SaveSuccess { get; set; }
+    private bool ShowError { get; set; }
+
+    private UserWebsiteSettings? userWebsiteSettings;
+
+    private bool CanSave { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await AuthService.Initialize();
+
+        if (firstRender)
+        {
+            userWebsiteSettings = await ApiService.GetAsync<UserWebsiteSettings?>("getUserSettings", new() { { "username", AuthService?.User?.Username! } });
+
+            if (userWebsiteSettings is null)
+            {
+                StateHasChanged();
+                ToastService.AddError("Fehler", $"Beim abrufen der Einstellungen ist ein Fehler aufgetreten!");
+                return;
+            }
+
+            TelegramDisableNotification = userWebsiteSettings.TelegramDisableNotifications == 1 ? true : false;
+            DisableWebsitePreview = userWebsiteSettings.TelegramNoCoverArtNotifications == 1 ? true : false;
+
+            StateHasChanged();
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private async Task SaveSettings()
+    {
+        ToastService.Clear();
+
+        if (userWebsiteSettings is null || userWebsiteSettings.UserId <= 0)
+        {
+            return;
+        }
+
+        userWebsiteSettings.TelegramDisableNotifications = TelegramDisableNotification ? 1 : 0;
+        userWebsiteSettings.TelegramNoCoverArtNotifications = DisableWebsitePreview ? 1 : 0;
+
+        bool saveSuccess = await ApiService.PostAsync<bool>("setUserSettings", userWebsiteSettings);
+
+        if (!saveSuccess)
+        {
+            ToastService.AddError("Fehler", $"Beim speichern der Einstellungen ist ein Fehler aufgetreten!");
+            return;
+        }
+
+        CanSave = false;
+        StateHasChanged();
+
+        ToastService.AddInformation("Erfolg", $"Deine Einstellungen wurden gespeichert!");
+    }
+
+    private void ChangedSettings()
+    {
+        CanSave = true;
+    }
+
+    private void NavigateBack()
+    {
+        ToastService.Clear();
+        NavigationManager.NavigateTo(Routes.Index);
+    }
+}
