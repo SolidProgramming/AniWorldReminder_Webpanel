@@ -116,6 +116,10 @@
     [Parameter]
     public string? SeriesSearchName { get; set; }
 
+    [SupplyParameterFromQuery(Name = "referer")]
+    [Parameter]
+    public string? Referer { get; set; }
+
     private string? QuickSearchSeriesName { get; set; }
 
     private ReminderModel Reminder = new();
@@ -224,7 +228,13 @@
 
     private void NavigateBack()
     {
-        NavigationManager.NavigateTo(Routes.Search);
+        if (string.IsNullOrEmpty(Referer))
+        {
+            NavigationManager.NavigateTo(Routes.Search);
+            return;
+        }
+
+        NavigationManager.NavigateTo(Referer);
     }
 
     private async Task AddReminder()

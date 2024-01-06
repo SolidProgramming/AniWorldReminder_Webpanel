@@ -2,6 +2,7 @@
 @inject IHxMessengerService ToastService
 @inject IApiService ApiService
 @inject IAuthenticationService AuthService
+@inject NavigationManager NavigationManager
 
 <div class="container">
     <h3 class="d-inline">Dashboard - </h3><h5 class="d-inline">Reminder</h5>
@@ -23,6 +24,7 @@
                     <BodyTemplate>
                         <HxCardTitle>@series.Name</HxCardTitle>
                             <HxCardSubtitle>
+                                <HxButton OnClick="@(() => NavigateToDetail(series.Name))" Spinner="@Loading" Enabled="@(!Loading)" Color="ThemeColor.Primary" Icon="BootstrapIcon.Forward" CssClass="w-100 mt-2">Anzeigen</HxButton>
                                 <HxButton OnClick="@(() => RemoveReminder(series.Name))" Spinner="@Loading" Enabled="@(!Loading)" Color="ThemeColor.Warning" Outline="true" Icon="BootstrapIcon.XCircleFill" CssClass="w-100 mt-2">Entfernen</HxButton>
                             </HxCardSubtitle>
                         </BodyTemplate>
@@ -79,6 +81,11 @@
 
         Loading = false;
         StateHasChanged();
+    }
+
+    private void NavigateToDetail(string seriesName)
+    {
+        NavigationManager.NavigateTo(Routes.SeriesDetail + $"/{seriesName}?referer={Routes.Dashboard}");
     }
 }
 
