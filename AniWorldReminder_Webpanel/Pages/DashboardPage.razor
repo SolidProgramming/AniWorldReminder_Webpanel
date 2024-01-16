@@ -1,15 +1,22 @@
 ﻿@attribute [Route(Routes.Dashboard)]
+@attribute [Route(Routes.Index)]
 @inject IHxMessengerService ToastService
 @inject IApiService ApiService
 @inject IAuthenticationService AuthService
 @inject NavigationManager NavigationManager
 
 <div class="container">
+    <div class="row mb-5">
+        <EditForm Model="@Reminder" OnValidSubmit="@(() => SearchSeriesDashboard())">
+            <HxInputText Label="Serien Name" @bind-Value="@SearchSeriesName" Placeholder="Jujutsu Kaisen" />
+            <HxSubmit Color="ThemeColor.Primary" CssClass="w-100" Spinner="Loading" Enabled="@(!Loading)">Reminder suchen</HxSubmit>
+        </EditForm>
+    </div>
     <h3 class="d-inline">Dashboard - </h3><h5 class="d-inline">Reminder</h5>
     @if (UserSeries is not null)
     {
         <HxBadge CssClass="mx-2" Color="ThemeColor.Success">@(UserSeries.Count)x</HxBadge>
-    }
+    }    
     <div class="row">
         @if (UserSeries is not null)
         {
@@ -44,6 +51,10 @@
     private List<SeriesModel>? UserSeries { get; set; }
 
     private bool Loading { get; set; }
+
+    private ReminderModel Reminder = new();
+
+    private string SearchSeriesName;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -86,6 +97,26 @@
     private void NavigateToDetail(string seriesName)
     {
         NavigationManager.NavigateTo(Routes.SeriesDetail + $"/{seriesName}?referer={Routes.Dashboard}");
+    }
+
+    private async Task SearchSeriesDashboard()
+    {
+        if (string.IsNullOrEmpty(SearchSeriesName))
+        {
+            Loading = true;
+            StateHasChanged();
+
+            UserSeries = await ApiService.GetAsync<List<SeriesModel>?>("getAllUserSeries", new() { { "username", AuthService?.User?.Username! } });
+
+            Loading = false;
+            StateHasChanged();
+            return;
+        }
+
+        List<SeriesModel>? searchResults = UserSeries.Where(_ => _.Name.ToLower().Contains(SearchSeriesName.ToLower())).ToList();
+
+        UserSeries = searchResults;
+        StateHasChanged();
     }
 }
 
