@@ -1,0 +1,23 @@
+﻿<div>
+    @if (Languages.HasFlag(Language.GerDub))
+    {
+        <img class="d-inline languageFlag" src="img/german_dub.svg">
+    }
+    @if (Languages.HasFlag(Language.EngDub))
+    {
+        <img class="d-inline languageFlag" src="img/english_dub.svg">
+    }
+    @if (Languages.HasFlag(Language.GerSub))
+    {
+        <img class="d-inline languageFlag" src="img/german_sub.svg">
+    }
+    @if (Languages.HasFlag(Language.EngSub))
+    {
+        <img class="d-inline languageFlag" src="img/english_sub.svg">
+    }
+</div>
+
+@code {
+    [Parameter]
+    public Language Languages { get; set; }
+}

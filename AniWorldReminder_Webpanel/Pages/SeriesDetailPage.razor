@@ -19,19 +19,19 @@
     else
     {
         <div class="row mt-3">
-                <EditForm Model="@Reminder" OnValidSubmit="@(() => Quicksearch())">
-                    <HxInputText Label="Serien Name" @bind-Value="@QuickSearchSeriesName" Placeholder="Jujutsu Kaisen" />
-                <HxSubmit Color="ThemeColor.Primary" CssClass="w-100 mt-3" Spinner="Loading" Enabled="@(!Loading)">Schnellsuche</HxSubmit>
-                </EditForm>
+            <EditForm Model="@Reminder" OnValidSubmit="@(() => Quicksearch())">
+                <HxInputText Label="Serien Name" @bind-Value="@QuickSearchSeriesName" Placeholder="Jujutsu Kaisen" />
+                <HxSubmit Color="ThemeColor.Primary" CssClass="w-100" Spinner="Loading" Enabled="@(!Loading)">Schnellsuche</HxSubmit>
+            </EditForm>
         </div>
-        <div class="row mt-3">
+        <div class="row mt-2">
             <div class="col-sm-auto pb-2">
                 <HxCard ImageAlt=""
                         ImageSrc="@SeriesInfo?.CoverArtUrl"
                         ImageHeight="330"
                         ImageWidth="220"
                         style="width: 256px;"
-                        CssClass="pt-2 mt-4 px-2 rounded"
+                        CssClass="mt-3 px-2 rounded"
                         HeaderCssClass="bg-transparent border border-0">
                     <HeaderTemplate>
                         @switch (SeriesInfo?.StreamingPortal)
@@ -72,7 +72,7 @@
                     </BodyTemplate>
                 </HxCard>
             </div>
-            <div class="col mt-4">
+            <div class="col mt-3">
                 <div class="text-warning border rounded">
                     @if (LoadingInfo)
                     {
@@ -91,7 +91,7 @@
                 <div class="col-6 mt-4">
                     <div class="px-3 py-2 border rounded">
                         <div class="my-2">
-                            <HxIcon CssClass="d-inline fs-5" Icon="BootstrapIcon.Translate"></HxIcon>
+                            <HxIcon CssClass="d-inline fs-5 text-primary" Icon="BootstrapIcon.Translate"></HxIcon>
                             <h5 class="d-inline px-2">Sprache:</h5>
                         </div>
                         <HxCheckbox TextCssClass="text-warning" Inline="true" @bind-Value="GerDub" Text="Deutsch" />
@@ -109,6 +109,47 @@
                 </div>
             </div>
         </div>
+        @if (SeriesInfo is not null)
+        {
+            <div class="mt-3">
+                <HxTabPanel InitialActiveTabId="@SeriesInfo.Seasons.First().Id.ToString()" CssClass="mt-3">
+                    <div>
+                        <HxIcon CssClass="d-inline fs-2 text-warning" Icon="BootstrapIcon.PlayFill"></HxIcon>
+                        <h4 class="d-inline px-2">Staffeln:</h4>
+                    </div>
+                    @foreach (SeasonModel season in SeriesInfo.Seasons)
+                    {
+                        <HxTab ContentCssClass="mt-2" Title="@season.Id.ToString()" Id="@season.Id.ToString()">
+                            <Content>
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Folge</th>
+                                            <th scope="col">Titel/Name</th>
+                                            <th scope="col">Sprache</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @{
+                                            int i = 1;
+                                            @foreach (EpisodeModel episode in season.Episodes)
+                                            {
+                                                <tr>
+                                                    <th class="text-secondary" scope="row">@i</th>
+                                                    <td class="text-primary" style="font-family: 'Roboto', sans-serif;"><b>@episode.Name</b></td>
+                                                    <td><LanguageFlagsComponent Languages="@episode.Languages"></LanguageFlagsComponent></td>
+                                                </tr>
+                                                i++;
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                            </Content>
+                        </HxTab>
+                    }
+                </HxTabPanel>
+            </div>
+        }
     }
 </div>
 
