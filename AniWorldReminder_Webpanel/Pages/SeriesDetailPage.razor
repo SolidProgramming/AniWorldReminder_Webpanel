@@ -125,6 +125,7 @@
                                     <thead>
                                         <tr>
                                             <th scope="col">Folge</th>
+                                            <th scope="col">Link</th>
                                             <th scope="col">Titel/Name</th>
                                             <th scope="col">Sprache</th>
                                         </tr>
@@ -136,6 +137,14 @@
                                             {
                                                 <tr>
                                                     <th class="text-secondary" scope="row">@i</th>
+                                                    <th>
+                                                        @if (!string.IsNullOrEmpty(episode.DirectViewLink))
+                                                        {
+                                                            <a href=@episode.DirectViewLink target="_blank">
+                                                                <HxIcon CssClass="fs-2 text-warning" Icon="BootstrapIcon.PlayFill"></HxIcon>
+                                                            </a>
+                                                        }
+                                                    </th>
                                                     <td class="text-primary" style="font-family: 'Roboto', sans-serif;"><b>@episode.Name</b></td>
                                                     <td><LanguageFlagsComponent Languages="@episode.Languages"></LanguageFlagsComponent></td>
                                                 </tr>
@@ -347,6 +356,11 @@
     private async Task OpenDirectLink()
     {
         await JSRuntime.InvokeAsync<string>("open", SeriesInfo?.DirectLink, "_blank");
+    }
+
+    private async Task OpenEpisodeDirectLink(string episodeUrl)
+    {
+        await JSRuntime.InvokeAsync<string>("open", episodeUrl, "_blank");
     }
 }
 
