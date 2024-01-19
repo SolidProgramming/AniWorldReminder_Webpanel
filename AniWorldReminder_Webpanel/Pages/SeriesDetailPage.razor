@@ -112,14 +112,14 @@
         @if (SeriesInfo is not null && SeriesInfo.Seasons.Count > 0)
         {
             <div class="mt-3">
-                <HxTabPanel @bind-ActiveTabId="ActiveTabId" CssClass="mt-3">
+                <HxTabPanel InitialActiveTabId="@SeriesInfo.Seasons.First().Id.ToString()" CssClass="mt-3">
                     <div>
                         <HxIcon CssClass="d-inline fs-2 text-warning" Icon="BootstrapIcon.PlayFill"></HxIcon>
                         <h4 class="d-inline px-2">Staffeln:</h4>
                     </div>
                     @foreach (SeasonModel season in SeriesInfo.Seasons)
                     {
-                        <HxTab OnTabActivated="SelectedSeasonTabChanged" ContentCssClass="mt-2" Title="@season.Id.ToString()" Id="@season.Id.ToString()">
+                        <HxTab ContentCssClass="mt-2" Title="@season.Id.ToString()" Id="@season.Id.ToString()">
                             <Content>
                                 <table class="table">
                                     <thead>
@@ -193,8 +193,6 @@
 
     private bool ShowInfoError { get; set; }
     private bool ShowLanguageError { get; set; }
-
-    private string ActiveTabId;
 
     protected override void OnParametersSet()
     {
@@ -381,18 +379,18 @@
         await JSRuntime.InvokeAsync<string>("open", episodeUrl, "_blank");
     }
 
-    private async Task SelectedSeasonTabChanged()
-    {
-        SeasonModel? updatedSeason = await ApiService.GetAsync<SeasonModel?>("getSeasonEpisodesLinks", new() { { "seriesName", SeriesInfo!.Name! } }, ActiveTabId);
+    // private async Task SelectedSeasonTabChanged()
+    // {
+    //     SeasonModel? updatedSeason = await ApiService.GetAsync<SeasonModel?>("getSeasonEpisodesLinks", new() { { "seriesName", SeriesInfo!.Name! } }, );
 
-        if (updatedSeason is not null)
-        {
-            SeriesInfo.Seasons.RemoveAt(Convert.ToInt32(ActiveTabId));
-            StateHasChanged();
-            SeriesInfo.Seasons.Add(updatedSeason);
-            SeriesInfo.Seasons = SeriesInfo.Seasons.OrderBy(_ => _.Id).ToList();
-            StateHasChanged();
-        }
-    }
+    //     if (updatedSeason is not null)
+    //     {
+    //         SeriesInfo.Seasons.RemoveAt(Convert.ToInt32(ActiveTabId));
+    //         StateHasChanged();
+    //         SeriesInfo.Seasons.Add(updatedSeason);
+    //         SeriesInfo.Seasons = SeriesInfo.Seasons.OrderBy(_ => _.Id).ToList();
+    //         StateHasChanged();
+    //     }
+    // }
 }
 
