@@ -40,6 +40,15 @@ namespace AniWorldReminder_Webpanel.Services
             HttpRequestMessage request = new(HttpMethod.Get, uri);
             return await SendRequest<T>(request);
         }
+
+        public async Task<T?> GetAsync<T>(string uri, Dictionary<string, string> queryData, object body)
+        {
+            HttpRequestMessage request = new(HttpMethod.Get, new Uri(QueryHelpers.AddQueryString(HttpClient.BaseAddress + uri, queryData!)))
+            {
+                Content = new StringContent(System.Text.Json.JsonSerializer.Serialize(body), Encoding.UTF8, "application/json")
+            };
+            return await SendRequest<T>(request);
+        }
         public async Task<T?> GetAsync<T>(string uri, Dictionary<string, string> queryData)
         {
             HttpRequestMessage request = new(HttpMethod.Get, new Uri(QueryHelpers.AddQueryString(HttpClient.BaseAddress + uri, queryData!)));
@@ -90,6 +99,6 @@ namespace AniWorldReminder_Webpanel.Services
             }
 
             return await response.Content.ReadFromJsonAsync<T>();
-        }
+        }        
     }
 }
