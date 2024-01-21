@@ -7,9 +7,43 @@
 
 <PageTitle>Serie: @SeriesInfo?.Name</PageTitle>
 
-    <div class="container">
-        <HxButton Outline="true" Color="ThemeColor.Warning" OnClick="@NavigateBack" Icon="BootstrapIcon.Backspace">Zurück</HxButton>
-        @if (ShowInfoError)
+    <HxModal Size="ModalSize.Regular" @ref="LanguageSelectionModal" Title="Sprache" Centered="true">
+        <BodyTemplate>
+            <div class="d-flex justify-content-center">
+                @foreach (DirectViewLinkModel directViewLink in SelectedEpisodeDirectView.DirectViewLinks)
+            {
+                @if (directViewLink.Language == Language.GerDub)
+                {
+                    <a target="_blank" href="@directViewLink.DirectLink">
+                        <img style="width: 65px;" class="d-inline mx-2" src="img/german_dub.svg">
+                    </a>
+                }
+                @if (directViewLink.Language == Language.EngDub)
+                {
+                    <a target="_blank" href="@directViewLink.DirectLink">
+                        <img style="width: 65px;" class="d-inline mx-2" src="img/english_dub.svg">
+                    </a>
+                }
+                @if (directViewLink.Language == Language.GerSub)
+                {
+                    <a target="_blank" href="@directViewLink.DirectLink">
+                        <img style="width: 65px;" class="d-inline mx-2" src="img/german_sub.svg">
+                    </a>
+                }
+                @if (directViewLink.Language == Language.EngSub)
+                {
+                    <a target="_blank" href="@directViewLink.DirectLink">
+                        <img style="width: 65px;" class="d-inline mx-2" src="img/english_sub.svg">
+                    </a>
+                }
+            }
+        </div>
+    </BodyTemplate>
+</HxModal>
+
+<div class="container">
+    <HxButton Outline="true" Color="ThemeColor.Warning" OnClick="@NavigateBack" Icon="BootstrapIcon.Backspace">Zurück</HxButton>
+    @if (ShowInfoError)
     {
         <HxAlert Color="ThemeColor.Danger" CssClass="mt-3">
             <HxIcon Icon="@BootstrapIcon.ExclamationCircleFill" />
@@ -84,7 +118,7 @@
                     {
                         if (SeriesInfo is not null && !string.IsNullOrWhiteSpace(SeriesInfo.DirectLink))
                         {
-                            <p class="p-3 pb-0">@SeriesInfo.Description<a href="@SeriesInfo.DirectLink" class="text-primary d-inline mx-2">mehr anzeigen</a></p>
+                            <p class="p-3 pb-0">@SeriesInfo.Description<a target="_blank" href="@SeriesInfo.DirectLink" class="text-primary d-inline mx-2">mehr anzeigen</a></p>
                         }
                     }
                 </div>
@@ -124,8 +158,8 @@
                                 <table class="table">
                                     <thead>
                                         <tr>
-                                            <th scope="col">Folge</th>
-                                            <th scope="col">Link</th>
+                                            <th scope="col" class="text-center" width="70px">Folge</th>
+                                            <th scope="col" class="text-center" width="70px">Watch</th>
                                             <th scope="col">Titel/Name</th>
                                             <th scope="col">Sprache</th>
                                         </tr>
@@ -136,17 +170,15 @@
                                             @foreach (EpisodeModel episode in season.Episodes)
                                             {
                                                 <tr>
-                                                    <th class="text-secondary" scope="row">@i</th>
-                                                    <th>
-                                                        @if (string.IsNullOrEmpty(episode.DirectViewLink))
+                                                    <th class="text-secondary text-center" scope="row">@i</th>
+                                                    <th class="text-center">
+                                                        @if (episode.DirectViewLinks is null)
                                                         {
                                                             <HxSpinner Size="SpinnerSize.Small"></HxSpinner>
                                                         }
                                                         else
                                                         {
-                                                            <a href=@episode.DirectViewLink target="_blank">
-                                                                <HxIcon CssClass="m-0 p-0 fs-2 text-warning" Icon="BootstrapIcon.PlayFill"></HxIcon>
-                                                            </a>
+                                                            <HxButton OnClick="@(() => OpenLanguageSelectionForEpisode(episode))" Size="ButtonSize.Small" IconCssClass="p-0 m-0" Icon="BootstrapIcon.PlayFill" Color="ThemeColor.Warning"></HxButton>
                                                         }
                                                     </th>
                                                     <td class="text-primary" style="font-family: 'Roboto', sans-serif;"><b>@episode.Name</b></td>
@@ -174,6 +206,8 @@
     [Parameter]
     public string? Referer { get; set; }
 
+    private HxModal? LanguageSelectionModal;
+
     private string? QuickSearchSeriesName { get; set; }
 
     private ReminderModel Reminder = new();
@@ -193,6 +227,8 @@
 
     private bool ShowInfoError { get; set; }
     private bool ShowLanguageError { get; set; }
+
+    private EpisodeModel? SelectedEpisodeDirectView;
 
     protected override void OnParametersSet()
     {
@@ -228,14 +264,14 @@
             LoadingInfo = false;
             StateHasChanged();
 
-            SeasonModel? updatedSeason = await ApiService.GetAsync<SeasonModel?>("getSeasonEpisodesLinks", new() { { "seriesName", SeriesInfo!.Name! } }, SeriesInfo!.Seasons.First());
+            SeasonModel? updatedSeason = await ApiService.GetAsync<SeasonModel?>("getSeasonEpisodesLinks", new() { { "seriesName", SeriesInfo!.Name! }, { "streamingPortal", SeriesInfo!.StreamingPortal.ToString() } }, SeriesInfo!.Seasons.First());
 
             if (updatedSeason is not null)
             {
                 SeriesInfo.Seasons.RemoveAt(0);
                 StateHasChanged();
                 SeriesInfo.Seasons.Add(updatedSeason);
-                SeriesInfo.Seasons = SeriesInfo.Seasons.OrderBy(_ => _.Id).ToList();                
+                SeriesInfo.Seasons = SeriesInfo.Seasons.OrderBy(_ => _.Id).ToList();
                 StateHasChanged();
             }
         }
@@ -379,18 +415,10 @@
         await JSRuntime.InvokeAsync<string>("open", episodeUrl, "_blank");
     }
 
-    // private async Task SelectedSeasonTabChanged()
-    // {
-    //     SeasonModel? updatedSeason = await ApiService.GetAsync<SeasonModel?>("getSeasonEpisodesLinks", new() { { "seriesName", SeriesInfo!.Name! } }, );
-
-    //     if (updatedSeason is not null)
-    //     {
-    //         SeriesInfo.Seasons.RemoveAt(Convert.ToInt32(ActiveTabId));
-    //         StateHasChanged();
-    //         SeriesInfo.Seasons.Add(updatedSeason);
-    //         SeriesInfo.Seasons = SeriesInfo.Seasons.OrderBy(_ => _.Id).ToList();
-    //         StateHasChanged();
-    //     }
-    // }
+    private async Task OpenLanguageSelectionForEpisode(EpisodeModel episode)
+    {
+        SelectedEpisodeDirectView = episode;
+        await LanguageSelectionModal.ShowAsync();
+    }
 }
 

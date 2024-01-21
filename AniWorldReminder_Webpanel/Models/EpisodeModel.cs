@@ -9,6 +9,6 @@
         public string? Name { get; set; }
         public Language Languages { get; set; }
         public string? M3U8DirectLink { get; set; }
-        public string? DirectViewLink { get; set; }
+        public List<DirectViewLinkModel>? DirectViewLinks { get; set; }
     }
 }
