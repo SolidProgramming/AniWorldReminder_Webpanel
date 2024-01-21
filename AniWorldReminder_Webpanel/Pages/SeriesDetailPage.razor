@@ -143,10 +143,10 @@
                 </div>
             </div>
         </div>
-        @if (SeriesInfo is not null && SeriesInfo.Seasons.Count > 0)
+        @if (SeriesInfo is not null)
         {
             <div class="mt-3">
-                <HxTabPanel InitialActiveTabId="@SeriesInfo.Seasons.First().Id.ToString()" CssClass="mt-3">
+                <HxTabPanel ActiveTabIdChanged="TabChanged" CssClass="mt-3" RenderMode="TabPanelRenderMode.ActiveTabOnly">
                     <div>
                         <HxIcon CssClass="d-inline fs-2 text-warning" Icon="BootstrapIcon.PlayFill"></HxIcon>
                         <h4 class="d-inline px-2">Staffeln:</h4>
@@ -165,12 +165,10 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @{
-                                            int i = 1;
                                             @foreach (EpisodeModel episode in season.Episodes)
                                             {
                                                 <tr>
-                                                    <th class="text-secondary text-center" scope="row">@i</th>
+                                                    <th class="text-secondary text-center" scope="row"></th>
                                                     <th class="text-center">
                                                         @if (episode.DirectViewLinks is null)
                                                         {
@@ -184,9 +182,7 @@
                                                     <td class="text-primary" style="font-family: 'Roboto', sans-serif;"><b>@episode.Name</b></td>
                                                     <td><LanguageFlagsComponent Languages="@episode.Languages"></LanguageFlagsComponent></td>
                                                 </tr>
-                                                i++;
                                             }
-                                        }
                                     </tbody>
                                 </table>
                             </Content>
@@ -219,7 +215,7 @@
 
     private bool LoadingInfo { get; set; }
     private bool Loading { get; set; }
-
+    private bool LoadingEpisodes { get; set; }
     private SeriesInfoModel? SeriesInfo;
     private SeriesModel? UserSeries;
 
@@ -264,16 +260,16 @@
             LoadingInfo = false;
             StateHasChanged();
 
-            SeasonModel? updatedSeason = await ApiService.GetAsync<SeasonModel?>("getSeasonEpisodesLinks", new() { { "seriesName", SeriesInfo!.Name! }, { "streamingPortal", SeriesInfo!.StreamingPortal.ToString() } }, SeriesInfo!.Seasons.First());
+            // SeasonModel? updatedSeason = await ApiService.GetAsync<SeasonModel?>("getSeasonEpisodesLinks", new() { { "seriesName", SeriesInfo!.Name! }, { "streamingPortal", SeriesInfo!.StreamingPortal.ToString() } }, SeriesInfo!.Seasons.First());
 
-            if (updatedSeason is not null)
-            {
-                SeriesInfo.Seasons.RemoveAt(0);
-                StateHasChanged();
-                SeriesInfo.Seasons.Add(updatedSeason);
-                SeriesInfo.Seasons = SeriesInfo.Seasons.OrderBy(_ => _.Id).ToList();
-                StateHasChanged();
-            }
+            // if (updatedSeason is not null)
+            // {
+            //     SeriesInfo.Seasons.RemoveAt(0);
+            //     StateHasChanged();
+            //     SeriesInfo.Seasons.Add(updatedSeason);
+            //     SeriesInfo.Seasons = SeriesInfo.Seasons.OrderBy(_ => _.Id).ToList();
+            //     StateHasChanged();
+            // }
         }
 
 
@@ -419,6 +415,20 @@
     {
         SelectedEpisodeDirectView = episode;
         await LanguageSelectionModal.ShowAsync();
+    }
+
+    private async Task TabChanged(string tabId)
+    {
+        SeasonModel? season = SeriesInfo!.Seasons.First(_ => _.Id.ToString() == tabId);
+        SeasonModel? updatedSeason = await ApiService.GetAsync<SeasonModel?>("getSeasonEpisodesLinks", new() { { "seriesName", SeriesInfo!.Name! }, { "streamingPortal", SeriesInfo!.StreamingPortal.ToString() } }, season);
+
+        if (updatedSeason is not null)
+        {
+            SeriesInfo.Seasons.RemoveAll(_ => _.Id.ToString() == tabId);
+            SeriesInfo.Seasons.Add(updatedSeason);
+            SeriesInfo.Seasons = SeriesInfo.Seasons.OrderBy(_ => _.Id).ToList();
+            StateHasChanged();
+        }
     }
 }
 
