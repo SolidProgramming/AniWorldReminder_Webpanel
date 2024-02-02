@@ -1,5 +1,5 @@
 # AniWorldReminder_Webpanel
-[C#/Blazor] Webpanel built with Blazor using Havit Bootstrap for the AniWorldReminder_TelegramBot
+[C#/Blazor] Webpanel built with Blazor using Havit Bootstrap
 
 
 ## Dashboard
