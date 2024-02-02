@@ -98,7 +98,10 @@ namespace AniWorldReminder_Webpanel.Services
                 return (T)Convert.ChangeType(response.IsSuccessStatusCode, typeof(T));
             }
 
-            return await response.Content.ReadFromJsonAsync<T>();
+            if (response.Content.Headers.ContentLength == 0)
+                return default;
+
+            return await response.Content.ReadFromJsonAsync<T?>();
         }        
     }
 }

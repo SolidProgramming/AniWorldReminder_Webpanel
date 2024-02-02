@@ -250,7 +250,7 @@
                 return;
             }
 
-            UserSeries = await ApiService.GetAsync<SeriesModel?>("getUserSeries", new() { { "username", AuthService?.User?.Username! }, { "seriesName", SeriesInfo?.Name! } });
+            UserSeries = await ApiService.GetAsync<SeriesModel?>("getUserSeries", new() { { "seriesName", SeriesInfo?.Name! } });
 
             if (UserSeries is not null)
             {
@@ -259,17 +259,6 @@
 
             LoadingInfo = false;
             StateHasChanged();
-
-            // SeasonModel? updatedSeason = await ApiService.GetAsync<SeasonModel?>("getSeasonEpisodesLinks", new() { { "seriesName", SeriesInfo!.Name! }, { "streamingPortal", SeriesInfo!.StreamingPortal.ToString() } }, SeriesInfo!.Seasons.First());
-
-            // if (updatedSeason is not null)
-            // {
-            //     SeriesInfo.Seasons.RemoveAt(0);
-            //     StateHasChanged();
-            //     SeriesInfo.Seasons.Add(updatedSeason);
-            //     SeriesInfo.Seasons = SeriesInfo.Seasons.OrderBy(_ => _.Id).ToList();
-            //     StateHasChanged();
-            // }
         }
 
 
@@ -362,7 +351,6 @@
             {
                 Language = language,
                 SeriesName = SeriesInfo?.Name,
-                Username = AuthService?.User?.Username,
                 StreamingPortal = SeriesInfo.StreamingPortal
             };
 

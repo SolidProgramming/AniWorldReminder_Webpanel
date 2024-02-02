@@ -64,7 +64,7 @@
         {
             Loading = true;
             StateHasChanged();
-            UserSeries = await ApiService.GetAsync<List<SeriesModel>?>("getAllUserSeries", new() { { "username", AuthService?.User?.Username! } });
+            UserSeries = await ApiService.GetAsync<List<SeriesModel>?>("getAllUserSeries");
             Loading = false;
             StateHasChanged();
         }
@@ -78,7 +78,7 @@
         Loading = true;
         StateHasChanged();
 
-        bool deleteSuccess = await ApiService.GetAsync<bool>("removeReminder", new() { { "username", AuthService?.User?.Username! }, { "seriesName", seriesName } });
+        bool deleteSuccess = await ApiService.GetAsync<bool>("removeReminder", new() { { "seriesName", seriesName } });
 
         if (deleteSuccess)
         {
@@ -106,7 +106,7 @@
             Loading = true;
             StateHasChanged();
 
-            UserSeries = await ApiService.GetAsync<List<SeriesModel>?>("getAllUserSeries", new() { { "username", AuthService?.User?.Username! } });
+            UserSeries = await ApiService.GetAsync<List<SeriesModel>?>("getAllUserSeries");
 
             Loading = false;
             StateHasChanged();

@@ -48,7 +48,7 @@
 
         if (firstRender)
         {
-            userWebsiteSettings = await ApiService.GetAsync<UserWebsiteSettings?>("getUserSettings", new() { { "username", AuthService?.User?.Username! } });
+            userWebsiteSettings = await ApiService.GetAsync<UserWebsiteSettings?>("getUserSettings");
 
             if (userWebsiteSettings is null)
             {
@@ -71,9 +71,7 @@
         ToastService.Clear();
 
         if (userWebsiteSettings is null || userWebsiteSettings.UserId <= 0)
-        {
-            return;
-        }
+            userWebsiteSettings = new();
 
         userWebsiteSettings.TelegramDisableNotifications = TelegramDisableNotification ? 1 : 0;
         userWebsiteSettings.TelegramNoCoverArtNotifications = DisableWebsitePreview ? 1 : 0;
