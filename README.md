@@ -10,3 +10,6 @@
 
 ## View Episodes in Browser
 ![](https://reducemy.link/p/4WRCFk)
+
+## Settings
+![](https://reducemy.link/p/4WRCFm)
