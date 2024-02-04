@@ -168,7 +168,7 @@
                                             @foreach (EpisodeModel episode in season.Episodes)
                                             {
                                                 <tr>
-                                                    <th class="text-secondary text-center" scope="row"></th>
+                                                    <th class="text-secondary text-center" scope="row">@episode.Episode.ToString()</th>
                                                     <th class="text-center">
                                                         @if (episode.DirectViewLinks is null)
                                                         {
