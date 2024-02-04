@@ -9,15 +9,15 @@
     <div class="row mb-5">
         <EditForm Model="@Reminder" OnValidSubmit="@(() => SearchSeriesDashboard())">
             <HxInputText Label="Serien Name" @bind-Value="@SearchSeriesName" Placeholder="Jujutsu Kaisen" />
-            <HxSubmit Color="ThemeColor.Primary" CssClass="w-100" Spinner="Loading" Enabled="@(!Loading)">Reminder suchen</HxSubmit>
+            <HxSubmit Color="ThemeColor.Primary" CssClass="w-100" Spinner="Loading" Enabled="@(!Loading)">Serie suchen</HxSubmit>
         </EditForm>
     </div>
-    <h3 class="d-inline">Dashboard - </h3><h5 class="d-inline">Reminder</h5>
+    <h3 class="d-inline">Dashboard</h3>    
     @if (UserSeries is not null)
     {
-        <HxBadge CssClass="mx-2" Color="ThemeColor.Success">@(UserSeries.Count)x</HxBadge>
-    }    
-    <div class="row">
+        <HxBadge CssClass="mx-3" Color="ThemeColor.Success">@(UserSeries.Count)x</HxBadge>
+    }
+    <div class="row justify-content-center">
         @if (UserSeries is not null)
         {
             foreach (SeriesModel series in UserSeries)
@@ -25,17 +25,33 @@
                 <HxCard ImageAlt=""
                         ImageSrc="@series.CoverArtUrl"
                         ImageHeight="330"
-                        ImageWidth="220"
-                        style="width: 256px;"
-                        CssClass="pt-2 mt-4 mx-2 rounded">
+                        style="width: 245px;"
+                        CssClass="mt-3 mx-2 px-2 rounded"
+                        HeaderCssClass="bg-transparent border border-0">
+                    <HeaderTemplate>
+                        @switch (series.StreamingPortal)
+                        {
+                            case StreamingPortal.AniWorld:
+                                <div class="text-warning fw-light text-center" style="font-family: 'Roboto', sans-serif;"><HxIcon CssClass="px-2 fs-4 align-middle" Icon="BootstrapIcon.Cloud"></HxIcon>AniWorld</div>
+                                break;
+                            case StreamingPortal.STO:
+                                <div class="text-warning fw-light text-center" style="font-family: 'Roboto', sans-serif;"><HxIcon CssClass="px-2 fs-4 align-middle" Icon="BootstrapIcon.Cloud"></HxIcon>S.TO</div>
+                                break;
+                            default:
+                                break;
+                        }
+                    </HeaderTemplate>
                     <BodyTemplate>
                         <HxCardTitle>@series.Name</HxCardTitle>
                             <HxCardSubtitle>
                                 <HxButton OnClick="@(() => NavigateToDetail(series.Name))" Spinner="@Loading" Enabled="@(!Loading)" Color="ThemeColor.Primary" Icon="BootstrapIcon.Forward" CssClass="w-100 mt-2">Anzeigen</HxButton>
+                                @if (!series.IsSearchResult)
+                            {
                                 <HxButton OnClick="@(() => RemoveReminder(series.Name))" Spinner="@Loading" Enabled="@(!Loading)" Color="ThemeColor.Warning" Outline="true" Icon="BootstrapIcon.XCircleFill" CssClass="w-100 mt-2">Entfernen</HxButton>
-                            </HxCardSubtitle>
-                        </BodyTemplate>
-                    </HxCard>
+                            }
+                        </HxCardSubtitle>
+                    </BodyTemplate>
+                </HxCard>
             }
         }
         else
@@ -101,6 +117,15 @@
 
     private async Task SearchSeriesDashboard()
     {
+        List<SeriesModel> allResults = new();
+
+        allResults.AddRange(UserSeries.Where(_ => _.Name.ToLower().Contains(SearchSeriesName.ToLower())).ToList());
+
+        UserSeries?.Clear();
+
+        Loading = true;
+        StateHasChanged();
+
         if (string.IsNullOrEmpty(SearchSeriesName))
         {
             Loading = true;
@@ -112,10 +137,24 @@
             StateHasChanged();
             return;
         }
+                
+        List<SearchResultModel>? apiSearchResults = await ApiService.GetAsync<List<SearchResultModel>?>("getSeries", new() { { "seriesName", SearchSeriesName.ToLower() } });
 
-        List<SeriesModel>? searchResults = UserSeries.Where(_ => _.Name.ToLower().Contains(SearchSeriesName.ToLower())).ToList();
+        foreach (SearchResultModel searchResult in apiSearchResults.Where(_ => !allResults.Any(x => x.Name == _.Title)))
+        {
+            SeriesModel series = new()
+                {
+                    Name = searchResult.Title,
+                    CoverArtUrl = searchResult.CoverArtUrl,
+                    IsSearchResult = true                     
+                };
 
-        UserSeries = searchResults;
+            allResults.Add(series);
+        }
+
+        UserSeries = allResults;
+
+        Loading = false;
         StateHasChanged();
     }
 }
