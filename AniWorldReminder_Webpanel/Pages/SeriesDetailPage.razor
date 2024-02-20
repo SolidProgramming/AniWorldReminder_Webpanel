@@ -4,13 +4,14 @@
 @inject IAuthenticationService AuthService
 @inject IHxMessengerService ToastService
 @inject IJSRuntime JSRuntime;
+@using System.Web;
 
 <PageTitle>Serie: @SeriesInfo?.Name</PageTitle>
 
-    <HxModal Size="ModalSize.Regular" @ref="LanguageSelectionModal" Title="Sprache" Centered="true">
-        <BodyTemplate>
-            <div class="d-flex justify-content-center">
-                @foreach (DirectViewLinkModel directViewLink in SelectedEpisodeDirectView.DirectViewLinks)
+<HxModal Size="ModalSize.Regular" @ref="LanguageSelectionModal" Title="Sprache" Centered="true">
+    <BodyTemplate>
+        <div class="d-flex justify-content-center">
+            @foreach (DirectViewLinkModel directViewLink in SelectedEpisodeDirectView.DirectViewLinks)
             {
                 @if (directViewLink.Language == Language.GerDub)
                 {
@@ -121,23 +122,51 @@
                         }
                     }
                 </div>
-                <div class="col-6 mt-4">
-                    <div class="px-3 py-2 border rounded">
-                        <div class="my-2">
-                            <HxIcon CssClass="d-inline fs-5 text-primary" Icon="BootstrapIcon.Translate"></HxIcon>
-                            <h5 class="d-inline px-2">Sprache:</h5>
+                <div class="row">
+                    <div class="col-6 mt-4">
+                        <div class="px-3 py-2 border rounded">
+                            <div class="my-2">
+                                <HxIcon CssClass="d-inline fs-5 text-primary" Icon="BootstrapIcon.Translate"></HxIcon>
+                                <h5 class="d-inline px-2">Sprache:</h5>
+                            </div>
+                            <HxCheckbox Enabled="@(UserSeries is null)" TextCssClass="text-warning" Inline="true" @bind-Value="GerDub" Text="Deutsch" />
+                            <HxCheckbox Enabled="@(UserSeries is null)" TextCssClass="text-warning" Inline="true" @bind-Value="GerSub" CssClass="mt-2" Text="Deutsch Untertitel" />
+                            <HxCheckbox Enabled="@(UserSeries is null)" TextCssClass="text-warning" Inline="true" @bind-Value="EngDub" CssClass="mt-2" Text="Englisch" />
+                            <HxCheckbox Enabled="@(UserSeries is null)" TextCssClass="text-warning" Inline="true" @bind-Value="EngSub" CssClass="mt-2" Text="Englisch Untertitel" />
+                            @if (ShowLanguageError)
+                            {
+                                <HxAlert Color="ThemeColor.Danger" CssClass="mt-3">
+                                    <HxIcon Icon="@BootstrapIcon.ExclamationCircleFill" />
+                                    Es muss mindestens eine Sprachoption gewählt werden!
+                                </HxAlert>
+                            }
                         </div>
-                        <HxCheckbox TextCssClass="text-warning" Inline="true" @bind-Value="GerDub" Text="Deutsch" />
-                        <HxCheckbox TextCssClass="text-warning" Inline="true" @bind-Value="GerSub" CssClass="mt-2" Text="Deutsch Untertitel" />
-                        <HxCheckbox TextCssClass="text-warning" Inline="true" @bind-Value="EngDub" CssClass="mt-2" Text="Englisch" />
-                        <HxCheckbox TextCssClass="text-warning" Inline="true" @bind-Value="EngSub" CssClass="mt-2" Text="Englisch Untertitel" />
-                        @if (ShowLanguageError)
-                        {
-                            <HxAlert Color="ThemeColor.Danger" CssClass="mt-3">
-                                <HxIcon Icon="@BootstrapIcon.ExclamationCircleFill" />
-                                Es muss mindestens eine Sprachoption gewählt werden!
-                            </HxAlert>
-                        }
+                    </div>
+                    <div class="col-6 mt-4">
+                        <div class="px-3 py-2 border rounded">
+                            <div class="my-2">
+                                <HxIcon CssClass="d-inline fs-5 text-primary" Icon="BootstrapIcon.Download"></HxIcon>
+                                <h5 class="d-inline px-2">Download:</h5>
+                                @if (SeriesInfo is not null)
+                                {
+                                    <HxCheckboxList ItemTextCssClass="text-warning"
+                                                    LabelCssClass="d-flex text-light"
+                                                    Inline="true"
+                                                    CssClass="mt-3"
+                                                    TItem="SeasonModel"
+                                                    TValue="int"
+                                                    Label="Staffeln"
+                                                    Data="@SeriesInfo.Seasons"
+                                                    ItemTextSelector="@(season => season.Id.ToString())"
+                                                    ItemValueSelector="@(season => season.Id)"
+                                                    @bind-Value="SelectedDownloadSeasons" />
+                                    <HxButton OnClick="@AddDownloads" Outline="true" Color="ThemeColor.Success" Icon="BootstrapIcon.Download"
+                                              Spinner="@Loading" Enabled="@(!Loading && UserSeries is not null)" CssClass="w-100 mt-4">
+                                        Hinzufügen
+                                    </HxButton>
+                                }
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -164,24 +193,24 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                            @foreach (EpisodeModel episode in season.Episodes)
-                                            {
-                                                <tr>
-                                                    <th class="text-secondary text-center" scope="row">@episode.Episode.ToString()</th>
-                                                    <th class="text-center">
-                                                        @if (episode.DirectViewLinks is null)
-                                                        {
-                                                            <HxSpinner Size="SpinnerSize.Small"></HxSpinner>
-                                                        }
-                                                        else
-                                                        {
-                                                            <HxButton OnClick="@(() => OpenLanguageSelectionForEpisode(episode))" Size="ButtonSize.Small" IconCssClass="p-0 m-0" Icon="BootstrapIcon.PlayFill" Color="ThemeColor.Warning"></HxButton>
-                                                        }
-                                                    </th>
-                                                    <td class="text-primary" style="font-family: 'Roboto', sans-serif;"><b>@episode.Name</b></td>
-                                                    <td><LanguageFlagsComponent Languages="@episode.Languages"></LanguageFlagsComponent></td>
-                                                </tr>
-                                            }
+                                        @foreach (EpisodeModel episode in season.Episodes)
+                                        {
+                                            <tr>
+                                                <th class="text-secondary text-center" scope="row">@episode.Episode.ToString()</th>
+                                                <th class="text-center">
+                                                    @if (episode.DirectViewLinks is null)
+                                                    {
+                                                        <HxSpinner Size="SpinnerSize.Small"></HxSpinner>
+                                                    }
+                                                    else
+                                                    {
+                                                        <HxButton OnClick="@(() => OpenLanguageSelectionForEpisode(episode))" Size="ButtonSize.Small" IconCssClass="p-0 m-0" Icon="BootstrapIcon.PlayFill" Color="ThemeColor.Warning"></HxButton>
+                                                    }
+                                                </th>
+                                                <td class="text-primary" style="font-family: 'Roboto', sans-serif;"><b>@HttpUtility.HtmlDecode(episode.Name)</b></td>
+                                                <td><LanguageFlagsComponent Languages="@episode.Languages"></LanguageFlagsComponent></td>
+                                            </tr>
+                                        }
                                     </tbody>
                                 </table>
                             </Content>
@@ -219,11 +248,14 @@
     private SeriesModel? UserSeries;
 
     private bool AddSuccess { get; set; }
+    private bool AddDownloadsSuccess { get; set; }
 
     private bool ShowInfoError { get; set; }
     private bool ShowLanguageError { get; set; }
 
     private EpisodeModel? SelectedEpisodeDirectView;
+
+    private List<int> SelectedDownloadSeasons { get; set; } = new();
 
     protected override void OnParametersSet()
     {
@@ -361,6 +393,57 @@
         }
 
         AddSuccess = success;
+
+        UserSeries = await ApiService.GetAsync<SeriesModel?>("getUserSeries", new() { { "seriesName", SeriesInfo?.Name! } });
+
+        Loading = false;
+        StateHasChanged();
+    }
+
+    private async Task AddDownloads()
+    {
+        if (!SelectedDownloadSeasons.Any() || SeriesInfo is null || UserSeries is null)
+            return;
+
+        ToastService.Clear();
+        Loading = true;
+        StateHasChanged();
+
+        IEnumerable<Language>? flagsReminder = UserSeries.LanguageFlag.GetFlags<Language>(ignore: Language.None);
+        IEnumerable<EpisodeModel> selectedEpisodes = SeriesInfo.Seasons.SelectMany(_ => _.Episodes.Where(x => SelectedDownloadSeasons.Contains(x.Season)));
+
+        List<EpisodeModel> episodes = [];
+
+        foreach (EpisodeModel episode in selectedEpisodes)
+        {
+            IEnumerable<Language>? flagsEpisode = episode.Languages.GetFlags<Language>(ignore: Language.None);
+            
+            if (flagsEpisode.Any(_ => flagsReminder.Contains(_)))
+            {
+                IEnumerable<Language>? wantedLanguages = flagsEpisode.Intersect(flagsReminder);
+
+                episodes.Add(episode);
+            }
+        }
+               
+        AddDownloadsRequestModel addDownloadRequest = new()
+            {
+                SeriesId = UserSeries.Id.ToString(),
+                Episodes = episodes
+            };
+
+        bool success = await ApiService.PostAsync<bool>("addDownloads", addDownloadRequest);
+
+        if (!success)
+        {
+            ToastService.AddError("Fehler", $"Beim hinzufügen der Downloads für {SeriesInfo?.Name!} ist ein Fehler aufgetreten!");
+        }
+        else
+        {
+            ToastService.AddInformation("Hinzugefügt", $"Es wurden {episodes.Count} Episoden zu den Downloads hinzugefügt!");
+        }
+
+        AddDownloadsSuccess = success;
 
         Loading = false;
         StateHasChanged();

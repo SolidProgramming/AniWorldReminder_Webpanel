@@ -11,5 +11,14 @@
                 .Replace(",", "")
                 .Replace("’", "");
         }
+        public static IEnumerable<T> GetFlags<T>(this Enum input, Enum? ignore = default)
+        {
+            foreach (T value in Enum.GetValues(input.GetType()))
+            {
+                Enum? enumVal = (Enum)Convert.ChangeType(value, typeof(Enum));
+                if (!enumVal.Equals(ignore) && input.HasFlag(enumVal))
+                    yield return value;
+            }
+        }
     }
 }
