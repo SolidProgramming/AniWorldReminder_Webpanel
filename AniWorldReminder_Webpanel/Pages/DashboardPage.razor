@@ -88,22 +88,22 @@
         await base.OnAfterRenderAsync(firstRender);
     }
 
-    private async Task RemoveReminder(string seriesName)
+    private async Task RemoveReminder(string seriesPath)
     {
         ToastService.Clear();
         Loading = true;
         StateHasChanged();
 
-        bool deleteSuccess = await ApiService.GetAsync<bool>("removeReminder", new() { { "seriesName", seriesName } });
+        bool deleteSuccess = await ApiService.GetAsync<bool>("removeReminder", new() { { "seriesPath", seriesPath } });
 
         if (deleteSuccess)
         {
-            UserSeries?.RemoveAll(_ => _.Name == seriesName);
-            ToastService.AddInformation("Erfolg", $"Dein Reminder für {seriesName} wurde gelöscht!");
+            UserSeries?.RemoveAll(_ => _.Path == seriesPath);
+            ToastService.AddInformation("Erfolg", $"Dein Reminder wurde gelöscht!");
         }
         else
         {
-            ToastService.AddError("Fehler", $"Beim löschen des Reminders für {seriesName} ist ein Fehler aufgetreten und konnte nicht gelöscht werden!");
+            ToastService.AddError("Fehler", $"Beim löschen des Reminders ist ein Fehler aufgetreten und konnte nicht gelöscht werden!");
         }
 
         Loading = false;
@@ -123,9 +123,6 @@
 
         UserSeries?.Clear();
 
-        Loading = true;
-        StateHasChanged();
-
         if (string.IsNullOrEmpty(SearchSeriesName))
         {
             Loading = true;
@@ -138,9 +135,14 @@
             return;
         }
 
+        allResults.AddRange(UserSeries.Where(_ => _.Name.ToLower().Contains(SearchSeriesName.ToLower())).ToList());
+
+        Loading = true;
+        StateHasChanged();
+
         List<SearchResultModel>? apiSearchResults = await ApiService.GetAsync<List<SearchResultModel>?>("getSeries", new() { { "seriesName", SearchSeriesName.ToLower() } });
 
-        foreach (SearchResultModel searchResult in apiSearchResults.Where(_ => !allResults.Any(x => x.Name == _.Title)))
+        foreach (SearchResultModel searchResult in apiSearchResults.Where(_ => !allResults.Any(x => x.Path == _.Path)))
         {
             SeriesModel series = new()
                 {
