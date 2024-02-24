@@ -8,5 +8,7 @@
         public StreamingPortal StreamingPortal { get; set; }
         public Language LanguageFlag { get; set; }
         public bool IsSearchResult = false;
+        public string? Link { get; set; }
+        public string? Path { get; set; }
     }
 }

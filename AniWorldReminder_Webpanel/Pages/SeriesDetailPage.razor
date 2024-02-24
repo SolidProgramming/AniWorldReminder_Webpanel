@@ -1,4 +1,4 @@
-﻿@attribute [Route(Routes.SeriesDetail + "/{SeriesSearchName}")]
+﻿@attribute [Route(Routes.SeriesDetail + "/{SeriesUrlPath}")]
 @inject NavigationManager NavigationManager
 @inject IApiService ApiService
 @inject IAuthenticationService AuthService
@@ -224,7 +224,7 @@
 
 @code {
     [Parameter]
-    public string? SeriesSearchName { get; set; }
+    public string? SeriesUrlPath { get; set; }
 
     [SupplyParameterFromQuery(Name = "referer")]
     [Parameter]
@@ -259,7 +259,7 @@
 
     protected override void OnParametersSet()
     {
-        if (string.IsNullOrEmpty(SeriesSearchName))
+        if (string.IsNullOrEmpty(SeriesUrlPath))
             NavigationManager.NavigateTo("");
     }
 
@@ -270,7 +270,7 @@
             ShowInfoError = false;
             LoadingInfo = true;
             StateHasChanged();
-            SeriesInfo = await ApiService.GetAsync<SeriesInfoModel?>("getSeriesInfo", new() { { "seriesName", SeriesSearchName! } });
+            SeriesInfo = await ApiService.GetAsync<SeriesInfoModel?>("getSeriesInfo", new() { { "seriesPath", SeriesUrlPath! } });
 
             if (SeriesInfo is null)
             {
@@ -281,7 +281,7 @@
                 return;
             }
 
-            UserSeries = await ApiService.GetAsync<SeriesModel?>("getUserSeries", new() { { "seriesName", SeriesInfo?.Name! } });
+            UserSeries = await ApiService.GetAsync<SeriesModel?>("getUserSeries", new() { { "seriesPath", SeriesUrlPath! } });
 
             if (UserSeries is not null)
             {
@@ -381,7 +381,7 @@
         AddReminderRequestModel addReminderRequest = new()
             {
                 Language = language,
-                SeriesName = SeriesInfo?.Name,
+                SeriesPath = SeriesInfo.Path,
                 StreamingPortal = SeriesInfo.StreamingPortal
             };
 
@@ -394,7 +394,7 @@
 
         AddSuccess = success;
 
-        UserSeries = await ApiService.GetAsync<SeriesModel?>("getUserSeries", new() { { "seriesName", SeriesInfo?.Name! } });
+        UserSeries = await ApiService.GetAsync<SeriesModel?>("getUserSeries", new() { { "seriesPath", SeriesInfo.Path } });
 
         Loading = false;
         StateHasChanged();
@@ -455,7 +455,7 @@
         Loading = true;
         StateHasChanged();
 
-        bool deleteSuccess = await ApiService.GetAsync<bool>("removeReminder", new() { { "username", AuthService?.User?.Username! }, { "seriesName", SeriesInfo?.Name! } });
+        bool deleteSuccess = await ApiService.GetAsync<bool>("removeReminder", new() { { "username", AuthService?.User?.Username! }, { "seriesPath", SeriesInfo.Path } });
 
         if (deleteSuccess)
         {
@@ -490,7 +490,7 @@
     private async Task TabChanged(string tabId)
     {
         SeasonModel? season = SeriesInfo!.Seasons.First(_ => _.Id.ToString() == tabId);
-        SeasonModel? updatedSeason = await ApiService.GetAsync<SeasonModel?>("getSeasonEpisodesLinks", new() { { "seriesName", SeriesInfo!.Name! }, { "streamingPortal", SeriesInfo!.StreamingPortal.ToString() } }, season);
+        SeasonModel? updatedSeason = await ApiService.GetAsync<SeasonModel?>("getSeasonEpisodesLinks", new() { { "seriesPath", SeriesUrlPath! }, { "streamingPortal", SeriesInfo!.StreamingPortal.ToString() } }, season);
 
         if (updatedSeason is not null)
         {
