@@ -23,7 +23,7 @@
             foreach (SeriesModel series in UserSeries)
             {
                 <HxCard ImageAlt=""
-                        ImageSrc="@series.CoverArtUrl"
+                        ImageSrc="@series.CoverArtBase64"
                         ImageHeight="330"
                         style="width: 245px;"
                         CssClass="mt-3 mx-2 px-2 rounded"
@@ -150,7 +150,8 @@
                     CoverArtUrl = searchResult.CoverArtUrl,
                     IsSearchResult = true,
                     Link = searchResult.Link,
-                    Path = searchResult.Path
+                    Path = searchResult.Path,
+                    CoverArtBase64 = searchResult.CoverArtBase64
                 };
 
             allResults.Add(series);

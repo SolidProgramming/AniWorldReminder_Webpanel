@@ -17,6 +17,8 @@ namespace AniWorldReminder_Webpanel.Models
 
         public string? CoverArtUrl { get; set; }
 
+        public string? CoverArtBase64 {  get; set; }
+
         public StreamingPortal StreamingPortal { get; set; }
     }
 }
