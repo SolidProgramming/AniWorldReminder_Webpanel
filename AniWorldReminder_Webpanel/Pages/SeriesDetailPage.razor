@@ -89,7 +89,7 @@
                         }
                         else
                         {
-                            <HxCardTitle CssClass="text-center text-decoration-underline">@SeriesInfo?.Name</HxCardTitle>
+                            <HxCardTitle CssClass="text-center text-decoration-underline">@HttpUtility.HtmlDecode(@SeriesInfo?.Name)</HxCardTitle>
                             <HxCardText CssClass="text-center">Staffeln: @SeriesInfo?.SeasonCount</HxCardText>
                             <HxCardSubtitle>
                                 @if (UserSeries is null && !AddSuccess)
