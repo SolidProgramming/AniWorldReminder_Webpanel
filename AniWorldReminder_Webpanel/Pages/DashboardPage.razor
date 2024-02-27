@@ -119,7 +119,10 @@
     {
         List<SeriesModel> allResults = new();
 
-        allResults.AddRange(UserSeries.Where(_ => _.Name.ToLower().Contains(SearchSeriesName.ToLower())).ToList());
+        if (!string.IsNullOrEmpty(SearchSeriesName))
+        {
+            allResults.AddRange(UserSeries.Where(_ => _.Name.ToLower().Contains(SearchSeriesName.ToLower())).ToList());
+        }
 
         UserSeries?.Clear();
 
