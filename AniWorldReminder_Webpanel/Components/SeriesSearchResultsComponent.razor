@@ -1,4 +1,5 @@
-﻿@inject NavigationManager NavManager
+﻿@using System.Web
+@inject NavigationManager NavManager
 
 <div class="row pb-2">
     @foreach (SearchResultModel searchResult in SearchResults)
@@ -24,9 +25,9 @@
                 }
             </HeaderTemplate>
             <BodyTemplate>
-                <HxCardTitle>@searchResult.Title</HxCardTitle>
+                <HxCardTitle>@searchResult.Path</HxCardTitle>
                     <HxCardText>@searchResult.Description</HxCardText>
-                    <HxButton @onclick="@(() => NavigateToSeriesDetail(searchResult.Title))" Color="ThemeColor.Primary" CssClass="w-100">Auswählen</HxButton>
+                <HxButton @onclick="@(() => NavigateToSeriesDetail(searchResult.Path))" Color="ThemeColor.Primary" CssClass="w-100">Auswählen</HxButton>
                 </BodyTemplate>
             </HxCard>
     }
