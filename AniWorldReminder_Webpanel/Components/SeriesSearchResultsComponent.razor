@@ -1,5 +1,8 @@
 ﻿@using System.Web
 @inject NavigationManager NavManager
+@inject IHxMessengerService ToastService
+@inject IApiService ApiService
+@inject IAuthenticationService AuthService
 
 <div class="row pb-2">
     @foreach (SearchResultModel searchResult in SearchResults)
@@ -25,11 +28,13 @@
                 }
             </HeaderTemplate>
             <BodyTemplate>
-                <HxCardTitle>@searchResult.Path</HxCardTitle>
-                    <HxCardText>@searchResult.Description</HxCardText>
-                <HxButton @onclick="@(() => NavigateToSeriesDetail(searchResult.Path))" Color="ThemeColor.Primary" CssClass="w-100">Auswählen</HxButton>
-                </BodyTemplate>
-            </HxCard>
+                <HxCardTitle>@searchResult.Title</HxCardTitle>
+                <HxCardText>@searchResult.Description</HxCardText>
+                <HxCardSubtitle>                    
+                    <HxButton @onclick="@(() => NavigateToSeriesDetail(searchResult.Path))" Color="ThemeColor.Primary" CssClass="w-100">Auswählen</HxButton>                   
+                </HxCardSubtitle>                
+            </BodyTemplate>
+        </HxCard>
     }
 </div>
 
@@ -37,9 +42,11 @@
     [Parameter]
     public List<SearchResultModel> SearchResults { get; set; }
 
+    private bool Loading { get; set; }
+
 
     private void NavigateToSeriesDetail(string seriesName)
     {
-        NavManager.NavigateTo($"{Routes.SeriesDetail}/{seriesName}");
+        NavManager.NavigateTo($"{Routes.SeriesDetail}{seriesName}");
     }
 }
