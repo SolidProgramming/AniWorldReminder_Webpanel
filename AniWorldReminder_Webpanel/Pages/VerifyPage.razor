@@ -32,6 +32,19 @@
         </HxAlert>
     }
 </div>
+<div class="container w-50">
+    <HxAlert Color="ThemeColor.Success" CssClass="mt-5">
+        <HxIcon Icon="@BootstrapIcon.Check2Circle" />
+        <span class="ms-2">Verifiziere dich über den <a target="_blank" href="https://t.me/AniWorldReminderBot">Telegram Bot</a></span>
+        <br />
+        <HxIcon Icon="@BootstrapIcon.Check2Circle" />
+        <span class="ms-2">Verwende das "<span class="text-info">/verify</span>" Command und folge den Anweisungen im Chat</span>
+    </HxAlert>
+    <HxAlert Color="ThemeColor.Info">
+        <HxIcon Icon="@BootstrapIcon.InfoCircle" />
+        <span class="ms-2">Um einen Registrierungstoken zu erhalten wird ein Telegramm Account benötigt.</span>
+    </HxAlert>
+</div>
 
 @code {
     private string? RetypePassword { get; set; }
