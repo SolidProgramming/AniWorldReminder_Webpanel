@@ -22,6 +22,15 @@
         </HxAlert>
     }
 </div>
+<div class="container w-50 mt-5">
+    <HxAlert Color="ThemeColor.Info">
+        <HxIcon Icon="@BootstrapIcon.QuestionCircle" />
+        <span class="ms-2">Noch keinen Account verifiziert?</span><br />
+        <HxIcon Icon="@BootstrapIcon.ArrowReturnRight" />
+        <span class="ms-2">Dann folge den Anweisungen auf der <a href="/verify">Verifizieren Seite</a></span>
+    </HxAlert>
+</div>
+
 @code {
     private UserModel User = new();
 

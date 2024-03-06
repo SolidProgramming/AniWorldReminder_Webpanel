@@ -7,7 +7,13 @@
 <PageTitle>Verifizierung</PageTitle>
 
 <div class="container w-50">
-    <h3>Verifizierung</h3>
+    <HxAlert Color="ThemeColor.Info">
+        <HxIcon Icon="@BootstrapIcon.InfoCircle" />
+        <span class="ms-2">Um einen Registrierungstoken zu erhalten wird ein Telegramm Account benötigt.</span>
+    </HxAlert>
+</div>
+<div class="container w-50 mt-5">
+    <h3 class="text-center">Verifizierung</h3>
     <EditForm Model="@VerifyRequest" OnValidSubmit="@(() => Verify())">
         <DataAnnotationsValidator />
 
@@ -39,10 +45,6 @@
         <br />
         <HxIcon Icon="@BootstrapIcon.Check2Circle" />
         <span class="ms-2">Verwende das "<span class="text-info">/verify</span>" Command und folge den Anweisungen im Chat</span>
-    </HxAlert>
-    <HxAlert Color="ThemeColor.Info">
-        <HxIcon Icon="@BootstrapIcon.InfoCircle" />
-        <span class="ms-2">Um einen Registrierungstoken zu erhalten wird ein Telegramm Account benötigt.</span>
     </HxAlert>
 </div>
 
