@@ -362,3 +362,5 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 /AniWorldReminder_Webpanel/settings.json
+/AniWorldReminder_Webpanel/appdata/settings.json
+/AniWorldReminder_Webpanel/wwwroot/binaries/DefaultAutoDLClient.zip
