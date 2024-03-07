@@ -1,9 +1,9 @@
 ﻿@inject IAuthenticationService AuthService
 @inject IApiService ApiService
 
-<HxSidebar CssClass="sticky-top">
+<HxSidebar>
     <HeaderTemplate>
-        <div class="userWrap">
+        <div class="pt-3 userWrap">
             <div class="user-image">
                 <img src="https://i.pravatar.cc/75" alt="">
             </div>
@@ -38,8 +38,12 @@
                 Einstellungen
             </ContentTemplate>
         </HxSidebarItem>
+        <HxSidebarItem Icon="BootstrapIcon.Gear" Href="@Routes.Settings" CssClass="align-bottom">
+            <ContentTemplate>
+                Einstellungen
+            </ContentTemplate>
+        </HxSidebarItem>
     </ItemsTemplate>
-    <TogglerTemplate></TogglerTemplate>
 </HxSidebar>
 
 @code {
