@@ -4,6 +4,7 @@ global using AniWorldReminder_Webpanel.Services;
 global using AniWorldReminder_Webpanel.Models;
 global using AniWorldReminder_Webpanel.Interfaces;
 global using Newtonsoft.Json;
+global using BlazorDownloadFile;
 using Havit.Blazor.Components.Web;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,6 +22,7 @@ builder.Services.AddHxMessenger();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<IApiService, ApiService>();
 builder.Services.AddScoped<ILocalStorageService, LocalStorageService>();
+builder.Services.AddBlazorDownloadFile(ServiceLifetime.Scoped);
 
 SettingsModel? settings = SettingsHelper.ReadSettings<SettingsModel>();
 

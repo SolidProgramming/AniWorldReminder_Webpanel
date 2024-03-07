@@ -46,5 +46,10 @@ namespace AniWorldReminder_Webpanel.Services
             User = null;
             await LocalStorageService.RemoveItem("user");
         }
+
+        public async Task<string?> GetAPIKey()
+        {
+            return await ApiService.GetAsync<string?>("/getAPIKey");
+        }
     }
 }

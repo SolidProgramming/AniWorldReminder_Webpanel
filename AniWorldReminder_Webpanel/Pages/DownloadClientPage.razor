@@ -1,6 +1,87 @@
 ﻿@attribute [Route(Routes.CreateDownloader)]
+@inject IBlazorDownloadFileService BlazorDownloadFileService
+@using System.IO.Compression
+@using System.Text
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JS
+@inject IAuthenticationService AuthService
 
+<PageTitle>Downloader erstellen</PageTitle>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-auto mt-4">
+            <div class="row">
+                <div class="col">
+                    <h5>Host IP:</h5>
+                    <HxInputText @bind-Value="HostIP" Placeholder="127.0.0.1"></HxInputText>
+                </div>
+                <div class="col">
+                    <h5>Download Pfad:</h5>
+                    <HxInputText @bind-Value="DownloadPath" Placeholder="C:\\Downloads"></HxInputText>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-5">
+        <div class="col-6">
+            <HxButton OnClick="CreateDownloaderFiles" Color="ThemeColor.Success" Icon="BootstrapIcon.Check" CssClass="w-100">Downloader erstellen</HxButton>
+        </div>
+        <div class="col-6">
+            <HxButton Outline="true" Color="ThemeColor.Warning" Icon="BootstrapIcon.XCircle" CssClass="w-100">Abbrechen</HxButton>
+        </div>
+    </div>
+</div>
 
 @code {
+    private string? HostIP { get; set; }
+    private string? DownloadPath { get; set; }
+
+    private async Task CreateDownloaderFiles()
+    {
+        string folderName = Guid.NewGuid().ToString();
+        string rootPath = @".\wwwroot";
+        string tempFolderPath = Path.Combine(rootPath, "binaries", folderName);
+        string tempFileNameZip = "AutoDLClient.zip";
+        string tempFileNameSettings = "settings.json";
+        string defaultClientFilePath = Path.Combine(rootPath, "binaries", "DefaultAutoDLClient.zip");
+        string fileDownloadUrl = Path.Combine("binaries", folderName, tempFileNameZip);
+
+        string tempFileZip = Path.Combine(tempFolderPath, tempFileNameZip);
+
+        if (!Directory.Exists(tempFolderPath))
+        {
+            Directory.CreateDirectory(tempFolderPath);
+        }
+
+        await Task.Run(async () =>
+        {
+            File.Copy(defaultClientFilePath, tempFileZip);
+
+            string tempFileSettings;
+
+            using (ZipArchive archive = ZipFile.Open(tempFileZip, ZipArchiveMode.Update))
+            {
+                AutoDLClientSettingsModel settings = new()
+                {
+                    ApiUrl = "https://aniworldwebapi.solidserver.xyz",
+                    HostUrl = $"http://{HostIP}:5080",
+                    DownloadPath = DownloadPath
+                };
+
+                settings.ApiKey = await AuthService.GetAPIKey();
+
+                tempFileSettings = Path.Combine(tempFolderPath, tempFileNameSettings);
+
+                File.WriteAllText(tempFileSettings, System.Text.Json.JsonSerializer.Serialize(settings));
+
+                archive.CreateEntryFromFile(tempFileSettings, "settings.json");
+            }
+
+            File.Delete(tempFileSettings);
+        });
+
+        await JS.InvokeVoidAsync("triggerFileDownload", tempFileNameZip, fileDownloadUrl);
+    }
 
 }

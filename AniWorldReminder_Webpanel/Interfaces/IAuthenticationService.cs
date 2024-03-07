@@ -6,5 +6,6 @@
         Task Initialize();
         Task Login(string username, string password);
         Task Logout();
+        Task<string?> GetAPIKey();
     }
 }
