@@ -5,6 +5,7 @@
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JS
 @inject IAuthenticationService AuthService
+@inject IHxMessengerService ToastService
 
 <PageTitle>Downloader erstellen</PageTitle>
 
@@ -28,7 +29,7 @@
             <HxButton OnClick="CreateDownloaderFiles" Color="ThemeColor.Success" Icon="BootstrapIcon.Check" CssClass="w-100">Downloader erstellen</HxButton>
         </div>
         <div class="col-6">
-            <HxButton Outline="true" Color="ThemeColor.Warning" Icon="BootstrapIcon.XCircle" CssClass="w-100">Abbrechen</HxButton>
+            <HxButton OnClick="NavigateBack" Outline="true" Color="ThemeColor.Warning" Icon="BootstrapIcon.XCircle" CssClass="w-100">Abbrechen</HxButton>
         </div>
     </div>
 </div>
@@ -40,7 +41,7 @@
     private async Task CreateDownloaderFiles()
     {
         string folderName = Guid.NewGuid().ToString();
-        string rootPath ;
+        string rootPath;
 
         if (Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true")
         {
@@ -66,32 +67,44 @@
 
         await Task.Run(async () =>
         {
-            File.Copy(defaultClientFilePath, tempFileZip);
-
-            string tempFileSettings;
-
-            using (ZipArchive archive = ZipFile.Open(tempFileZip, ZipArchiveMode.Update))
+            try
             {
-                AutoDLClientSettingsModel settings = new()
+                File.Copy(defaultClientFilePath, tempFileZip);
+
+                string tempFileSettings;
+
+                using (ZipArchive archive = ZipFile.Open(tempFileZip, ZipArchiveMode.Update))
                 {
-                    ApiUrl = "https://aniworldwebapi.solidserver.xyz",
-                    HostUrl = $"http://{HostIP}:5080",
-                    DownloadPath = DownloadPath
-                };
+                    AutoDLClientSettingsModel settings = new()
+                        {
+                            ApiUrl = "https://aniworldwebapi.solidserver.xyz",
+                            HostUrl = $"http://{HostIP}:5080",
+                            DownloadPath = DownloadPath
+                        };
 
-                settings.ApiKey = await AuthService.GetAPIKey();
+                    settings.ApiKey = await AuthService.GetAPIKey();
 
-                tempFileSettings = Path.Combine(tempFolderPath, tempFileNameSettings);
+                    tempFileSettings = Path.Combine(tempFolderPath, tempFileNameSettings);
 
-                File.WriteAllText(tempFileSettings, System.Text.Json.JsonSerializer.Serialize(settings));
+                    File.WriteAllText(tempFileSettings, System.Text.Json.JsonSerializer.Serialize(settings));
 
-                archive.CreateEntryFromFile(tempFileSettings, "settings.json");
+                    archive.CreateEntryFromFile(tempFileSettings, "settings.json");
+                }
+
+                File.Delete(tempFileSettings);
             }
-
-            File.Delete(tempFileSettings);
+            catch (Exception)
+            {
+                ToastService.AddError("Beim erstellen des Clients ist ein Fehler aufgetreten!");
+            }
         });
 
         await JS.InvokeVoidAsync("triggerFileDownload", tempFileNameZip, fileDownloadUrl);
+    }
+
+    private void NavigateBack()
+    {
+        NavigationManager.NavigateTo(Routes.Index);
     }
 
 }
