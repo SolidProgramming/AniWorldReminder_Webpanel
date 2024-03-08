@@ -4,7 +4,7 @@
 @inject IHxMessengerService ToastService
 
 <div class="d-md-flex min-vh-100">
-    @if (!NavManager.Uri.Contains("/login"))
+    @if (!NavManager.Uri.Contains(Routes.Login) && !NavManager.Uri.Contains(Routes.Verify))
     {
         @if (LoggedIn)
         {

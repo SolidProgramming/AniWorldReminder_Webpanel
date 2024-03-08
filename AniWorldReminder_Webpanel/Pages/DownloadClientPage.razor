@@ -40,7 +40,17 @@
     private async Task CreateDownloaderFiles()
     {
         string folderName = Guid.NewGuid().ToString();
-        string rootPath = @".\wwwroot";
+        string rootPath ;
+
+        if (Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true")
+        {
+            rootPath = @"/app/wwwroot";
+        }
+        else
+        {
+            rootPath = @".\wwwroot";
+        }
+
         string tempFolderPath = Path.Combine(rootPath, "binaries", folderName);
         string tempFileNameZip = "AutoDLClient.zip";
         string tempFileNameSettings = "settings.json";

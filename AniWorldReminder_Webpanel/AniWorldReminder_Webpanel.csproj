@@ -17,13 +17,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="appdata\binaries\" />
     <Folder Include="wwwroot\binaries\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Update="wwwroot\binaries\DefaultAutoDLClient.zip">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
 
 </Project>
