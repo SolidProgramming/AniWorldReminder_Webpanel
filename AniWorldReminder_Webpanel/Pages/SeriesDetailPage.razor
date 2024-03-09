@@ -135,7 +135,7 @@
                             <HxCheckbox Enabled="@(UserSeries is null)" TextCssClass="text-warning" Inline="true" @bind-Value="EngSub" CssClass="mt-2" Text="Englisch Untertitel" />
                             @if (ShowLanguageError)
                             {
-                                <HxAlert Color="ThemeColor.Danger" CssClass="mt-3">
+                                <HxAlert Color="ThemeColor.Danger" CssClass="mt-3 mb-2">
                                     <HxIcon Icon="@BootstrapIcon.ExclamationCircleFill" />
                                     Es muss mindestens eine Sprachoption gewählt werden!
                                 </HxAlert>
@@ -143,27 +143,38 @@
                         </div>
                     </div>
                     <div class="col-6 mt-4">
-                        <div class="px-3 py-2 border rounded">
+                        <div class="px-3 border rounded">
                             <div class="my-2">
                                 <HxIcon CssClass="d-inline fs-5 text-primary" Icon="BootstrapIcon.Download"></HxIcon>
                                 <h5 class="d-inline px-2">Download:</h5>
                                 @if (SeriesInfo is not null)
                                 {
-                                    <HxCheckboxList ItemTextCssClass="text-warning"
-                                                    LabelCssClass="d-flex text-light"
-                                                    Inline="true"
-                                                    CssClass="mt-3"
-                                                    TItem="SeasonModel"
-                                                    TValue="int"
-                                                    Label="Staffeln"
-                                                    Data="@SeriesInfo.Seasons"
-                                                    ItemTextSelector="@(season => season.Id.ToString())"
-                                                    ItemValueSelector="@(season => season.Id)"
-                                                    @bind-Value="SelectedDownloadSeasons" />
-                                    <HxButton OnClick="@AddDownloads" Outline="true" Color="ThemeColor.Success" Icon="BootstrapIcon.Download"
-                                              Spinner="@Loading" Enabled="@(!Loading && UserSeries is not null)" CssClass="w-100 mt-4">
-                                        Hinzufügen
-                                    </HxButton>
+                                    @if (UserSeries is not null)
+                                    {
+                                        <HxCheckboxList ItemTextCssClass="text-warning"
+                                                        LabelCssClass="d-flex text-light"
+                                                        Inline="true"
+                                                        CssClass="mt-3"
+                                                        TItem="SeasonModel"
+                                                        TValue="int"
+                                                        Label="Staffeln"
+                                                        Data="@SeriesInfo.Seasons"
+                                                        ItemTextSelector="@(season => season.Id.ToString())"
+                                                        ItemValueSelector="@(season => season.Id)"
+                                                        @bind-Value="SelectedDownloadSeasons" />
+
+                                        <HxButton OnClick="@AddDownloads" Outline="true" Color="ThemeColor.Success" Icon="BootstrapIcon.Download"
+                                                  Spinner="@Loading" Enabled="@(!Loading && UserSeries is not null)" CssClass="w-100 mt-4 mb-2">
+                                            Hinzufügen
+                                        </HxButton>
+                                    }
+                                    else
+                                    {
+                                        <HxAlert Color="ThemeColor.Secondary" CssClass="mt-3">
+                                            <HxIcon Icon="@BootstrapIcon.ExclamationCircle" />
+                                            <span class="ms-2">Füge erst die Serie zu deinen Remindern hinzu!</span>
+                                        </HxAlert>
+                                    }
                                 }
                             </div>
                         </div>
@@ -248,7 +259,6 @@
     private SeriesModel? UserSeries;
 
     private bool AddSuccess { get; set; }
-    private bool AddDownloadsSuccess { get; set; }
 
     private bool ShowInfoError { get; set; }
     private bool ShowLanguageError { get; set; }
@@ -417,7 +427,7 @@
         foreach (EpisodeModel episode in selectedEpisodes)
         {
             IEnumerable<Language>? flagsEpisode = episode.Languages.GetFlags<Language>(ignore: Language.None);
-            
+
             if (flagsEpisode.Any(_ => flagsReminder.Contains(_)))
             {
                 IEnumerable<Language>? wantedLanguages = flagsEpisode.Intersect(flagsReminder);
@@ -425,25 +435,30 @@
                 episodes.Add(episode);
             }
         }
-               
+
         AddDownloadsRequestModel addDownloadRequest = new()
             {
                 SeriesId = UserSeries.Id.ToString(),
                 Episodes = episodes
             };
 
-        bool success = await ApiService.PostAsync<bool>("addDownloads", addDownloadRequest);
+        int addedDownloads = await ApiService.PostAsync<int>("addDownloads", addDownloadRequest);
 
-        if (!success)
+        if (addedDownloads > 0)
         {
-            ToastService.AddError("Fehler", $"Beim hinzufügen der Downloads für {SeriesInfo?.Name!} ist ein Fehler aufgetreten!");
+            ToastService.AddMessage($"Es wurden {addedDownloads} Episoden zu den Downloads hinzugefügt!", MessageType.Success);
+
+            int existingDownloads = episodes.Count - addedDownloads;
+
+            if (existingDownloads > 0)
+            {
+                ToastService.AddMessage($"{existingDownloads} Episoden sind bereits in der Warteschlange.", MessageType.Secondary);
+            }
         }
         else
         {
-            ToastService.AddInformation("Hinzugefügt", $"Es wurden {episodes.Count} Episoden zu den Downloads hinzugefügt!");
+            ToastService.AddMessage($"Es sind bereits alle verfügbaren Episoden für {SeriesInfo?.Name!} in der Warteschlange!", MessageType.Secondary);
         }
-
-        AddDownloadsSuccess = success;
 
         Loading = false;
         StateHasChanged();
