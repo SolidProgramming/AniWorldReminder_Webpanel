@@ -16,8 +16,8 @@ namespace AniWorldReminder_Webpanel.Classes
 
         public static void AddMessage(this IHxMessengerService messenger, string message, MessageType messageType)
         {
-            int autoHideDelay = 0;
-            ThemeColor color = ThemeColor.None;
+            int autoHideDelay;
+            ThemeColor color;
 
             switch (messageType)
             {

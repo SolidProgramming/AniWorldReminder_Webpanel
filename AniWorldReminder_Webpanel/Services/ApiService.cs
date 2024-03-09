@@ -6,6 +6,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
 
 namespace AniWorldReminder_Webpanel.Services
 {
@@ -34,13 +35,20 @@ namespace AniWorldReminder_Webpanel.Services
 
             return (true, content);
         }
-
         public async Task<T?> GetAsync<T>(string uri)
         {
             HttpRequestMessage request = new(HttpMethod.Get, uri);
             return await SendRequest<T>(request);
         }
+        public async Task<T?> GetAsyncWithApiKey<T>(string uri)
+        {
+            string? apiKey = await GetAsync<string?>("/getAPIKey");
 
+            HttpRequestMessage request = new(HttpMethod.Get, uri);
+            request.Headers.Add("X-API-KEY", apiKey);
+
+            return await SendRequest<T>(request);
+        }
         public async Task<T?> GetAsync<T>(string uri, Dictionary<string, string> queryData, object body)
         {
             HttpRequestMessage request = new(HttpMethod.Get, new Uri(QueryHelpers.AddQueryString(HttpClient.BaseAddress + uri, queryData!)))
@@ -54,7 +62,6 @@ namespace AniWorldReminder_Webpanel.Services
             HttpRequestMessage request = new(HttpMethod.Get, new Uri(QueryHelpers.AddQueryString(HttpClient.BaseAddress + uri, queryData!)));
             return await SendRequest<T>(request);
         }
-
         public async Task<T?> PostAsync<T>(string uri, object value)
         {
             HttpRequestMessage request = new(HttpMethod.Post, uri)
@@ -63,7 +70,6 @@ namespace AniWorldReminder_Webpanel.Services
             };
             return await SendRequest<T>(request);
         }
-
         public async Task<bool> PostAsync(string uri, object value)
         {
             HttpRequestMessage request = new(HttpMethod.Post, uri)
@@ -72,7 +78,6 @@ namespace AniWorldReminder_Webpanel.Services
             };
             return await SendRequest<bool>(request);
         }
-
         private async Task<T?> SendRequest<T>(HttpRequestMessage request)
         {
             UserModel? user = await LocalStorageService.GetItem<UserModel>("user");

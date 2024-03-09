@@ -11,7 +11,7 @@
         </div>
     </HeaderTemplate>
     <ItemsTemplate>
-        <HxSidebarItem Icon="BootstrapIcon.Person" Href="@Routes.Index" >
+        <HxSidebarItem Icon="BootstrapIcon.Person" Href="@Routes.Index">
             <ContentTemplate>
                 Profil
             </ContentTemplate>
@@ -24,12 +24,31 @@
         <HxSidebarItem Icon="BootstrapIcon.Columns" Href="@Routes.Dashboard" CssClass="mt-4">
             <ContentTemplate>
                 Dashboard
-                <HxBadge Color="ThemeColor.Secondary" CssClass="ms-2">
-                    @if (UserSeries is not null && UserSeries.Any())
-                    {
+                @if (UserSeries is not null && UserSeries.Any())
+                {
+                    <HxBadge Color="ThemeColor.Secondary" CssClass="ms-2">
                         @UserSeries.Count
-                    }
-                </HxBadge>
+                    </HxBadge>
+                }
+                else
+                {
+                    <HxSpinner CssClass="ms-2" Color="ThemeColor.Secondary" Size="SpinnerSize.Small"></HxSpinner>
+                }
+            </ContentTemplate>
+        </HxSidebarItem>
+        <HxSidebarItem Icon="BootstrapIcon.Download">
+            <ContentTemplate>
+                Downloads:
+                @if (UserSeries is not null && UserSeries.Any())
+                {
+                    <HxBadge Color="ThemeColor.Warning" CssClass="ms-2 text-dark">
+                        @DownloadCount
+                    </HxBadge>
+                }
+                else
+                {
+                    <HxSpinner CssClass="ms-2" Color="ThemeColor.Warning" Size="SpinnerSize.Small"></HxSpinner>
+                }
             </ContentTemplate>
         </HxSidebarItem>
         <HxSidebarItem Icon="BootstrapIcon.BoxArrowLeft" CssClass="mt-4 text-danger" Href="@Routes.Logout">
@@ -41,7 +60,7 @@
             <ContentTemplate>
                 Einstellungen
             </ContentTemplate>
-        </HxSidebarItem>  
+        </HxSidebarItem>
     </ItemsTemplate>
 </HxSidebar>
 
@@ -49,20 +68,24 @@
     private string? Username { get; set; }
 
     private List<SeriesModel>? UserSeries;
+    private int DownloadCount { get; set; }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            await RefreshUserSeries();
+            await RefreshData();
         }
 
         await base.OnAfterRenderAsync(firstRender);
     }
 
-    private async Task RefreshUserSeries()
+    private async Task RefreshData()
     {
         UserSeries = await ApiService.GetAsync<List<SeriesModel>?>("getAllUserSeries", new() { { "username", AuthService?.User?.Username! } });
+
+        DownloadCount = await ApiService.GetAsyncWithApiKey<int>("getDownloadsCount");
+
         StateHasChanged();
     }
 
