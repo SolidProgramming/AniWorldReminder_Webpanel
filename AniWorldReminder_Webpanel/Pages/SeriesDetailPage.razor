@@ -287,7 +287,7 @@
                 LoadingInfo = false;
                 ShowInfoError = true;
                 StateHasChanged();
-                ToastService.AddError("Fehler", $"Beim abrufen der Serien Informationen ist ein Fehler aufgetreten!");
+                ToastService.AddMessage("Beim abrufen der Serien Informationen ist ein Fehler aufgetreten!", MessageType.Error);
                 return;
             }
 
@@ -399,7 +399,7 @@
 
         if (!success)
         {
-            ToastService.AddError("Fehler", $"Beim hinzufügen des Reminders für {SeriesInfo?.Name!} ist ein Fehler aufgetreten!");
+            ToastService.AddMessage($"Beim hinzufügen des Reminders für {SeriesInfo?.Name!} ist ein Fehler aufgetreten!", MessageType.Error);
         }
 
         AddSuccess = success;
@@ -479,7 +479,7 @@
         }
         else
         {
-            ToastService.AddError("Fehler", $"Beim löschen des Reminders für {SeriesInfo?.Name!} ist ein Fehler aufgetreten und konnte nicht gelöscht werden!");
+            ToastService.AddMessage($"Beim löschen des Reminders für {SeriesInfo?.Name!} ist ein Fehler aufgetreten und konnte nicht gelöscht werden!", MessageType.Error);
         }
 
         Loading = false;

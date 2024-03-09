@@ -99,11 +99,11 @@
         if (deleteSuccess)
         {
             UserSeries?.RemoveAll(_ => _.Path == seriesPath);
-            ToastService.AddInformation("Erfolg", $"Dein Reminder wurde gelöscht!");
+            ToastService.AddMessage("Der Reminder wurde gelöscht!", MessageType.Info);
         }
         else
         {
-            ToastService.AddError("Fehler", $"Beim löschen des Reminders ist ein Fehler aufgetreten und konnte nicht gelöscht werden!");
+            ToastService.AddMessage("Beim löschen des Reminders ist ein Fehler aufgetreten und konnte nicht gelöscht werden!", MessageType.Error);
         }
 
         Loading = false;

@@ -95,7 +95,7 @@
             }
             catch (Exception)
             {
-                ToastService.AddError("Beim erstellen des Clients ist ein Fehler aufgetreten!");
+                ToastService.AddMessage("Beim erstellen des Clients ist ein Fehler aufgetreten!", MessageType.Error);
             }
         });
 

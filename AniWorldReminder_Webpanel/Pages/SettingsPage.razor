@@ -53,7 +53,7 @@
             if (userWebsiteSettings is null)
             {
                 StateHasChanged();
-                ToastService.AddError("Fehler", $"Beim abrufen der Einstellungen ist ein Fehler aufgetreten!");
+                ToastService.AddMessage($"Beim abrufen der Einstellungen ist ein Fehler aufgetreten!", MessageType.Error);
                 return;
             }
 
@@ -80,14 +80,14 @@
 
         if (!saveSuccess)
         {
-            ToastService.AddError("Fehler", $"Beim speichern der Einstellungen ist ein Fehler aufgetreten!");
+            ToastService.AddMessage($"Beim speichern der Einstellungen ist ein Fehler aufgetreten!", MessageType.Error);
             return;
         }
 
         CanSave = false;
         StateHasChanged();
 
-        ToastService.AddInformation("Erfolg", $"Deine Einstellungen wurden gespeichert!");
+        ToastService.AddMessage("Deine Einstellungen wurden gespeichert!", MessageType.Success);
     }
 
     private void ChangedSettings()
