@@ -10,18 +10,10 @@
 <PageTitle>Downloader erstellen</PageTitle>
 
 <div class="container">
-    <div class="row">
-        <div class="col-sm-auto mt-4">
-            <div class="row">
-                <div class="col">
-                    <h5>Host IP:</h5>
-                    <HxInputText @bind-Value="HostIP" Placeholder="127.0.0.1"></HxInputText>
-                </div>
-                <div class="col">
-                    <h5>Download Pfad:</h5>
-                    <HxInputText @bind-Value="DownloadPath" Placeholder="C:\\Downloads"></HxInputText>
-                </div>
-            </div>
+    <div class="row mt-4">
+        <div class="col-6">
+            <h5>Download Pfad:</h5>
+            <HxInputText @bind-Value="DownloadPath" Placeholder="C:\\Downloads"></HxInputText>
         </div>
     </div>
     <div class="row mt-5">
@@ -35,11 +27,16 @@
 </div>
 
 @code {
-    private string? HostIP { get; set; }
     private string? DownloadPath { get; set; }
 
     private async Task CreateDownloaderFiles()
     {
+        if (string.IsNullOrEmpty(DownloadPath))
+        {
+            ToastService.AddMessage("Bitte einen Download Pfad angeben", MessageType.Warning);
+            return;
+        }
+
         string folderName = Guid.NewGuid().ToString();
         string rootPath;
 
@@ -78,7 +75,6 @@
                     AutoDLClientSettingsModel settings = new()
                         {
                             ApiUrl = "https://aniworldwebapi.solidserver.xyz",
-                            HostUrl = $"http://{HostIP}:5080",
                             DownloadPath = DownloadPath
                         };
 
