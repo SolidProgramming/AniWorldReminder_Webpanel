@@ -1,6 +1,7 @@
 # AniWorldReminder_Webpanel
 [C#/Blazor] Webpanel built with Blazor using Havit Bootstrap
 
+## [Video](https://vimeo.com/921474892)
 ## [Website](https://aniworldweb.solidserver.xyz)
 ## Verify @[Telegram](https://t.me/AniWorldReminderBot)
 
