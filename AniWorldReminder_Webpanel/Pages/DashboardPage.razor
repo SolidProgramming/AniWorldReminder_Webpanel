@@ -20,19 +20,30 @@
                 @if (UserSeries is not null)
                 {
                     <HxBadge CssClass="mx-3" Color="ThemeColor.Success">@(UserSeries.Count)x</HxBadge>
-                }
+                }                
             </div>
-            <div class="col align-self-end text-end">
-                <div class="d-inline">
-                    <h5 class="d-inline me-2">Sortierung:</h5>
-                    <HxButton Size="ButtonSize.Small" CssClass="d-inline" Color="ThemeColor.Warning">Name</HxButton>
-                    <span class="d-inline">|</span>
-                    <HxButton Size="ButtonSize.Small" CssClass="d-inline" Color="ThemeColor.Secondary">Datum</HxButton>
+            @if (UserSeries is not null)
+            {
+                <div class="col align-self-end text-end">
+                    <div class="d-inline">
+                        <h5 class="d-inline me-2">Sortierung:</h5>
+                        <HxButton Size="ButtonSize.Small" CssClass="d-inline" Color="ThemeColor.Warning">Name</HxButton>
+                        <span class="d-inline">|</span>
+                        <HxButton Size="ButtonSize.Small" CssClass="d-inline" Color="ThemeColor.Secondary">Datum</HxButton>
+                    </div>
                 </div>
-            </div>
+            }
         </div>
     </div>
+    @if (ShowEmptyDashboardInfo)
+    {
+        <HxAlert Color="ThemeColor.Info" CssClass="mt-4">
+            <HxIcon Icon="@BootstrapIcon.ExclamationCircleFill" />
+            Es sieht so aus als hättest du noch keine Serien hinzugefügt! Starte eine Suche und füge deine erste Serie hinzu!
+        </HxAlert>
+    }
     <div class="row justify-content-center">
+        
         @if (UserSeries is not null)
         {
             foreach (SeriesModel series in UserSeries)
@@ -79,6 +90,8 @@
 </div>
 
 @code {
+    private bool ShowEmptyDashboardInfo { get; set; }
+
     private List<SeriesModel>? UserSeries { get; set; }
 
     private bool Loading { get; set; }
@@ -96,9 +109,15 @@
             Loading = true;
             StateHasChanged();
             UserSeries = await ApiService.GetAsync<List<SeriesModel>?>("getAllUserSeries");
-            
+
             if (UserSeries is not null)
+            {
                 UserSeries.OrderBy(_ => _.Name);
+            }
+            else
+            {
+                ShowEmptyDashboardInfo = true;
+            }
 
             Loading = false;
             StateHasChanged();
