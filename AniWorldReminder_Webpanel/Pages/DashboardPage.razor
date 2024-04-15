@@ -12,11 +12,26 @@
             <HxSubmit Color="ThemeColor.Primary" CssClass="w-100" Spinner="Loading" Enabled="@(!Loading)">Serie suchen</HxSubmit>
         </EditForm>
     </div>
-    <h3 class="d-inline">Dashboard</h3>
-    @if (UserSeries is not null)
-    {
-        <HxBadge CssClass="mx-3" Color="ThemeColor.Success">@(UserSeries.Count)x</HxBadge>
-    }
+
+    <div class="container">
+        <div class="row">
+            <div class="col align-self-start text-start">
+                <h3 class="d-inline">Dashboard</h3>
+                @if (UserSeries is not null)
+                {
+                    <HxBadge CssClass="mx-3" Color="ThemeColor.Success">@(UserSeries.Count)x</HxBadge>
+                }
+            </div>
+            <div class="col align-self-end text-end">
+                <div class="d-inline">
+                    <h5 class="d-inline me-2">Sortierung:</h5>
+                    <HxButton Size="ButtonSize.Small" CssClass="d-inline" Color="ThemeColor.Warning">Name</HxButton>
+                    <span class="d-inline">|</span>
+                    <HxButton Size="ButtonSize.Small" CssClass="d-inline" Color="ThemeColor.Secondary">Datum</HxButton>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="row justify-content-center">
         @if (UserSeries is not null)
         {
@@ -81,6 +96,10 @@
             Loading = true;
             StateHasChanged();
             UserSeries = await ApiService.GetAsync<List<SeriesModel>?>("getAllUserSeries");
+            
+            if (UserSeries is not null)
+                UserSeries.OrderBy(_ => _.Name);
+
             Loading = false;
             StateHasChanged();
         }
