@@ -27,9 +27,9 @@
                 <div class="col align-self-end text-end">
                     <div class="d-inline">
                         <h5 class="d-inline me-2">Sortierung:</h5>
-                        <HxButton Size="ButtonSize.Small" CssClass="d-inline" Color="ThemeColor.Warning">Name</HxButton>
+                        <HxButton Size="ButtonSize.Small" OnClick="SelectNameSorting" CssClass="d-inline" Color="@(SortingNameSelected == true ? ThemeColor.Warning : ThemeColor.Secondary)">Name</HxButton>
                         <span class="d-inline">|</span>
-                        <HxButton Size="ButtonSize.Small" CssClass="d-inline" Color="ThemeColor.Secondary">Datum</HxButton>
+                        <HxButton Size="ButtonSize.Small" OnClick="SelectHosterSorting" CssClass="d-inline" Color="@(SortingHosterSelected == true ? ThemeColor.Warning : ThemeColor.Secondary)">Hoster</HxButton>
                     </div>
                 </div>
             }
@@ -90,6 +90,9 @@
 </div>
 
 @code {
+    private bool SortingNameSelected { get; set; } = true;
+    private bool SortingHosterSelected { get; set; } = false;
+
     private bool ShowEmptyDashboardInfo { get; set; }
 
     private List<SeriesModel>? UserSeries { get; set; }
@@ -201,6 +204,26 @@
         UserSeries = allResults;
 
         Loading = false;
+        StateHasChanged();
+    }
+
+    private void SelectNameSorting()
+    {
+        SortingNameSelected = true;
+        SortingHosterSelected = false;
+
+        UserSeries = UserSeries.OrderBy(_ => _.Name).ToList();
+
+        StateHasChanged();
+    }
+
+    private void SelectHosterSorting()
+    {
+        SortingNameSelected = false;
+        SortingHosterSelected = true;
+
+        UserSeries = UserSeries.OrderBy(_ => _.StreamingPortal).ToList();
+
         StateHasChanged();
     }
 }
