@@ -6,10 +6,10 @@
 ## Verify @[Telegram](https://t.me/AniWorldReminderBot)
 
 ## Dashboard
-![](https://reducemy.link/p/4WRCFh)
+![](https://reducemy.link/p/4WRCGg)
 
 ## Series Details
-![](https://reducemy.link/p/4WRCFj)
+![](https://reducemy.link/p/4WRCGh)
 
 ## View Episodes in Browser
 ![](https://reducemy.link/p/4WRCFk)
