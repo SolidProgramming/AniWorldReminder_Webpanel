@@ -1,12 +1,8 @@
-﻿using AniWorldReminder_Webpanel.Interfaces;
-using Microsoft.AspNetCore.Components;
-using System.Net.Http;
+﻿using Microsoft.AspNetCore.Components;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
-using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.AspNetCore.DataProtection.KeyManagement;
 
 namespace AniWorldReminder_Webpanel.Services
 {

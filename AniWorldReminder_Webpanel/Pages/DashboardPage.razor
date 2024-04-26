@@ -189,7 +189,7 @@
 
         List<SearchResultModel>? apiSearchResults = await ApiService.GetAsync<List<SearchResultModel>?>("getSeries", new() { { "seriesName", SearchSeriesName.ToLower() } });
 
-        foreach (SearchResultModel searchResult in apiSearchResults.Where(_ => !allResults.Any(x => x.Path == _.Path)))
+        foreach (SearchResultModel searchResult in apiSearchResults)
         {
             SeriesModel series = new()
                 {
