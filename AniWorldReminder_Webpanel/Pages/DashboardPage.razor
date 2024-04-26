@@ -26,7 +26,9 @@
             {
                 <div class="col align-self-end text-end">
                     <div class="d-inline">
-                        <h5 class="d-inline me-2">Sortierung:</h5>
+                        <h5 class="d-inline me-2">Sortierung:</h5>                        
+                        <HxButton Size="ButtonSize.Small" OnClick="SelectDateSorting" CssClass="d-inline" Color="@(SortingDateSelected == true ? ThemeColor.Warning : ThemeColor.Secondary)">Datum</HxButton>
+                        <span class="d-inline">|</span>
                         <HxButton Size="ButtonSize.Small" OnClick="SelectNameSorting" CssClass="d-inline" Color="@(SortingNameSelected == true ? ThemeColor.Warning : ThemeColor.Secondary)">Name</HxButton>
                         <span class="d-inline">|</span>
                         <HxButton Size="ButtonSize.Small" OnClick="SelectHosterSorting" CssClass="d-inline" Color="@(SortingHosterSelected == true ? ThemeColor.Warning : ThemeColor.Secondary)">Hoster</HxButton>
@@ -68,8 +70,8 @@
                         }
                     </HeaderTemplate>
                     <BodyTemplate>
-                        <HxCardTitle>@series.Name</HxCardTitle>
-                        <HxCardSubtitle>
+                        <HxCardTitle CssClass="text-center">@series.Name</HxCardTitle>
+                        <HxCardSubtitle CssClass="mt-2">
                             <HxButton OnClick="@(() => NavigateToDetail(series.Path))" Spinner="@Loading" Enabled="@(!Loading)" Color="ThemeColor.Primary" Icon="BootstrapIcon.Forward" CssClass="w-100 mt-2">Anzeigen</HxButton>
                             @if (!series.IsSearchResult)
                             {
@@ -90,8 +92,9 @@
 </div>
 
 @code {
-    private bool SortingNameSelected { get; set; } = true;
+    private bool SortingNameSelected { get; set; } = false;
     private bool SortingHosterSelected { get; set; } = false;
+    private bool SortingDateSelected { get; set; } = true;
 
     private bool ShowEmptyDashboardInfo { get; set; }
 
@@ -115,7 +118,7 @@
 
             if (UserSeries is not null)
             {
-                UserSeries = UserSeries.OrderBy(_ => _.Name).ToList();
+                UserSeries = UserSeries.OrderByDescending(_ => _.Added).ThenByDescending(_ => _.Id).ToList();
             }
             else
             {
@@ -211,6 +214,7 @@
     {
         SortingNameSelected = true;
         SortingHosterSelected = false;
+        SortingDateSelected = false;
 
         UserSeries = UserSeries.OrderBy(_ => _.Name).ToList();
 
@@ -221,8 +225,20 @@
     {
         SortingNameSelected = false;
         SortingHosterSelected = true;
+        SortingDateSelected = false;
 
         UserSeries = UserSeries.OrderBy(_ => _.StreamingPortal).ToList();
+
+        StateHasChanged();
+    }
+
+    private void SelectDateSorting()
+    {
+        SortingNameSelected = false;
+        SortingHosterSelected = false;
+        SortingDateSelected = true;
+
+        UserSeries = UserSeries.OrderByDescending(_ => _.Added).ThenByDescending(_ => _.Id).ToList();
 
         StateHasChanged();
     }

@@ -11,5 +11,7 @@
         public bool IsSearchResult = false;
         public string? Link { get; set; }
         public string? Path { get; set; }
+        public DateTime? Added { get; set; }
+        public DateTime? Updated { get; set; }
     }
 }
