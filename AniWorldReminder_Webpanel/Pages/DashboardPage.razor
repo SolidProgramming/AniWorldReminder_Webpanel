@@ -5,28 +5,36 @@
 @inject IAuthenticationService AuthService
 @inject NavigationManager NavigationManager
 
+<PageTitle>Dashboard</PageTitle>
 <div class="container">
-    <div class="row mb-5">
-        <EditForm Model="@Reminder" OnValidSubmit="@(() => SearchSeriesDashboard())">
-            <HxInputText Label="Serien Name" @bind-Value="@SearchSeriesName" Placeholder="Jujutsu Kaisen" />
-            <HxSubmit Color="ThemeColor.Primary" CssClass="w-100" Spinner="Loading" Enabled="@(!Loading)">Serie suchen</HxSubmit>
-        </EditForm>
-    </div>
-
-    <div class="container">
+    <EditForm Model="@Reminder" OnValidSubmit="@(() => SearchSeriesDashboard())">
         <div class="row">
-            <div class="col align-self-start text-start">
-                <h3 class="d-inline">Dashboard</h3>
-                @if (UserSeries is not null)
-                {
-                    <HxBadge CssClass="mx-3" Color="ThemeColor.Success">@(UserSeries.Count)x</HxBadge>
-                }                
+            <div class="col-8">
+                <HxInputText Label="Serien Name" @bind-Value="@SearchSeriesName" Placeholder="Jujutsu Kaisen" />
             </div>
-            @if (UserSeries is not null)
-            {
+            <div class="col-4 d-flex align-items-center">
+                <div class="mt-4">
+                    <input id="chbSearchSeries" type="checkbox" class="form-check-input" @bind-value=SearchSeries checked=SearchSeries />
+                    <label for="chbSearchSeries" class="ps-1">Serien</label>
+                    <input id="chbSearchFilms" type="checkbox" class="form-check-input ms-2" @bind-value=SearchFilms checked=SearchFilms />
+                    <label for="chbSearchFilms" class="ps-1">Filme</label>
+                </div>
+            </div>
+        </div>
+        <HxSubmit Color="ThemeColor.Primary" CssClass="w-100 mb-5" Spinner="Loading" Enabled="@(!Loading)">Serie suchen</HxSubmit>
+    </EditForm>
+
+    @if (UserSeries is not null && !Loading)
+    {
+        <div class="container">
+            <div class="row">
+                <div class="col align-self-start text-start">
+                    <h3 class="d-inline">Dashboard</h3>
+                    <HxBadge CssClass="mx-3" Color="ThemeColor.Success">@(UserSeries.Count)x</HxBadge>
+                </div>
                 <div class="col align-self-end text-end">
                     <div class="d-inline">
-                        <h5 class="d-inline me-2">Sortierung:</h5>                        
+                        <h5 class="d-inline me-2">Sortierung:</h5>
                         <HxButton Size="ButtonSize.Small" OnClick="SelectDateSorting" CssClass="d-inline" Color="@(SortingDateSelected == true ? ThemeColor.Warning : ThemeColor.Secondary)">Datum</HxButton>
                         <span class="d-inline">|</span>
                         <HxButton Size="ButtonSize.Small" OnClick="SelectNameSorting" CssClass="d-inline" Color="@(SortingNameSelected == true ? ThemeColor.Warning : ThemeColor.Secondary)">Name</HxButton>
@@ -34,9 +42,9 @@
                         <HxButton Size="ButtonSize.Small" OnClick="SelectHosterSorting" CssClass="d-inline" Color="@(SortingHosterSelected == true ? ThemeColor.Warning : ThemeColor.Secondary)">Hoster</HxButton>
                     </div>
                 </div>
-            }
+            </div>
         </div>
-    </div>
+    }
     @if (ShowEmptyDashboardInfo)
     {
         <HxAlert Color="ThemeColor.Info" CssClass="mt-4">
@@ -44,8 +52,7 @@
             Es sieht so aus als hättest du noch keine Serien hinzugefügt! Starte eine Suche und füge deine erste Serie hinzu!
         </HxAlert>
     }
-    <div class="row justify-content-center">
-        
+    <div class="row justify-content-center">        
         @if (UserSeries is not null)
         {
             foreach (SeriesModel series in UserSeries)
@@ -84,8 +91,9 @@
         }
         else
         {
-            <div class="text-center">
+            <div class="d-flex align-items-center justify-content-center text-secondary">
                 <HxSpinner Size="SpinnerSize.Regular"></HxSpinner>
+                <span class="ps-3 fs-5">Reminder Daten abrufen...</span>
             </div>
         }
     </div>
@@ -95,6 +103,9 @@
     private bool SortingNameSelected { get; set; } = false;
     private bool SortingHosterSelected { get; set; } = false;
     private bool SortingDateSelected { get; set; } = true;
+
+    private bool SearchSeries { get; set; } = true;
+    private bool SearchFilms { get; set; } = true;
 
     private bool ShowEmptyDashboardInfo { get; set; }
 
@@ -187,7 +198,14 @@
         Loading = true;
         StateHasChanged();
 
-        List<SearchResultModel>? apiSearchResults = await ApiService.GetAsync<List<SearchResultModel>?>("getSeries", new() { { "seriesName", SearchSeriesName.ToLower() } });
+        MediaType searchMediaType = ( SearchSeries ? MediaType.Series : MediaType.Undefined ) |
+                                    ( SearchFilms ? MediaType.Films : MediaType.Undefined );
+
+        List<SearchResultModel>? apiSearchResults = await ApiService.GetAsync<List<SearchResultModel>?>("getSeries", 
+                                                    new() {
+                                                        { "seriesName", SearchSeriesName.ToLower() },
+                                                        { "mediaType", MediaType.Films.ToString() } 
+                                                    });
 
         foreach (SearchResultModel searchResult in apiSearchResults)
         {
