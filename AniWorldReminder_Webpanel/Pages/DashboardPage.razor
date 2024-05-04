@@ -204,7 +204,7 @@
         List<SearchResultModel>? apiSearchResults = await ApiService.GetAsync<List<SearchResultModel>?>("getSeries", 
                                                     new() {
                                                         { "seriesName", SearchSeriesName.ToLower() },
-                                                        { "mediaType", MediaType.Films.ToString() } 
+                                                        { "mediaType", searchMediaType.ToString() }
                                                     });
 
         foreach (SearchResultModel searchResult in apiSearchResults)
