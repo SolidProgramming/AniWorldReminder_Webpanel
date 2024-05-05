@@ -72,6 +72,9 @@
                             case StreamingPortal.STO:
                                 <div class="text-warning fw-light text-center" style="font-family: 'Roboto', sans-serif;"><HxIcon CssClass="px-2 fs-4 align-middle" Icon="BootstrapIcon.Cloud"></HxIcon>S.TO</div>
                                 break;
+                            case StreamingPortal.MegaKino:
+                                <div class="text-warning fw-light text-center" style="font-family: 'Roboto', sans-serif;"><HxIcon CssClass="px-2 fs-4 align-middle" Icon="BootstrapIcon.Cloud"></HxIcon>MegaKino</div>
+                                break;
                             default:
                                 break;
                         }
@@ -79,7 +82,7 @@
                     <BodyTemplate>
                         <HxCardTitle CssClass="text-center">@series.Name</HxCardTitle>
                         <HxCardSubtitle CssClass="mt-2">
-                            <HxButton OnClick="@(() => NavigateToDetail(series.Path))" Spinner="@Loading" Enabled="@(!Loading)" Color="ThemeColor.Primary" Icon="BootstrapIcon.Forward" CssClass="w-100 mt-2">Anzeigen</HxButton>
+                            <HxButton OnClick="@(() => NavigateToDetail(series))" Spinner="@Loading" Enabled="@(!Loading)" Color="ThemeColor.Primary" Icon="BootstrapIcon.Forward" CssClass="w-100 mt-2">Anzeigen</HxButton>
                             @if (!series.IsSearchResult)
                             {
                                 <HxButton OnClick="@(() => RemoveReminder(series.Path))" Spinner="@Loading" Enabled="@(!Loading)" Color="ThemeColor.Warning" Outline="true" Icon="BootstrapIcon.XCircleFill" CssClass="w-100 mt-2">Entfernen</HxButton>
@@ -165,9 +168,9 @@
         StateHasChanged();
     }
 
-    private void NavigateToDetail(string seriesName)
+    private void NavigateToDetail(SeriesModel series)
     {
-        NavigationManager.NavigateTo(Routes.SeriesDetail + $"{seriesName}?referer={Routes.Dashboard}");
+        NavigationManager.NavigateTo(Routes.MediaDetail + $"{series.Path}?referer={Routes.Dashboard}&hoster={series.StreamingPortal}");
     }
 
     private async Task SearchSeriesDashboard()
@@ -216,6 +219,7 @@
                     IsSearchResult = true,
                     Link = searchResult.Link,
                     Path = searchResult.Path,
+                    StreamingPortal = searchResult.StreamingPortal,
                     CoverArtBase64 = searchResult.CoverArtBase64
                 };
 
@@ -223,6 +227,8 @@
         }
 
         UserSeries = allResults;
+
+        SelectHosterSorting();
 
         Loading = false;
         StateHasChanged();

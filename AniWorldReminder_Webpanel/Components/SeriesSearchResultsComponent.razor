@@ -23,6 +23,9 @@
                     case StreamingPortal.STO:
                         <div class="text-warning fw-light text-center" style="font-family: 'Roboto', sans-serif;"><HxIcon CssClass="px-2 fs-4 align-middle" Icon="BootstrapIcon.Cloud"></HxIcon>S.TO</div>
                         break;
+                    case StreamingPortal.MegaKino:
+                        <div class="text-warning fw-light text-center" style="font-family: 'Roboto', sans-serif;"><HxIcon CssClass="px-2 fs-4 align-middle" Icon="BootstrapIcon.Cloud"></HxIcon>MegaKino</div>
+                        break;
                     default:
                         break;
                 }
@@ -47,6 +50,6 @@
 
     private void NavigateToSeriesDetail(string seriesName)
     {
-        NavManager.NavigateTo($"{Routes.SeriesDetail}{seriesName}");
+        NavManager.NavigateTo($"{Routes.MediaDetail}{seriesName}");
     }
 }

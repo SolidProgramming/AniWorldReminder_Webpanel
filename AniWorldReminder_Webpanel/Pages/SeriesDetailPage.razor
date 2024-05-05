@@ -1,4 +1,4 @@
-﻿@attribute [Route(Routes.SeriesDetail + "/{SeriesUrlPath}")]
+﻿@attribute [Route(Routes.MediaDetail + "/{SeriesUrlPath}")]
 @inject NavigationManager NavigationManager
 @inject IApiService ApiService
 @inject IAuthenticationService AuthService
@@ -242,6 +242,10 @@
     [Parameter]
     public string? Referer { get; set; }
 
+    [SupplyParameterFromQuery(Name = "hoster")]
+    [Parameter]
+    public string? Hoster { get; set; }
+
     private HxModal? LanguageSelectionModal;
 
     private string? QuickSearchSeriesName { get; set; }
@@ -281,7 +285,7 @@
             ShowInfoError = false;
             LoadingInfo = true;
             StateHasChanged();
-            SeriesInfo = await ApiService.GetAsync<SeriesInfoModel?>("getSeriesInfo", new() { { "seriesPath", SeriesUrlPath! } });
+            SeriesInfo = await ApiService.GetAsync<SeriesInfoModel?>("getSeriesInfo", new() { { "seriesPath", SeriesUrlPath! }, { "hoster", Hoster! } });
 
             if (SeriesInfo is null)
             {
