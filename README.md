@@ -2,7 +2,7 @@
 [C#/Blazor] Webpanel built with Blazor using Havit Bootstrap
 
 ## [Video](https://vimeo.com/921474892)
-## [Website](https://aniworldweb.solidserver.xyz)
+## [Website](https://proxymov.xyz)
 ## Verify @[Telegram](https://t.me/AniWorldReminderBot)
 
 ## Dashboard
