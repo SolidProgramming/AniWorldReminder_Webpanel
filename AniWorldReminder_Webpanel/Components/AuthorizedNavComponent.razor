@@ -3,10 +3,7 @@
 
 <HxSidebar CssClass="ms-2 pt-3">
     <HeaderTemplate>
-        <div class="userWrap">
-            <div class="user-image">
-                <img src="https://i.pravatar.cc/75" alt="">
-            </div>
+        <div class="userWrap">            
             <span>@Username</span>
         </div>
     </HeaderTemplate>
@@ -36,7 +33,7 @@
                 }
             </ContentTemplate>
         </HxSidebarItem>
-        <HxSidebarItem Icon="BootstrapIcon.Download">
+        <HxSidebarItem Icon="BootstrapIcon.Download" Href="@Routes.Downloads">
             <ContentTemplate>
                 Downloads:
                 @if (UserSeries is not null && UserSeries.Any())

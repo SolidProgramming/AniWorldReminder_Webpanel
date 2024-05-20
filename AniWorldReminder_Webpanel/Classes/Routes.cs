@@ -11,5 +11,6 @@
         public const string Dashboard = "/dashboard";
         public const string Settings = "/settings";
         public const string CreateDownloader = "/createDownloader";
+        public const string Downloads = "/downloads";
     }
 }

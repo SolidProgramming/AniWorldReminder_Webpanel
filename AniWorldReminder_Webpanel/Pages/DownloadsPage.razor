@@ -1,0 +1,131 @@
+﻿@attribute [Route(Routes.Downloads)]
+@inject IApiService ApiService
+
+<div class="container mt-5">    
+    <div class="row align-items-center">
+        <div class="col"></div>
+        <div class="col-8">
+            @if (!string.IsNullOrEmpty(TimeUntilRefreshText))
+            {
+                <h5>
+                    Aktualisierung in:
+                    <HxBadge CssClass="ms-2" Type="BadgeType.RoundedPill" Color="ThemeColor.Primary">
+                        <span>@TimeUntilRefreshText</span>
+                    </HxBadge>
+                </h5>
+            }
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col" class="text-center" style="font-family: 'Roboto', sans-serif;">Name</th>
+                        <th scope="col" class="text-center" style="font-family: 'Roboto', sans-serif;">Staffel</th>
+                        <th scope="col" class="text-center" style="font-family: 'Roboto', sans-serif;">Episode</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Downloads is not null)
+                    {
+                        int i = 1;
+
+                        @foreach (EpisodeDownloadModel download in Downloads)
+                        {
+                            @if (i == 1)
+                            {
+                                TextClass = "text-warning";
+                            }
+                            else
+                            {
+                                TextClass = "";
+                            }
+                            <tr>
+                                <td class="text-center align-middle @TextClass" style="font-family: 'Roboto', sans-serif;">
+                                    @download.Download.Name
+                                </td>
+                                <td class="text-center align-middle @TextClass" width="70" style="font-family: 'Roboto', sans-serif;">
+                                    @($"S{download.Download.Season:D2}")
+                                </td>
+                                <td class="text-center align-middle @TextClass" width="70" style="font-family: 'Roboto', sans-serif;">
+                                    @($"E{download.Download.Episode:D2}")
+                                </td>
+                            </tr>
+                            i++;
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="col"> </div>
+    </div>
+</div>
+@code {
+    private TimeSpan? TimeUntilRefresh;
+    private string? TimeUntilRefreshText;
+    private DateTime StartRefreshTime;
+
+    private System.Timers.Timer? TmRefresh;
+    private System.Timers.Timer? TmCountDown;
+
+    private IEnumerable<EpisodeDownloadModel>? Downloads;
+    private string? TextClass { get; set; }
+
+    private const int Interval = 30;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            Downloads = await ApiService.GetAsyncWithApiKey<IEnumerable<EpisodeDownloadModel>?>("getDownloads");
+            StateHasChanged();
+
+            if (TmRefresh is null)
+            {
+                TmRefresh = new()
+                    {
+                        AutoReset = true,
+                        Interval = Interval * 1000
+                    };
+
+                TmRefresh.Elapsed += Refresh;
+            }
+
+            if (!TmRefresh.Enabled)
+            {
+                TmRefresh.Start();
+                StartRefreshTime = DateTime.Now;
+            }
+
+            if (TmCountDown is null)
+            {
+                TmCountDown = new()
+                    {
+                        AutoReset = true,
+                        Interval = 1000
+                    };
+
+                TmCountDown.Elapsed += Countdown;
+            }
+
+            if (!TmCountDown.Enabled)
+            {
+                TmCountDown.Start();
+                StartRefreshTime = DateTime.Now.AddSeconds(Interval);
+            }
+        }
+    }
+
+    private async void Refresh(Object? source, System.Timers.ElapsedEventArgs e)
+    {
+        Downloads = await ApiService.GetAsyncWithApiKey<IEnumerable<EpisodeDownloadModel>?>("getDownloads");
+        await InvokeAsync(() => StateHasChanged());
+
+        StartRefreshTime = DateTime.Now.AddSeconds(Interval);
+    }
+
+    private void Countdown(Object? source, System.Timers.ElapsedEventArgs e)
+    {
+        TimeUntilRefresh = StartRefreshTime - DateTime.Now;
+
+        TimeUntilRefreshText = $" {TimeUntilRefresh:ss} Sekunden";
+        InvokeAsync(() => StateHasChanged());
+    }
+}

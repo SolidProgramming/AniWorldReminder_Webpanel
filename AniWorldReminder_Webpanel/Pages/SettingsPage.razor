@@ -21,7 +21,7 @@
     </div>
     <div class="row mt-4">
         <div class="col-6">
-            <HxButton OnClick="@SaveSettings" Color="ThemeColor.Success" Icon="BootstrapIcon.Check" Enabled="@(CanSave)" CssClass="w-100">Speichern</HxButton>
+            <HxButton OnClick="@SaveSettings" Color="ThemeColor.Success" Icon="BootstrapIcon.Check" Enabled="CanSave" CssClass="w-100">Speichern</HxButton>
         </div>
         <div class="col-6">
             <HxButton Outline="true" Color="ThemeColor.Warning" OnClick="@NavigateBack" Icon="BootstrapIcon.XCircle" CssClass="w-100">Abbrechen</HxButton>
