@@ -30,10 +30,10 @@
     /*   outline: 3px solid tomato; */
     border: 3px outset #66c4ec;
     position: relative;
-    width: 75px;
-    height: 75px;
+    max-width: 100%;
+    height: auto;
     align-self: center;
-    margin-bottom: 15px;
+    margin-bottom: 5px;
     border-radius: 50%;
     overflow: hidden;
     text-align: center;
