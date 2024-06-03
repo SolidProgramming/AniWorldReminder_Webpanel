@@ -126,16 +126,16 @@
     {
         await AuthService.Initialize();
 
+        MediaSearchOptionsModel? mediaSearchOptions = await LocalStorageService.GetItem<MediaSearchOptionsModel>("MediaSearchOptions");
+
+        if (mediaSearchOptions is not null)
+        {
+            SearchSeries = mediaSearchOptions.SearchSeries;
+            SearchFilms = mediaSearchOptions.SearchFilms;
+        }
+        
         if (firstRender)
         {
-            MediaSearchOptionsModel? mediaSearchOptions = await LocalStorageService.GetItem<MediaSearchOptionsModel>("MediaSearchOptions");
-
-            if (mediaSearchOptions is not null)
-            {
-                SearchSeries = mediaSearchOptions.SearchSeries;
-                SearchFilms = mediaSearchOptions.SearchFilms;
-            }
-
             Loading = true;
             StateHasChanged();
 
