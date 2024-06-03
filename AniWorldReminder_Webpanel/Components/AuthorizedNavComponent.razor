@@ -82,10 +82,10 @@
 
     private async Task RefreshData()
     {
-        DownloadCount = await ApiService.GetAsyncWithApiKey<int>("getDownloadsCount");
-        StateHasChanged();
-
         UserSeries = await ApiService.GetAsync<List<SeriesModel>?>("getAllUserSeries", new() { { "username", AuthService?.User?.Username! } });
+
+        DownloadCount = await ApiService.GetAsyncWithApiKey<int>("getDownloadsCount");
+
         StateHasChanged();
     }
 
