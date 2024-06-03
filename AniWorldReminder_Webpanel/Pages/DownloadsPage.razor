@@ -72,45 +72,45 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
-        {
-            Downloads = await ApiService.GetAsyncWithApiKey<IEnumerable<EpisodeDownloadModel>?>("getDownloads");
-            StateHasChanged();
+        // if (firstRender)
+        // {
+        //     Downloads = await ApiService.GetAsyncWithApiKey<IEnumerable<EpisodeDownloadModel>?>("getDownloads");
+        //     StateHasChanged();
 
-            if (TmRefresh is null)
-            {
-                TmRefresh = new()
-                    {
-                        AutoReset = true,
-                        Interval = Interval * 1000
-                    };
+        //     if (TmRefresh is null)
+        //     {
+        //         TmRefresh = new()
+        //             {
+        //                 AutoReset = true,
+        //                 Interval = Interval * 1000
+        //             };
 
-                TmRefresh.Elapsed += Refresh;
-            }
+        //         TmRefresh.Elapsed += Refresh;
+        //     }
 
-            if (!TmRefresh.Enabled)
-            {
-                TmRefresh.Start();
-                StartRefreshTime = DateTime.Now;
-            }
+        //     if (!TmRefresh.Enabled)
+        //     {
+        //         TmRefresh.Start();
+        //         StartRefreshTime = DateTime.Now;
+        //     }
 
-            if (TmCountDown is null)
-            {
-                TmCountDown = new()
-                    {
-                        AutoReset = true,
-                        Interval = 1000
-                    };
+        //     if (TmCountDown is null)
+        //     {
+        //         TmCountDown = new()
+        //             {
+        //                 AutoReset = true,
+        //                 Interval = 1000
+        //             };
 
-                TmCountDown.Elapsed += Countdown;
-            }
+        //         TmCountDown.Elapsed += Countdown;
+        //     }
 
-            if (!TmCountDown.Enabled)
-            {
-                TmCountDown.Start();
-                StartRefreshTime = DateTime.Now.AddSeconds(Interval);
-            }
-        }
+        //     if (!TmCountDown.Enabled)
+        //     {
+        //         TmCountDown.Start();
+        //         StartRefreshTime = DateTime.Now.AddSeconds(Interval);
+        //     }
+        // }
     }
 
     private async void Refresh(Object? source, System.Timers.ElapsedEventArgs e)

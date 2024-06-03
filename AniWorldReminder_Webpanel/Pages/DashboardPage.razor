@@ -35,11 +35,11 @@
                 <div class="col align-self-end text-end">
                     <div class="d-inline">
                         <h5 class="d-inline me-2">Sortierung:</h5>
-                        <HxButton Size="ButtonSize.Small" OnClick="SelectDateSorting" CssClass="d-inline" Color="@(SortingDateSelected == true ? ThemeColor.Warning : ThemeColor.Secondary)">Datum</HxButton>
+                        <HxButton Size="ButtonSize.Small" OnClick="SelectDateSorting" CssClass="d-inline" Color="@(SortingDateSelected ? ThemeColor.Warning : ThemeColor.Secondary)">Datum</HxButton>
                         <span class="d-inline">|</span>
-                        <HxButton Size="ButtonSize.Small" OnClick="SelectNameSorting" CssClass="d-inline" Color="@(SortingNameSelected == true ? ThemeColor.Warning : ThemeColor.Secondary)">Name</HxButton>
+                        <HxButton Size="ButtonSize.Small" OnClick="SelectNameSorting" CssClass="d-inline" Color="@(SortingNameSelected ? ThemeColor.Warning : ThemeColor.Secondary)">Name</HxButton>
                         <span class="d-inline">|</span>
-                        <HxButton Size="ButtonSize.Small" OnClick="SelectHosterSorting" CssClass="d-inline" Color="@(SortingHosterSelected == true ? ThemeColor.Warning : ThemeColor.Secondary)">Hoster</HxButton>
+                        <HxButton Size="ButtonSize.Small" OnClick="SelectHosterSorting" CssClass="d-inline" Color="@(SortingHosterSelected ? ThemeColor.Warning : ThemeColor.Secondary)">Hoster</HxButton>
                     </div>
                 </div>
             </div>
