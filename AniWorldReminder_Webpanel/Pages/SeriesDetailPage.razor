@@ -1,5 +1,5 @@
 ﻿@attribute [Route(Routes.MediaDetail + "/{SeriesUrlPath}")]
-@attribute [Route(Routes.MediaDetail + "/action/{SeriesUrlPath}")]
+@attribute [Route(Routes.MediaDetail + "/{Genre}/{SeriesUrlPath}")]
 @inject NavigationManager NavigationManager
 @inject IApiService ApiService
 @inject IAuthenticationService AuthService
@@ -252,6 +252,9 @@
 </div>
 
 @code {
+    [Parameter]
+    public string? Genre { get; set; }
+
     [Parameter]
     public string? SeriesUrlPath { get; set; }
 
