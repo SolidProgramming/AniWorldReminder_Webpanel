@@ -95,7 +95,7 @@
                             <HxCardTitle CssClass="text-center text-decoration-underline">@HttpUtility.HtmlDecode(@SeriesInfo?.Name)</HxCardTitle>
                             <HxCardText CssClass="text-center">Staffeln: @SeriesInfo?.SeasonCount</HxCardText>
                             <HxCardSubtitle>
-                                @if (SeriesInfo.StreamingPortal != StreamingPortal.MegaKino)
+                                @if (SeriesInfo is not null && SeriesInfo.StreamingPortal != StreamingPortal.MegaKino)
                                 {
                                     @if (UserSeries is null && !AddSuccess)
                                     {
@@ -135,7 +135,7 @@
                         }
                     }
                 </div>
-                @if (SeriesInfo.StreamingPortal != StreamingPortal.MegaKino)
+                @if (SeriesInfo is not null &&  SeriesInfo.StreamingPortal != StreamingPortal.MegaKino)
                 {
                     <div class="row">
                         <div class="col-6 mt-4">
