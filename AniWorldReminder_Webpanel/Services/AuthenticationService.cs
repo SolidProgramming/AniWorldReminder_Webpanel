@@ -2,29 +2,18 @@
 
 namespace AniWorldReminder_Webpanel.Services
 {
-    public class AuthenticationService : IAuthenticationService
+    public class AuthenticationService(IApiService apiService, ILocalStorageService localStorageService) : IAuthenticationService
     {
-        private readonly IApiService ApiService;
-        private NavigationManager NavigationManager;
-        private ILocalStorageService LocalStorageService;
-
         public UserModel? User { get; private set; }
-
-        public AuthenticationService(IApiService apiService, NavigationManager navigationManager, ILocalStorageService localStorageService)
-        {
-            ApiService = apiService;
-            NavigationManager = navigationManager;
-            LocalStorageService = localStorageService;
-        }
 
         public async Task Initialize()
         {
-            User = await LocalStorageService.GetItem<UserModel>("user");            
+            User = await localStorageService.GetItem<UserModel>("user");            
         }
 
         public async Task Login(string username, string password)
         {
-            JwtResponseModel jwtResponse = await ApiService.PostAsync<JwtResponseModel>("login", new UserModel() { Username = username, Password = password });
+            JwtResponseModel? jwtResponse = await apiService.PostAsync<JwtResponseModel>("login", new UserModel() { Username = username, Password = password });
 
             if (jwtResponse is null || string.IsNullOrEmpty(jwtResponse.Token))
             {
@@ -38,18 +27,18 @@ namespace AniWorldReminder_Webpanel.Services
                 Username = username
             };
 
-            await LocalStorageService.SetItem("user", User);
+            await localStorageService.SetItem("user", User);
         }
 
         public async Task Logout()
         {
             User = null;
-            await LocalStorageService.RemoveItem("user");
+            await localStorageService.RemoveItem("user");
         }
 
         public async Task<string?> GetAPIKey()
         {
-            return await ApiService.GetAsync<string?>("/getAPIKey");
+            return await apiService.GetAsync<string?>("/getAPIKey");
         }
     }
 }

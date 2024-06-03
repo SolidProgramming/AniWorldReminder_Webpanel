@@ -4,6 +4,7 @@
 @inject IApiService ApiService
 @inject IAuthenticationService AuthService
 @inject NavigationManager NavigationManager
+@inject ILocalStorageService LocalStorageService
 
 <PageTitle>Dashboard</PageTitle>
 <div class="container">
@@ -14,9 +15,9 @@
             </div>
             <div class="col-4 d-flex align-items-center">
                 <div class="mt-4">
-                    <input id="chbSearchSeries" type="checkbox" class="form-check-input" @bind-value=SearchSeries checked=SearchSeries />
+                    <input id="chbSearchSeries" type="checkbox" class="form-check-input" @bind-value=SearchSeries checked=@SearchSeries />
                     <label for="chbSearchSeries" class="ps-1">Serien</label>
-                    <input id="chbSearchFilms" type="checkbox" class="form-check-input ms-2" @bind-value=SearchFilms checked=SearchFilms />
+                    <input id="chbSearchFilms" type="checkbox" class="form-check-input ms-2" @bind-value=SearchFilms checked=@SearchFilms />
                     <label for="chbSearchFilms" class="ps-1">Filme</label>
                 </div>
             </div>
@@ -52,7 +53,7 @@
             Es sieht so aus als hättest du noch keine Serien hinzugefügt! Starte eine Suche und füge deine erste Serie hinzu!
         </HxAlert>
     }
-    <div class="row justify-content-center">        
+    <div class="row justify-content-center">
         @if (UserSeries is not null)
         {
             foreach (SeriesModel series in UserSeries)
@@ -107,10 +108,11 @@
     private bool SortingHosterSelected { get; set; } = false;
     private bool SortingDateSelected { get; set; } = true;
 
-    private bool SearchSeries { get; set; } = true;
-    private bool SearchFilms { get; set; } = true;
-
+    private bool SearchSeries { get; set; } 
+    private bool SearchFilms { get; set; } 
     private bool ShowEmptyDashboardInfo { get; set; }
+
+    private bool IsSearchView { get; set; } = false;
 
     private List<SeriesModel>? UserSeries { get; set; }
 
@@ -118,7 +120,7 @@
 
     private ReminderModel Reminder = new();
 
-    private string SearchSeriesName;
+    private string? SearchSeriesName;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -126,8 +128,17 @@
 
         if (firstRender)
         {
+            MediaSearchOptionsModel? mediaSearchOptions = await LocalStorageService.GetItem<MediaSearchOptionsModel>("MediaSearchOptions");
+
+            if (mediaSearchOptions is not null)
+            {
+                SearchSeries = mediaSearchOptions.SearchSeries;
+                SearchFilms = mediaSearchOptions.SearchFilms;
+            }
+
             Loading = true;
             StateHasChanged();
+
             UserSeries = await ApiService.GetAsync<List<SeriesModel>?>("getAllUserSeries");
 
             if (UserSeries is not null)
@@ -143,7 +154,7 @@
             StateHasChanged();
         }
 
-        await base.OnAfterRenderAsync(firstRender);
+        await base.OnAfterRenderAsync(firstRender);        
     }
 
     private async Task RemoveReminder(string seriesPath)
@@ -156,7 +167,15 @@
 
         if (deleteSuccess)
         {
-            UserSeries?.RemoveAll(_ => _.Path == seriesPath);
+            if (!IsSearchView)
+            {
+                UserSeries?.RemoveAll(_ => _.Path == seriesPath);
+            }
+            else
+            {
+                UserSeries?.Where(_ => _.Path == seriesPath).ToList().ForEach(x => x.IsSearchResult = true);
+            }
+
             ToastService.AddMessage("Der Reminder wurde gelöscht!", MessageType.Info);
         }
         else
@@ -193,8 +212,12 @@
 
             Loading = false;
             StateHasChanged();
+
+            IsSearchView = false;
             return;
         }
+
+        IsSearchView = true;
 
         allResults.AddRange(UserSeries.Where(_ => _.Name.ToLower().Contains(SearchSeriesName.ToLower())).ToList());
 
@@ -204,11 +227,11 @@
         MediaType searchMediaType = ( SearchSeries ? MediaType.Series : MediaType.Undefined ) |
                                     ( SearchFilms ? MediaType.Films : MediaType.Undefined );
 
-        List<SearchResultModel>? apiSearchResults = await ApiService.GetAsync<List<SearchResultModel>?>("getSeries", 
+        List<SearchResultModel>? apiSearchResults = await ApiService.GetAsync<List<SearchResultModel>?>("getSeries",
                                                     new() {
                                                         { "seriesName", SearchSeriesName.ToLower() },
                                                         { "mediaType", searchMediaType.ToString() }
-                                                    });
+                                                                        });
 
         foreach (SearchResultModel searchResult in apiSearchResults)
         {
@@ -226,12 +249,10 @@
             allResults.Add(series);
         }
 
-        UserSeries = allResults;
-
-        SelectHosterSorting();
+        UserSeries = allResults.DistinctBy(_ => _.Name).ToList();
 
         Loading = false;
-        StateHasChanged();
+        SelectHosterSorting();
     }
 
     private void SelectNameSorting()

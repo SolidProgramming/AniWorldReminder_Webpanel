@@ -53,12 +53,12 @@
     }
     else
     {
-        <div class="row mt-3">
+        @* <div class="row mt-3">
             <EditForm Model="@Reminder" OnValidSubmit="@(() => Quicksearch())">
                 <HxInputText Label="Serien Name" @bind-Value="@QuickSearchSeriesName" Placeholder="Jujutsu Kaisen" />
                 <HxSubmit Color="ThemeColor.Primary" CssClass="w-100" Spinner="Loading" Enabled="@(!Loading)">Schnellsuche</HxSubmit>
             </EditForm>
-        </div>
+        </div> *@
         <div class="row mt-2">
             <div class="col-sm-auto pb-2">
                 <HxCard ImageAlt=""
