@@ -487,39 +487,7 @@
 
     private async Task AddMovieDownload()
     {
-        if (SeriesInfo is null || UserSeries is null)
-            return;
-
-        ToastService.Clear();
-        Loading = true;
-        StateHasChanged();
-
-        AddDownloadsRequestModel addDownloadRequest = new()
-            {
-                SeriesId = UserSeries.Id.ToString(),
-                Episodes = episodes
-            };
-
-        int addedDownloads = await ApiService.PostAsync<int>("addDownloads", addDownloadRequest);
-
-        if (addedDownloads > 0)
-        {
-            ToastService.AddMessage($"Es wurden {addedDownloads} Episoden zu den Downloads hinzugefügt!", MessageType.Success);
-
-            int existingDownloads = episodes.Count - addedDownloads;
-
-            if (existingDownloads > 0)
-            {
-                ToastService.AddMessage($"{existingDownloads} Episoden sind bereits in der Warteschlange.", MessageType.Secondary);
-            }
-        }
-        else
-        {
-            ToastService.AddMessage($"Es sind bereits alle verfügbaren Episoden für {SeriesInfo?.Name!} in der Warteschlange!", MessageType.Secondary);
-        }
-
-        Loading = false;
-        StateHasChanged();
+       
     }
 
     private async Task RemoveReminder()
