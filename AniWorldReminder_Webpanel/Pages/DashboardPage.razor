@@ -126,20 +126,18 @@
     {
         await AuthService.Initialize();
 
-        MediaSearchOptionsModel? mediaSearchOptions = await LocalStorageService.GetItem<MediaSearchOptionsModel>("MediaSearchOptions");
-
-        if (mediaSearchOptions is not null)
-        {
-            SearchSeries = mediaSearchOptions.SearchSeries;
-            SearchFilms = mediaSearchOptions.SearchFilms;
-
-            StateHasChanged();
-        }
-        
         if (firstRender)
         {
             Loading = true;
             StateHasChanged();
+
+            MediaSearchOptionsModel? mediaSearchOptions = await LocalStorageService.GetItem<MediaSearchOptionsModel>("MediaSearchOptions");
+
+            if (mediaSearchOptions is not null)
+            {
+                SearchSeries = mediaSearchOptions.SearchSeries;
+                SearchFilms = mediaSearchOptions.SearchFilms;
+            }
 
             UserSeries = await ApiService.GetAsync<List<SeriesModel>?>("getAllUserSeries");
 
@@ -156,7 +154,15 @@
             StateHasChanged();
         }
 
-        await base.OnAfterRenderAsync(firstRender);        
+        MediaSearchOptionsModel mediaSearchOptionsNew = new()
+        {
+            SearchFilms = this.SearchFilms,
+            SearchSeries = this.SearchSeries
+        };
+
+        await LocalStorageService.SetItem("MediaSearchOptions", mediaSearchOptionsNew);
+
+        await base.OnAfterRenderAsync(firstRender);
     }
 
     private async Task RemoveReminder(string seriesPath)
@@ -233,7 +239,7 @@
                                                     new() {
                                                         { "seriesName", SearchSeriesName.ToLower() },
                                                         { "mediaType", searchMediaType.ToString() }
-                                                                        });
+                                                                            });
 
         foreach (SearchResultModel searchResult in apiSearchResults)
         {
