@@ -10,19 +10,8 @@
 <PageTitle>Downloader erstellen</PageTitle>
 
 <div class="container">
-    <div class="row mt-4">
-        <div class="col-6">
-            <h5>Download Pfad:</h5>
-            <HxInputText @bind-Value="DownloadPath" Placeholder="C:\\Downloads"></HxInputText>
-        </div>
-    </div>
-    <div class="row mt-5">
-        <div class="col-6">
-            <HxButton OnClick="CreateDownloaderFiles" Color="ThemeColor.Success" Icon="BootstrapIcon.Check" CssClass="w-100">Downloader erstellen</HxButton>
-        </div>
-        <div class="col-6">
-            <HxButton OnClick="NavigateBack" Outline="true" Color="ThemeColor.Warning" Icon="BootstrapIcon.XCircle" CssClass="w-100">Abbrechen</HxButton>
-        </div>
+    <div class="row mt-2">
+        <HxButton OnClick="CreateDownloaderFiles" Color="ThemeColor.Success" Icon="BootstrapIcon.Check" CssClass="w-100">Downloader erstellen</HxButton>
     </div>
 </div>
 
@@ -30,13 +19,7 @@
     private string? DownloadPath { get; set; }
 
     private async Task CreateDownloaderFiles()
-    {
-        if (string.IsNullOrEmpty(DownloadPath))
-        {
-            ToastService.AddMessage("Bitte einen Download Pfad angeben", MessageType.Warning);
-            return;
-        }
-
+    {        
         string folderName = Guid.NewGuid().ToString();
         string rootPath;
 

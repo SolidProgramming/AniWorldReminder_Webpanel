@@ -10,7 +10,7 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["AniWorldReminder_Webpanel/AniWorldReminder_Webpanel.csproj", "AniWorldReminder_Webpanel/"]
-RUN dotnet restore "./AniWorldReminder_Webpanel/./AniWorldReminder_Webpanel.csproj"
+RUN dotnet restore "./AniWorldReminder_Webpanel/AniWorldReminder_Webpanel.csproj"
 COPY . .
 WORKDIR "/src/AniWorldReminder_Webpanel"
 RUN dotnet build "./AniWorldReminder_Webpanel.csproj" -c $BUILD_CONFIGURATION -o /app/build
