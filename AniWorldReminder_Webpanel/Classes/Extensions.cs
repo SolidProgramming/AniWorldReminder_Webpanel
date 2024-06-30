@@ -1,4 +1,6 @@
-﻿namespace AniWorldReminder_Webpanel.Classes
+﻿using System.Web;
+
+namespace AniWorldReminder_Webpanel.Classes
 {
     public static class Extensions
     {
@@ -19,6 +21,11 @@
                 if (!enumVal.Equals(ignore) && input.HasFlag(enumVal))
                     yield return value;
             }
+        }
+
+        public static string? HtmlDecode(this string? text)
+        {
+            return (string.IsNullOrEmpty(text) ? default : HttpUtility.HtmlDecode(text));
         }
     }
 }
