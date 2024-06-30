@@ -59,7 +59,7 @@
             foreach (SeriesModel series in UserSeries)
             {
                 <HxCard ImageAlt=""
-                        ImageSrc="@series.CoverArtBase64"
+                        ImageSrc="@series.CoverArtUrl"
                         ImageHeight="330"
                         style="width: 245px;"
                         CssClass="mt-3 mx-2 px-2 rounded glass border-0"
@@ -250,14 +250,13 @@
                     IsSearchResult = true,
                     Link = searchResult.Link,
                     Path = searchResult.Path,
-                    StreamingPortal = searchResult.StreamingPortal,
-                    CoverArtBase64 = searchResult.CoverArtBase64
+                    StreamingPortal = searchResult.StreamingPortal
                 };
 
             allResults.Add(series);
         }
 
-        UserSeries = allResults.DistinctBy(_ => _.Name).ToList();
+        UserSeries = allResults.DistinctBy(_ => _.Name.ToLower()).ToList();
 
         Loading = false;
         SelectHosterSorting();
