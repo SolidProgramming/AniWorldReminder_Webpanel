@@ -6,19 +6,11 @@ using Microsoft.AspNetCore.WebUtilities;
 
 namespace AniWorldReminder_Webpanel.Services
 {
-    public class ApiService : IApiService
+    public class ApiService(HttpClient httpClient, NavigationManager navigationManager, ILocalStorageService localStorageService) : IApiService
     {
-        private readonly HttpClient HttpClient;
-        private NavigationManager NavigationManager;
-        private ILocalStorageService LocalStorageService;
-
-
-        public ApiService(HttpClient httpClient, NavigationManager navigationManager, ILocalStorageService localStorageService)
-        {
-            HttpClient = httpClient;
-            NavigationManager = navigationManager;
-            LocalStorageService = localStorageService;
-        }
+        private readonly HttpClient? HttpClient = httpClient;
+        private NavigationManager? NavigationManager = navigationManager;
+        private ILocalStorageService? LocalStorageService = localStorageService;
 
         public async Task<(bool success, string? errorMessage)> VerifyAsync(VerifyRequestModel verifyRequest)
         {

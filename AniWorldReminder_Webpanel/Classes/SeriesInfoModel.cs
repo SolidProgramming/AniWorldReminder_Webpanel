@@ -12,5 +12,6 @@
         public StreamingPortal StreamingPortal { get; set; }
         public List<SeasonModel> Seasons { get; set; } = new List<SeasonModel>();
         public Medium? AniListSearchMedia { get; set; }
+        public TMDBSearchTVByIdModel? TMDBSearchTVById { get; set; }
     }
 }
