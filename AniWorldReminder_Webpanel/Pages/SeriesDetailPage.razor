@@ -130,7 +130,7 @@
                                                 break;
                                             case "Returning Series":
                                                 <HxBadge CssClass="w-100" Color="ThemeColor.Warning">RELEASING/RETURNING</HxBadge>
-                                                break;                                            
+                                                break;
                                             default:
                                                 <HxBadge CssClass="w-100" Color="ThemeColor.Secondary">UNKNOWN</HxBadge>
                                                 break;
@@ -141,7 +141,7 @@
                                         <HxBadge CssClass="w-100" Color="ThemeColor.Secondary">UNKNOWN</HxBadge>
                                     }
                                     <div class="mt-3">
-                                        @SeriesInfo.Name.HtmlDecode();
+                                        @SeriesInfo.Name.HtmlDecode()
                                     </div>
                                 }
                             </HxCardTitle>
@@ -150,13 +150,34 @@
                                 {
                                     <span class="d-inline">Staffeln: <b>@SeriesInfo.SeasonCount</b></span>
 
+                                    <HxIcon CssClass="ps-1" Icon="BootstrapIcon.Dash" />
+                                    <HxIcon CssClass="d-inline pe-2 text-warning" Icon="BootstrapIcon.StarFill" />
+
                                     @if (SeriesInfo.AniListSearchMedia is not null)
-                                    {
-                                        <span class="d-inline"><HxIcon Icon="BootstrapIcon.Dash" /><HxIcon CssClass="px-1 text-warning" Icon="BootstrapIcon.StarFill" />@SeriesInfo.AniListSearchMedia.AverageScore</span>
+                                    {                                        
+                                        @if (SeriesInfo.AniListSearchMedia.AverageScore is not null)
+                                        {
+                                            <span class="d-inline">@($"{SeriesInfo.AniListSearchMedia.AverageScore:0}")/100</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="d-inline">0</span>
+                                        }
                                     }
                                     else if (SeriesInfo.TMDBSearchTVById is not null)
                                     {
-                                        <span class="d-inline"><HxIcon Icon="BootstrapIcon.Dash" /><HxIcon CssClass="px-1 text-warning" Icon="BootstrapIcon.StarFill" />@SeriesInfo.TMDBSearchTVById.VoteAverage</span>
+                                        @if (SeriesInfo.TMDBSearchTVById.VoteAverage is not null)
+                                        {
+                                            <span class="d-inline">@($"{@SeriesInfo.TMDBSearchTVById.VoteAverage.Value:F1}")/10</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="d-inline">0</span>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span class="d-inline">0</span>
                                     }
                                 }
                             </HxCardText>
