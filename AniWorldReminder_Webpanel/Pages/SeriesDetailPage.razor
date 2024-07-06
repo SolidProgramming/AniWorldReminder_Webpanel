@@ -102,10 +102,10 @@
                                         switch (SeriesInfo.AniListSearchMedia.Status)
                                         {
                                             case "FINISHED":
-                                                <HxBadge CssClass="w-100" Color="ThemeColor.Success">FINISHED/ENDED</HxBadge>
+                                                <HxBadge CssClass="w-100" Color="ThemeColor.Success">ENDED</HxBadge>
                                                 break;
                                             case "RELEASING":
-                                                <HxBadge CssClass="w-100" Color="ThemeColor.Warning">RELEASING/RETURNING</HxBadge>
+                                                <HxBadge CssClass="w-100" Color="ThemeColor.Warning">RELEASING</HxBadge>
                                                 break;
                                             case "NOT_YET_RELEASED":
                                                 <HxBadge CssClass="w-100" Color="ThemeColor.Secondary">NOT YET RELEASED</HxBadge>
@@ -126,10 +126,10 @@
                                         switch (SeriesInfo.TMDBSearchTVById.Status)
                                         {
                                             case "Ended":
-                                                <HxBadge CssClass="w-100" Color="ThemeColor.Warning">FINISHED/ENDED</HxBadge>
+                                                <HxBadge CssClass="w-100" Color="ThemeColor.Success">ENDED</HxBadge>
                                                 break;
                                             case "Returning Series":
-                                                <HxBadge CssClass="w-100" Color="ThemeColor.Warning">RELEASING/RETURNING</HxBadge>
+                                                <HxBadge CssClass="w-100" Color="ThemeColor.Warning">RELEASING</HxBadge>
                                                 break;
                                             default:
                                                 <HxBadge CssClass="w-100" Color="ThemeColor.Secondary">UNKNOWN</HxBadge>
@@ -145,40 +145,51 @@
                                     </div>
                                 }
                             </HxCardTitle>
-                            <HxCardText CssClass="text-center pt-3">
+                            <HxCardText CssClass="text-center">
                                 @if (SeriesInfo is not null)
                                 {
-                                    <span class="d-inline">Staffeln: <b>@SeriesInfo.SeasonCount</b></span>
+                                    <div>
+                                        <HxIcon CssClass="d-inline pe-2 text-warning" Icon="BootstrapIcon.StarFill" />
 
-                                    <HxIcon CssClass="ps-1" Icon="BootstrapIcon.Dash" />
-                                    <HxIcon CssClass="d-inline pe-2 text-warning" Icon="BootstrapIcon.StarFill" />
-
-                                    @if (SeriesInfo.AniListSearchMedia is not null)
-                                    {                                        
-                                        @if (SeriesInfo.AniListSearchMedia.AverageScore is not null)
+                                        @if (SeriesInfo.AniListSearchMedia is not null)
                                         {
-                                            <span class="d-inline">@($"{SeriesInfo.AniListSearchMedia.AverageScore:0}")/100</span>
+                                            @if (SeriesInfo.AniListSearchMedia.AverageScore is not null)
+                                            {
+                                                <span class="d-inline">@($"{SeriesInfo.AniListSearchMedia.AverageScore.Value:F1}")/10</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="d-inline">0</span>
+                                            }
+                                        }
+                                        else if (SeriesInfo.TMDBSearchTVById is not null)
+                                        {
+                                            @if (SeriesInfo.TMDBSearchTVById.VoteAverage is not null)
+                                            {
+                                                <span class="d-inline">@($"{@SeriesInfo.TMDBSearchTVById.VoteAverage.Value:F1}")/10</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="d-inline">0</span>
+                                            }
                                         }
                                         else
                                         {
                                             <span class="d-inline">0</span>
                                         }
-                                    }
-                                    else if (SeriesInfo.TMDBSearchTVById is not null)
-                                    {
-                                        @if (SeriesInfo.TMDBSearchTVById.VoteAverage is not null)
+                                    </div>
+                                    <div class="pt-3">
+                                        <span>Staffeln: <b>@SeriesInfo.SeasonCount</b></span>
+
+                                        @if (SeriesInfo.AniListSearchMedia is not null)
                                         {
-                                            <span class="d-inline">@($"{@SeriesInfo.TMDBSearchTVById.VoteAverage.Value:F1}")/10</span>
+                                            <span class="d-block">Episoden: <b>@SeriesInfo.AniListSearchMedia.Episodes</b></span>
                                         }
-                                        else
+                                        else if (SeriesInfo.TMDBSearchTVById is not null)
                                         {
-                                            <span class="d-inline">0</span>
+                                            <span class="d-block">Episoden: <b>@SeriesInfo.TMDBSearchTVById.NumberOfEpisodes</b></span>
                                         }
-                                    }
-                                    else
-                                    {
-                                        <span class="d-inline">0</span>
-                                    }
+                                    </div>
                                 }
                             </HxCardText>
                             <HxCardSubtitle>

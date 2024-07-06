@@ -253,6 +253,11 @@
                     StreamingPortal = searchResult.StreamingPortal
                 };
 
+            // if (allResults.Any(_ => _.Name.ToLower() == series.Name.ToLower() && _.CoverArtUrl != series.CoverArtUrl))
+            // {
+            //     allResults.SingleOrDefault(_ => _.Name.ToLower() == series.Name.ToLower() && _.CoverArtUrl != series.CoverArtUrl).CoverArtUrl = series.CoverArtUrl;
+            // }
+
             allResults.Add(series);
         }
 
