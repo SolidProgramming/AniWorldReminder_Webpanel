@@ -34,7 +34,7 @@ if(settings is null)
 
 builder.Services.AddScoped(_ =>
 {
-   return new HttpClient() { BaseAddress = new Uri(settings.ApiUrl) };
+   return new HttpClient() { BaseAddress = new Uri(settings.ApiUrl), Timeout = TimeSpan.FromSeconds(5) };
 });
 
 var app = builder.Build();

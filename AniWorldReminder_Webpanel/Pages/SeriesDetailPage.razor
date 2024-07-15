@@ -38,6 +38,12 @@
                         <img style="width: 65px;" class="d-inline mx-2" src="img/english_sub.svg">
                     </a>
                 }
+                @if (directViewLink.Language == Language.EngDubGerSub)
+                {
+                    <a target="_blank" href="@directViewLink.DirectLink">
+                        <img style="width: 65px;" class="d-inline mx-2" src="img/english_dub-german_sub.svg">
+                    </a>
+                }
             }
         </div>
     </BodyTemplate>
@@ -208,7 +214,7 @@
                                 else
                                 {
                                     <HxButton OnClick="@AddMovieDownload" Outline="true" Color="ThemeColor.Success" Icon="BootstrapIcon.Download"
-                                              Spinner="@Loading" Enabled="@(!Loading && UserSeries is not null)" CssClass="w-100">
+                                              Spinner="@Loading" Enabled="@(!Loading)" CssClass="w-100">
                                         Herunterladen
                                     </HxButton>
                                 }
@@ -588,7 +594,23 @@
 
     private async Task AddMovieDownload()
     {
+        ToastService.Clear();
+        Loading = true;
+        StateHasChanged();
 
+        if (SeriesInfo is null || string.IsNullOrEmpty(SeriesInfo.DirectLink))
+        {
+            ToastService.AddMessage("Beim hinzufügen des Downloads ist ein Problem aufgetreten!", MessageType.Error);
+            Loading = false;
+            StateHasChanged();
+
+            return;
+        }
+               
+        await ApiService.PostAsync("addMovieDownload", new AddMovieDownloadRequestModel() { DirectUrl = SeriesInfo.DirectLink});
+
+        Loading = false;
+        StateHasChanged();
     }
 
     private async Task RemoveReminder()

@@ -2,7 +2,7 @@
 {
     public class AddMovieDownloadRequestModel
     {
-        public StreamingPortal StreamingPortal { get; set; }
         public string? DirectUrl { get; set; }
+        public string? UserId { get; set; }
     }
 }

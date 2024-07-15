@@ -1,0 +1,208 @@
+﻿@attribute [Route(Routes.Plex)]
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.WebUtilities
+@inject IHxMessengerService ToastService
+@inject IApiService ApiService
+@inject IAuthenticationService AuthService
+@inject NavigationManager NavigationManager
+@inject ILocalStorageService LocalStorageService
+
+<PageTitle>Apps verbinden</PageTitle>
+<HxTabPanel ActiveTabIdChanged="TabChanged" CssClass="mt-3" RenderMode="TabPanelRenderMode.ActiveTabOnly">
+    <HxTab ContentCssClass="mt-2" Id="tabOverseerr">
+        <TitleTemplate>
+            <div>
+                <img style="height: 64px; width: 160px;" src="img/overseerr_full.svg">
+            </div>
+        </TitleTemplate>
+        <Content>
+            <EditForm Model="@OverseerrSettings" OnValidSubmit="@(() => OverseerrLogin())">
+                <DataAnnotationsValidator />
+                <div class="row">
+                    <div class="col" />
+                    <div class="col-8">
+                        <div class="row">
+                            <div class="col">
+                                <h4 class="text-center">
+                                    <HxSwitch LabelCssClass="@(OverseerrIsCheckedHttps ? "text-success" : "text-warning")" Label="@(OverseerrIsCheckedHttps ? "HTTPS" : "HTTP")" @oninput="@OverseerrHttpsChanged" @bind-Value="OverseerrIsCheckedHttps" />
+                                </h4>
+                            </div>
+                            <div class="col-9">
+                                <HxInputText CssClass="mt-2" Label="Hostname oder IP-Adresse" @oninput="@OverseerrChangedSettings" @bind-Value="@OverseerrSettings.HostOrIp" />
+                            </div>
+                            <div class="col-2">
+                                <HxInputNumber CssClass="mt-2" InputMode="InputMode.Numeric" Label="Port" @oninput="@OverseerrChangedSettings" @bind-Value="@OverseerrSettings.Port" />
+                            </div>
+                        </div>
+                        <HxInputText CssClass="mt-2" Label="API-KEY" @bind-Value="@OverseerrSettings.ApiKey" @oninput="@OverseerrChangedSettings" Type="InputType.Password" />
+                        <HxSubmit Enabled="@(!Loading  && !OverseerrAuthValid)" Color="ThemeColor.Success" CssClass="mt-4 w-100" Spinner="@Loading">Login</HxSubmit>
+                        @if (OverseerrAuthValid)
+                        {
+                            <HxAlert Color="ThemeColor.Success" CssClass="mt-3">
+                                <HxIcon Icon="@BootstrapIcon.Check2Circle" />
+                                Overseerr ist authentifiziert!
+                            </HxAlert>
+                        }
+                        else
+                        {
+                            <HxAlert Color="ThemeColor.Warning" CssClass="mt-3">
+                                <HxIcon CssClass="me-1" Icon="@BootstrapIcon.ExclamationCircleFill" />
+                                Overseeerr ist nicht authentifiziert!
+                            </HxAlert>
+                        }
+                    </div>
+                    <div class="col" />
+                </div>
+            </EditForm>
+        </Content>
+    </HxTab>
+    <HxTab ContentCssClass="mt-2" Id="tabPlex">
+        <TitleTemplate>
+            <div>
+                <img style="height: 64px;" class="filter" src="img/plex.svg">
+            </div>
+        </TitleTemplate>
+        <Content>
+            <EditForm Model="@PlexSettings" OnValidSubmit="@(() => PlexLogin())">
+                <DataAnnotationsValidator />
+                <div class="row">
+                    <div class="col" />
+                    <div class="col-8">
+                        <HxInputText CssClass="mt-2" Label="Email" @oninput="@PlexChangedSettings" @bind-Value="@PlexSettings.User.Email" />
+                        <HxInputText CssClass="mt-2" Label="Passwort" @oninput="@PlexChangedSettings" @bind-Value="@PlexSettings.User.Password" Type="InputType.Password" />
+                        <HxSubmit Enabled="@(!Loading && !PlexAuthValid)" Color="ThemeColor.Success" CssClass="mt-4 w-100" Spinner="@Loading">Login</HxSubmit>
+                        @if (PlexAuthValid)
+                        {
+                            <HxAlert Color="ThemeColor.Success" CssClass="mt-3">
+                                <HxIcon Icon="@BootstrapIcon.Check2Circle" />
+                                Plex ist authentifiziert!
+                            </HxAlert>
+                        }
+                        else
+                        {
+                            <HxAlert Color="ThemeColor.Warning" CssClass="mt-3">
+                                <HxIcon CssClass="me-1" Icon="@BootstrapIcon.ExclamationCircleFill" />
+                                Plex ist nicht authentifiziert!
+                            </HxAlert>
+                        }
+                    </div>
+                    <div class="col" />
+                </div>
+            </EditForm>
+        </Content>
+    </HxTab>
+</HxTabPanel>
+
+@code {
+    private bool OverseerrIsCheckedHttps { get; set; }
+    private bool Loading { get; set; }
+    private bool PlexAuthValid { get; set; }
+    private bool OverseerrAuthValid { get; set; }
+
+    private OverseerrSettingsModel OverseerrSettings { get; set; } = new();
+    private PlexSettingsModel PlexSettings { get; set; } = new();
+
+    private async Task OverseerrLogin()
+    {
+        if (string.IsNullOrEmpty(OverseerrSettings.ApiKey) || string.IsNullOrEmpty(OverseerrSettings.HostOrIp) || OverseerrSettings.Port <= 0)
+            return;
+
+        Loading = true;
+
+        Uri? outUri;
+
+        string protocol = OverseerrSettings.Protocol == TransportProtocol.Http ? "https://" : "http://";
+
+        bool uriValid = ( Uri.TryCreate(protocol + OverseerrSettings.HostOrIp + $":{OverseerrSettings.Port}", UriKind.Absolute, out outUri)
+                    && (outUri.Scheme == Uri.UriSchemeHttp || outUri.Scheme == Uri.UriSchemeHttps));
+
+        if (!uriValid)
+        {
+            Loading = false;
+            ToastService.AddMessage("Bitte gibt eine valide Url/IP an!", MessageType.Warning);
+            return;
+        }
+
+        OverseerrLoginResponseModel? overseerrLoginResponse = await ApiService.GetAsyncWithApiKey<OverseerrLoginResponseModel>(new Uri(outUri + "api/v1/auth/me").AbsoluteUri, OverseerrSettings.ApiKey);
+
+        if (overseerrLoginResponse is null || string.IsNullOrEmpty(overseerrLoginResponse.displayName) || string.IsNullOrEmpty(overseerrLoginResponse.plexUsername))
+        {
+            Loading = false;
+            OverseerrAuthValid = false;
+            ToastService.AddMessage("Fehler beim Login via Overseerr Zugangsdaten!", MessageType.Error);
+            return;
+        }
+
+        Loading = false;
+        OverseerrAuthValid = true;
+        ToastService.AddMessage("Erfolgreich mit deinen Overseerr Zugangsdaten authentifiziert!", MessageType.Success);
+    }
+
+    private async Task PlexLogin()
+    {
+        Loading = true;
+
+        PlexLoginResponseModel? plexLoginResponse = await ApiService.PostAsyncWithPlexClientIndentifier<PlexLoginResponseModel>("https://plex.tv/users/sign_in.json", PlexSettings.User);
+
+        if (plexLoginResponse is null || plexLoginResponse.User is null || string.IsNullOrEmpty(plexLoginResponse.User.AuthToken))
+        {
+            Loading = false;
+            PlexAuthValid = false;
+            ToastService.AddMessage("Fehler beim Login via Plex Zugangsdaten!", MessageType.Error);
+            return;
+        }
+
+        Loading = false;
+        PlexAuthValid = true;
+        ToastService.AddMessage("Erfolgreich mit deinen Plex Zugangsdaten authentifiziert!", MessageType.Success);
+    }
+
+    private async Task TabChanged(string tabId)
+    {
+        switch (tabId)
+        {
+            case "tabOverseerr":
+                if (!OverseerrAuthValid)
+                {
+                    await OverseerrLogin();
+                }
+                break;
+            case "tabPlex":
+                if (!PlexAuthValid)
+                {
+                    await PlexLogin();
+                }
+                break;
+            default:
+                ToastService.AddMessage($"TabId {tabId} nicht gefunden!", MessageType.Error);
+                break;
+        }
+
+    }
+
+    private void PlexChangedSettings()
+    {
+        PlexAuthValid = false;
+    }
+
+    private void OverseerrChangedSettings()
+    {
+        OverseerrAuthValid = false;
+
+        if (OverseerrSettings is null || string.IsNullOrEmpty(OverseerrSettings.HostOrIp))
+            return;
+
+        OverseerrSettings.HostOrIp = OverseerrSettings.HostOrIp.Replace("http://", "").Replace("https://", "");
+    }
+
+    private void OverseerrHttpsChanged()
+    {
+        OverseerrAuthValid = false;
+
+        if (OverseerrSettings is null || string.IsNullOrEmpty(OverseerrSettings.HostOrIp))
+            return;
+
+        OverseerrSettings.Protocol = ( OverseerrIsCheckedHttps ? TransportProtocol.Https : TransportProtocol.Http );
+        OverseerrSettings.HostOrIp = OverseerrSettings.HostOrIp.Replace("http://", "").Replace("https://", "");
+    }
+}

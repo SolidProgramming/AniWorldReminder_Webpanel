@@ -115,7 +115,7 @@
 
     private async void Refresh(Object? source, System.Timers.ElapsedEventArgs e)
     {
-        Downloads = await ApiService.GetAsyncWithApiKey<IEnumerable<EpisodeDownloadModel>?>("getDownloads");
+        Downloads = await ApiService.GetAsyncWithUserApiKey<IEnumerable<EpisodeDownloadModel>?>("getDownloads");
         await InvokeAsync(() => StateHasChanged());
 
         StartRefreshTime = DateTime.Now.AddSeconds(Interval);

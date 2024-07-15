@@ -12,5 +12,6 @@
         public const string Settings = "/settings";
         public const string CreateDownloader = "/createDownloader";
         public const string Downloads = "/downloads";
+        public const string Plex = "/plex";
     }
 }

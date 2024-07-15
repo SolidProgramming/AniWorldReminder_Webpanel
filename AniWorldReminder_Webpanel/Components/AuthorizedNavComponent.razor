@@ -84,7 +84,16 @@
     {
         UserSeries = await ApiService.GetAsync<List<SeriesModel>?>("getAllUserSeries", new() { { "username", AuthService?.User?.Username! } });
 
-        DownloadCount = await ApiService.GetAsyncWithApiKey<int>("getDownloadsCount");
+        DownloadCountModel? downloadsCount = await ApiService.GetAsyncWithUserApiKey<DownloadCountModel>("getDownloadsCount");
+
+        if (downloadsCount is null)
+        {
+            DownloadCount = 0;
+        }
+        else
+        {
+            DownloadCount = downloadsCount.DownloadsCount;
+        }
 
         StateHasChanged();
     }
