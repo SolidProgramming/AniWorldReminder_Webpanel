@@ -270,19 +270,29 @@
                                     {
                                         @if (UserSeries is not null)
                                         {
-                                            <HxCheckboxList ItemTextCssClass="text-warning"
-                                                            LabelCssClass="d-flex text-light"
-                                                            Inline="true"
-                                                            CssClass="mt-3"
-                                                            TItem="SeasonModel"
-                                                            TValue="int"
-                                                            Label="Staffeln"
-                                                            Data="@SeriesInfo.Seasons"
-                                                            ItemSortKeySelector="@(season => season.Id)"
-                                                            ItemTextSelector="@(season => season.Id.ToString())"
-                                                            ItemValueSelector="@(season => season.Id)"
-                                                            @bind-Value="SelectedDownloadSeasons" />
-
+                                            <HxTabPanel ActiveTabIdChanged="DownloadsTabChanged">
+                                                <h5 class="mt-3 px-2">Staffeln:</h5>
+                                                @foreach (SeasonModel season in SeriesInfo.Seasons)
+                                                {
+                                                    <HxTab Title="@season.Id.ToString()" Id="@season.Id.ToString()">
+                                                        <Content>
+                                                            <HxCheckbox @oninput="ToggleDownloadCheckboxes" CssClass="mt-2" TextCssClass="text-info" Text="Alle" @bind-Value="ToggleDownloadSeasonCheckboxes"></HxCheckbox>
+                                                            <HxCheckboxList ItemTextCssClass="text-warning"
+                                                                            LabelCssClass="d-flex text-light"
+                                                                            Inline="false"
+                                                                            CssClass="mt-3"
+                                                                            TItem="EpisodeModel"
+                                                                            TValue="EpisodeModel"
+                                                                            Label="Episoden"
+                                                                            Data="@season.Episodes"
+                                                                            ItemSortKeySelector="@(episode => episode.Episode)"
+                                                                            ItemTextSelector="@(episode => episode.Name)"
+                                                                            ItemValueSelector="@(episode => episode)"
+                                                                            @bind-Value="SelectedDownloadEpisodes" />
+                                                        </Content>
+                                                    </HxTab>
+                                                }
+                                            </HxTabPanel>
                                             <HxButton OnClick="@AddDownloads" Outline="true" Color="ThemeColor.Success" Icon="BootstrapIcon.Download"
                                                       Spinner="@Loading" Enabled="@(!Loading && UserSeries is not null)" CssClass="w-100 mt-4 mb-2">
                                                 Hinzufügen
@@ -394,6 +404,10 @@
     private EpisodeModel? SelectedEpisodeDirectView;
 
     private List<int> SelectedDownloadSeasons { get; set; } = new();
+    private List<EpisodeModel> SelectedDownloadEpisodes { get; set; } = new();
+
+    private bool ToggleDownloadSeasonCheckboxes { get; set; }
+    private string? SelectedDownloadTabId { get; set; }
 
     protected override void OnParametersSet()
     {
@@ -540,7 +554,7 @@
 
     private async Task AddDownloads()
     {
-        if (!SelectedDownloadSeasons.Any() || SeriesInfo is null || UserSeries is null)
+        if (!SelectedDownloadEpisodes.Any() || SeriesInfo is null || UserSeries is null)
             return;
 
         ToastService.Clear();
@@ -548,11 +562,11 @@
         StateHasChanged();
 
         IEnumerable<Language>? flagsReminder = UserSeries.LanguageFlag.GetFlags<Language>(ignore: Language.None);
-        IEnumerable<EpisodeModel> selectedEpisodes = SeriesInfo.Seasons.SelectMany(_ => _.Episodes.Where(x => SelectedDownloadSeasons.Contains(x.Season)));
+        // IEnumerable<EpisodeModel> selectedEpisodes = SeriesInfo.Seasons.SelectMany(_ => _.Episodes.Where(x => SelectedDownloadSeasons.Contains(x.Season)));
 
         List<EpisodeModel> episodes = [];
 
-        foreach (EpisodeModel episode in selectedEpisodes)
+        foreach (EpisodeModel episode in SelectedDownloadEpisodes)
         {
             IEnumerable<Language>? flagsEpisode = episode.Languages.GetFlags<Language>(ignore: Language.None);
 
@@ -606,8 +620,8 @@
 
             return;
         }
-               
-        await ApiService.PostAsync("addMovieDownload", new AddMovieDownloadRequestModel() { DirectUrl = SeriesInfo.DirectLink});
+
+        await ApiService.PostAsync("addMovieDownload", new AddMovieDownloadRequestModel() { DirectUrl = SeriesInfo.DirectLink });
 
         Loading = false;
         StateHasChanged();
@@ -662,6 +676,27 @@
             SeriesInfo.Seasons.Add(updatedSeason);
             SeriesInfo.Seasons = SeriesInfo.Seasons.OrderBy(_ => _.Id).ToList();
             StateHasChanged();
+        }
+    }
+
+    private void DownloadsTabChanged(string tabId)
+    {
+        SelectedDownloadTabId = tabId;
+        ToggleDownloadSeasonCheckboxes = false;
+    }
+
+    private void ToggleDownloadCheckboxes()
+    {
+        int index = int.Parse(SelectedDownloadTabId) - 1;
+
+        foreach (EpisodeModel episode in SeriesInfo.Seasons[index].Episodes)
+        {
+            SelectedDownloadEpisodes.Remove(episode);
+        }
+
+        if (!ToggleDownloadSeasonCheckboxes)
+        {
+            SelectedDownloadEpisodes.AddRange(SeriesInfo.Seasons[index].Episodes);
         }
     }
 }
