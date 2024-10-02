@@ -252,6 +252,7 @@
                                 <HxCheckbox Enabled="@(UserSeries is null)" TextCssClass="text-warning" Inline="true" @bind-Value="GerSub" CssClass="mt-2" Text="Deutsch Untertitel" />
                                 <HxCheckbox Enabled="@(UserSeries is null)" TextCssClass="text-warning" Inline="true" @bind-Value="EngDub" CssClass="mt-2" Text="Englisch" />
                                 <HxCheckbox Enabled="@(UserSeries is null)" TextCssClass="text-warning" Inline="true" @bind-Value="EngSub" CssClass="mt-2" Text="Englisch Untertitel" />
+                                <HxCheckbox Enabled="@(UserSeries is null)" TextCssClass="text-warning" Inline="true" @bind-Value="EngDubGerSub" CssClass="mt-2" Text="Englisch - Deutsch Untertitel" />
                                 @if (ShowLanguageError)
                                 {
                                     <HxAlert Color="ThemeColor.Danger" CssClass="mt-3 mb-2">
@@ -398,6 +399,7 @@
     private bool GerSub { get; set; }
     private bool EngDub { get; set; }
     private bool EngSub { get; set; }
+    private bool EngDubGerSub { get; set; }
 
     private bool LoadingInfo { get; set; }
     private bool Loading { get; set; }
@@ -492,6 +494,11 @@
         if (EngSub)
         {
             language |= Language.EngSub;
+        }
+
+        if (EngDubGerSub)
+        {
+            language |= Language.EngDubGerSub;
         }
 
         if (language == Language.None)
