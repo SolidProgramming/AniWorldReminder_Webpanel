@@ -272,6 +272,7 @@
                                         {
                                             <HxTabPanel ActiveTabIdChanged="DownloadsTabChanged" CssClass="">
                                                 <h5 class="mt-3 px-2">Staffeln:</h5>
+                                                <HxCheckbox @oninput="ToggleDownloadAllSeasonsCheckboxes" CssClass="m-2" TextCssClass="text-info" Text="Alle Staffeln" @bind-Value="ToggleDownloadAllSeasons"></HxCheckbox>
                                                 @foreach (SeasonModel season in SeriesInfo.Seasons)
                                                 {
                                                     <HxTab Title="@season.Id.ToString()" Id="@season.Id.ToString()" ContentCssClass="mb-3">
@@ -289,7 +290,7 @@
                                                                             ItemTextSelector="@(episode => episode.Name)"
                                                                             ItemValueSelector="@(episode => episode)"
                                                                             @bind-Value="SelectedDownloadEpisodes" />
-                                                            @if(season.Episodes.Count > ShowEpisodeCount)
+                                                            @if (season.Episodes.Count > ShowEpisodeCount)
                                                             {
                                                                 <p class="mt-3 ms-2 pb-0 cursor-pointer text-primary text-decoration-underline" @onclick="() => ShowAllEpisodes(season.Episodes.Count)">@($"Alle {season.Episodes.Count} Episoden anzeigen")</p>
                                                             }
@@ -299,7 +300,7 @@
                                                             }
                                                         </Content>
                                                     </HxTab>
-                                                }                                                
+                                                }
                                             </HxTabPanel>
                                             <HxButton OnClick="@AddDownloads" Outline="true" Color="ThemeColor.Success" Icon="BootstrapIcon.Download"
                                                       Spinner="@Loading" Enabled="@(!Loading && UserSeries is not null)" CssClass="w-100 mb-2">
@@ -419,6 +420,8 @@
 
     private int ShowEpisodeCount { get; set; } = 12;
     private const int ShowMaxEpisodeCount = 12;
+
+    private bool ToggleDownloadAllSeasons { get; set; }
 
     protected override void OnParametersSet()
     {
@@ -719,6 +722,25 @@
     private void ShowMaxEpisodes()
     {
         ShowEpisodeCount = ShowMaxEpisodeCount;
+    }
+
+    private void ToggleDownloadAllSeasonsCheckboxes()
+    {
+        foreach (SeasonModel season in SeriesInfo.Seasons)
+        {
+            foreach (EpisodeModel episode in season.Episodes)
+            {
+                SelectedDownloadEpisodes.Remove(episode);
+            }
+        }
+
+        if (!ToggleDownloadAllSeasons)
+        {
+            foreach (SeasonModel season in SeriesInfo.Seasons)
+            {
+                SelectedDownloadEpisodes.AddRange(season.Episodes);
+            }
+        }
     }
 }
 
