@@ -11,11 +11,13 @@
 <div class="container">
     <EditForm Model="@Reminder" OnValidSubmit="@(() => SearchSeriesDashboard())">
         <div class="row">
-            <div class="col-8">
+            <div class="col-12 col-md-8">
                 <HxInputText Label="Serien Name" @bind-Value="@SearchSeriesName" Placeholder="Jujutsu Kaisen" />
             </div>
-            <div class="col-4 d-flex align-items-center">
-                <div class="mt-4">
+            <div class="col-12 col-md-4 d-flex align-items-center">                
+                <div>
+                    <div class="mt-4 d-none d-md-block"></div>
+                    <div class="mt-3 d-sm-block"></div>
                     <input id="chbSearchSeries" type="checkbox" class="form-check-input" @bind-value=SearchSeries checked=@SearchSeries />
                     <label for="chbSearchSeries" class="ps-1">Serien</label>
                     <input id="chbSearchFilms" type="checkbox" class="form-check-input ms-2" @bind-value=SearchFilms checked=@SearchFilms />
