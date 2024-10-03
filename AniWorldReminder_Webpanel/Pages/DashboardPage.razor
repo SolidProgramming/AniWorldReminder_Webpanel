@@ -5,6 +5,7 @@
 @inject IAuthenticationService AuthService
 @inject NavigationManager NavigationManager
 @inject ILocalStorageService LocalStorageService
+@using System.Diagnostics
 
 <PageTitle>Dashboard</PageTitle>
 <div class="container">
@@ -23,7 +24,7 @@
             </div>
         </div>
         <HxSubmit Color="ThemeColor.Primary" CssClass="w-100 mb-5" Spinner="Loading" Enabled="@(!Loading)">Serie suchen</HxSubmit>
-    </EditForm>
+    </EditForm>    
 
     @if (UserSeries is not null && !Loading)
     {
@@ -31,7 +32,9 @@
             <div class="row">
                 <div class="col align-self-start text-start">
                     <h3 class="d-inline">Dashboard</h3>
-                    <HxBadge CssClass="mx-3" Color="ThemeColor.Success">@(UserSeries.Count)x</HxBadge>
+                    <HxBadge CssClass="ms-3" Color="ThemeColor.Success">@(UserSeries.Count)x</HxBadge>
+                    <HxIcon CssClass="ms-2 d-inline opacity-25" Icon="BootstrapIcon.Stopwatch"></HxIcon>
+                    <small class="d-inline opacity-25">@($"{RequestDuration:s\\.fff}s")</small>
                 </div>
                 <div class="col align-self-end text-end">
                     <div class="d-inline">
@@ -120,6 +123,8 @@
 
     private ReminderModel Reminder = new();
 
+    private TimeSpan RequestDuration { get; set; } = TimeSpan.Zero;
+
     private string? SearchSeriesName;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -139,6 +144,8 @@
                 SearchFilms = mediaSearchOptions.SearchFilms;
             }
 
+            Stopwatch stopwatch = Stopwatch.StartNew();
+
             UserSeries = await ApiService.GetAsync<List<SeriesModel>?>("getAllUserSeries");
 
             if (UserSeries is not null)
@@ -149,6 +156,9 @@
             {
                 ShowEmptyDashboardInfo = true;
             }
+
+            stopwatch.Stop();
+            RequestDuration = TimeSpan.FromMilliseconds(stopwatch.ElapsedMilliseconds);
 
             Loading = false;
             StateHasChanged();
@@ -202,6 +212,7 @@
 
     private async Task SearchSeriesDashboard()
     {
+        Stopwatch stopwatch;
         List<SeriesModel> allResults = new();
 
         if (!string.IsNullOrEmpty(SearchSeriesName))
@@ -216,12 +227,18 @@
             Loading = true;
             StateHasChanged();
 
+            stopwatch = Stopwatch.StartNew();
+
             UserSeries = await ApiService.GetAsync<List<SeriesModel>?>("getAllUserSeries");
 
+            stopwatch.Stop();
+            RequestDuration = TimeSpan.FromMilliseconds(stopwatch.ElapsedMilliseconds);
+
             Loading = false;
-            StateHasChanged();
 
             IsSearchView = false;
+            SelectDateSorting();
+
             return;
         }
 
@@ -232,14 +249,19 @@
         Loading = true;
         StateHasChanged();
 
+        stopwatch = Stopwatch.StartNew();
+
         MediaType searchMediaType = ( SearchSeries ? MediaType.Series : MediaType.Undefined ) |
                                     ( SearchFilms ? MediaType.Films : MediaType.Undefined );
-
+        
         List<SearchResultModel>? apiSearchResults = await ApiService.GetAsync<List<SearchResultModel>?>("getSeries",
                                                     new() {
                                                         { "seriesName", SearchSeriesName.ToLower() },
                                                         { "mediaType", searchMediaType.ToString() }
                                                                             });
+        
+        stopwatch.Stop();
+        RequestDuration = TimeSpan.FromMilliseconds(stopwatch.ElapsedMilliseconds);
 
         foreach (SearchResultModel searchResult in apiSearchResults)
         {
