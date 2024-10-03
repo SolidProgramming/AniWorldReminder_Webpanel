@@ -4,6 +4,7 @@
 ## [Video](https://vimeo.com/921474892)
 ## [Website](https://proxymov.xyz)
 ## Verify @[Telegram](https://t.me/AniWorldReminderBot)
+## [Docker Image for Downloader](https://hub.docker.com/repository/docker/solidprogramming/aniworldautodlwebpanel/general)
 
 ## Dashboard
 ![](https://reducemy.link/p/4WRCGg)
