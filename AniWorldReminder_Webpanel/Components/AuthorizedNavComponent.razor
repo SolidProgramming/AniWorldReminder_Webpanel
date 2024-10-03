@@ -1,13 +1,12 @@
 ﻿@inject IAuthenticationService AuthService
 @inject IApiService ApiService
 
-<HxSidebar CssClass="ms-2 pt-3">
+<HxSidebar CssClass="ps-2 pt-3">
     <HeaderTemplate>
-        <div class="userWrap">
-            <div class="user-image">
-                <img src="img/favicon.jpeg" alt="">
-            </div>
-            <span>@Username</span>
+        <div class="userWrap d-inline text-center mx-1">
+            <img class="user-image d-inline" src="img/favicon.jpeg" alt="">
+            <span class="d-inline-block d-md-none me-1"></span>
+            <h6 class="d-inline">@Username</h6>
         </div>
     </HeaderTemplate>
     <ItemsTemplate>
@@ -55,7 +54,7 @@
                     <HxSpinner CssClass="ms-2" Color="ThemeColor.Warning" Size="SpinnerSize.Small"></HxSpinner>
                 }
             </ContentTemplate>
-        </HxSidebarItem>        
+        </HxSidebarItem>
         <HxSidebarItem Icon="BootstrapIcon.BoxArrowLeft" CssClass="mt-4 text-danger" Href="@Routes.Logout">
             <ContentTemplate>
                 Ausloggen
