@@ -49,7 +49,7 @@
     </BodyTemplate>
 </HxModal>
 
-<div class="container">
+<div class="container mt-2">
     <HxButton Outline="true" Color="ThemeColor.Warning" OnClick="@NavigateBack" Icon="BootstrapIcon.Backspace">Zurück</HxButton>
     @if (ShowInfoError)
     {
@@ -61,7 +61,7 @@
     else
     {
         <div class="row mt-2">
-            <div class="col-12 col-sm-5 col-md-5 col-lg-4 col-xl-3 col-xxl-2 d-flex justify-content-center">
+            <div class="col-12 col-sm-5 col-md-5 col-lg-4 col-xl-3 d-flex justify-content-center">
                 <HxCard ImageAlt=""
                         ImageSrc="@SeriesInfo?.CoverArtUrl"
                         ImageHeight="330"
@@ -217,7 +217,7 @@
                     </BodyTemplate>
                 </HxCard>
             </div>
-            <div class="col-sm-7 col-md-7 col-lg-8 col-xl-9 col-xxl-10 mt-3">
+            <div class="col-sm-7 col-md-7 col-lg-8 col-xl-9 col-xxl-9 mt-3">
                 <div class="border rounded">
                     @if (LoadingInfo)
                     {
@@ -236,7 +236,7 @@
                 @if (SeriesInfo is not null && SeriesInfo.StreamingPortal != StreamingPortal.MegaKino)
                 {
                     <div class="row">
-                        <div class="col-12 col-lg-6 mt-4">
+                        <div class="col-12 col-xl-6 mt-4">
                             <div class="px-3 py-2 border rounded">
                                 <div class="my-2">
                                     <HxIcon CssClass="d-inline fs-5 text-primary" Icon="BootstrapIcon.Translate"></HxIcon>
@@ -256,7 +256,7 @@
                                 }
                             </div>
                         </div>
-                        <div class="col-12 col-lg-6 mt-4">
+                        <div class="col-12 col-xl-6 mt-4">
                             <div class="px-3 border rounded">
                                 <div class="my-2">
                                     <HxIcon CssClass="d-inline fs-5 text-primary" Icon="BootstrapIcon.Download"></HxIcon>
