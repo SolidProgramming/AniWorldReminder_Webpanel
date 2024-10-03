@@ -5,30 +5,36 @@
 
 <PageTitle>Login</PageTitle>
 
-<div class="container w-50">
-    <h3>Login</h3>
-    <EditForm Model="@User" OnValidSubmit="@(() => Login())">
-        <DataAnnotationsValidator />
+<div class="row">
+    <div class="col-sm-2 col-md-3 col-lg-4"></div>
+    <div class="col-12 col-sm-8 col-md-6 col-lg-4">
+        <h3>Login</h3>
+        <EditForm Model="@User" OnValidSubmit="@(() => Login())">
+            <DataAnnotationsValidator />
 
-        <HxInputText Label="Benutzername" @bind-Value="@User.Username" />
-        <HxInputText Label="Passwort" @bind-Value="@User.Password" Type="InputType.Password" />
-        <HxSubmit Color="ThemeColor.Primary" CssClass="w-100" Spinner="@Loading">Login</HxSubmit>
-    </EditForm>
-    @if(ShowError)
-    {
-        <HxAlert Color="ThemeColor.Danger" CssClass="mt-3">
-            <HxIcon Icon="@BootstrapIcon.ExclamationCircleFill" /> 
-            Fehler beim login! Bitte überprüfen Sie ihre Daten!
-        </HxAlert>
-    }
-</div>
-<div class="container w-50 mt-5">
-    <HxAlert Color="ThemeColor.Info">
-        <HxIcon Icon="@BootstrapIcon.QuestionCircle" />
-        <span class="ms-2">Noch keinen Account verifiziert?</span><br />
-        <HxIcon Icon="@BootstrapIcon.ArrowReturnRight" />
-        <span class="ms-2">Dann folge den Anweisungen auf der <a href="/verify">Verifizieren Seite</a></span>
-    </HxAlert>
+            <HxInputText Label="Benutzername" @bind-Value="@User.Username" />
+            <HxInputText Label="Passwort" @bind-Value="@User.Password" Type="InputType.Password" />
+            <HxSubmit Color="ThemeColor.Primary" CssClass="w-100" Spinner="@Loading">Login</HxSubmit>
+        </EditForm>
+        @if (ShowError)
+        {
+            <HxAlert Color="ThemeColor.Danger" CssClass="mt-3">
+                <HxIcon Icon="@BootstrapIcon.ExclamationCircleFill" />
+                Fehler beim login! Bitte überprüfen Sie ihre Daten!
+            </HxAlert>
+        }
+        <div class="mt-5">
+            <HxAlert Color="ThemeColor.Info">
+                <HxIcon Icon="@BootstrapIcon.QuestionCircle" />
+                <span class="ms-2">Noch keinen Account verifiziert?</span>
+                <div class="pt-2">
+                    <HxIcon Icon="@BootstrapIcon.ArrowReturnRight" />
+                    <span class="ms-2">Dann folge den Anweisungen auf der <a href="/verify">Verifizieren Seite</a></span>
+                </div>
+            </HxAlert>
+        </div>
+    </div>
+    <div class="col-sm-2 col-md-3 col-lg-4"></div>
 </div>
 
 @code {
