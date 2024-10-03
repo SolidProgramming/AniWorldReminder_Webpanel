@@ -24,27 +24,24 @@
             </div>
         </div>
         <HxSubmit Color="ThemeColor.Primary" CssClass="w-100 mb-5" Spinner="Loading" Enabled="@(!Loading)">Serie suchen</HxSubmit>
-    </EditForm>    
+    </EditForm>
 
     @if (UserSeries is not null && !Loading)
     {
-        <div class="container">
-            <div class="row">
-                <div class="col align-self-start text-start">
-                    <h3 class="d-inline">Dashboard</h3>
-                    <HxBadge CssClass="ms-3" Color="ThemeColor.Success">@(UserSeries.Count)x</HxBadge>
-                    <HxIcon CssClass="ms-2 d-inline opacity-25" Icon="BootstrapIcon.Stopwatch"></HxIcon>
-                    <small class="d-inline opacity-25">@($"{RequestDuration:s\\.fff}s")</small>
-                </div>
-                <div class="col align-self-end text-end">
-                    <div class="d-inline">
-                        <h5 class="d-inline me-2">Sortierung:</h5>
-                        <HxButton Size="ButtonSize.Small" OnClick="SelectDateSorting" CssClass="d-inline" Color="@(SortingDateSelected ? ThemeColor.Warning : ThemeColor.Secondary)">Datum</HxButton>
-                        <span class="d-inline">|</span>
-                        <HxButton Size="ButtonSize.Small" OnClick="SelectNameSorting" CssClass="d-inline" Color="@(SortingNameSelected ? ThemeColor.Warning : ThemeColor.Secondary)">Name</HxButton>
-                        <span class="d-inline">|</span>
-                        <HxButton Size="ButtonSize.Small" OnClick="SelectHosterSorting" CssClass="d-inline" Color="@(SortingHosterSelected ? ThemeColor.Warning : ThemeColor.Secondary)">Hoster</HxButton>
-                    </div>
+        <div class="row justify-content-around">
+            <div class="col-sm-6 col-md-5 col-lg-6 pb-2 d-none d-sm-block">
+                <h3 class="d-inline">Dashboard</h3>
+                <HxBadge CssClass="ms-3 d-none d-md-inline-block" Color="ThemeColor.Success">@(UserSeries.Count)x</HxBadge>
+                <HxIcon CssClass="ms-2 opacity-25 d-none d-lg-inline-block" Icon="BootstrapIcon.Stopwatch"></HxIcon>
+                <small class="opacity-25 d-none d-lg-inline-block">@($"{RequestDuration:s\\.fff}s")</small>
+            </div>
+            <div class="col-12 col-sm-6 col-md-5 col-lg-6 text-center">
+                <div class="d-inline float-sm-end">
+                    <HxButton Size="ButtonSize.Small" OnClick="SelectDateSorting" CssClass="d-inline" Color="@(SortingDateSelected ? ThemeColor.Warning : ThemeColor.Secondary)">Datum</HxButton>
+                    <span class="d-inline">|</span>
+                    <HxButton Size="ButtonSize.Small" OnClick="SelectNameSorting" CssClass="d-inline" Color="@(SortingNameSelected ? ThemeColor.Warning : ThemeColor.Secondary)">Name</HxButton>
+                    <span class="d-inline">|</span>
+                    <HxButton Size="ButtonSize.Small" OnClick="SelectHosterSorting" CssClass="d-inline" Color="@(SortingHosterSelected ? ThemeColor.Warning : ThemeColor.Secondary)">Hoster</HxButton>
                 </div>
             </div>
         </div>
@@ -165,10 +162,10 @@
         }
 
         MediaSearchOptionsModel mediaSearchOptionsNew = new()
-        {
-            SearchFilms = this.SearchFilms,
-            SearchSeries = this.SearchSeries
-        };
+            {
+                SearchFilms = this.SearchFilms,
+                SearchSeries = this.SearchSeries
+            };
 
         await LocalStorageService.SetItem("MediaSearchOptions", mediaSearchOptionsNew);
 
@@ -253,13 +250,13 @@
 
         MediaType searchMediaType = ( SearchSeries ? MediaType.Series : MediaType.Undefined ) |
                                     ( SearchFilms ? MediaType.Films : MediaType.Undefined );
-        
+
         List<SearchResultModel>? apiSearchResults = await ApiService.GetAsync<List<SearchResultModel>?>("getSeries",
                                                     new() {
                                                         { "seriesName", SearchSeriesName.ToLower() },
                                                         { "mediaType", searchMediaType.ToString() }
-                                                                            });
-        
+                                                                                });
+
         stopwatch.Stop();
         RequestDuration = TimeSpan.FromMilliseconds(stopwatch.ElapsedMilliseconds);
 
