@@ -156,6 +156,9 @@
                 ShowEmptyDashboardInfo = true;
             }
 
+            stopwatch.Stop();
+            RequestDuration = TimeSpan.FromMilliseconds(stopwatch.ElapsedMilliseconds);
+
             Loading = false;
             StateHasChanged();
         }
@@ -167,9 +170,6 @@
             };
 
         await LocalStorageService.SetItem("MediaSearchOptions", mediaSearchOptionsNew);
-
-        stopwatch.Stop();
-        RequestDuration = TimeSpan.FromMilliseconds(stopwatch.ElapsedMilliseconds);
 
         await base.OnAfterRenderAsync(firstRender);
     }
