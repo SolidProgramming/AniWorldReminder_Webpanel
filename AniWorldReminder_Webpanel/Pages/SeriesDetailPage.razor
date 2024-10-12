@@ -129,7 +129,17 @@
                                                 <HxBadge CssClass="w-100" Color="ThemeColor.Success">ENDED</HxBadge>
                                                 break;
                                             case "Returning Series":
-                                                <HxBadge CssClass="w-100" Color="ThemeColor.Warning">RELEASING</HxBadge>
+                                                <HxBadge CssClass="w-100" Color="ThemeColor.Secondary">RETURNING SERIES</HxBadge>
+                                                break;
+                                            case "Planned":
+                                            case "In Production":
+                                                <HxBadge CssClass="w-100" Color="ThemeColor.Warning">RETURNING SERIES</HxBadge>
+                                                break;
+                                            case "Canceled":
+                                                <HxBadge CssClass="w-100" Color="ThemeColor.Danger">CANCELLED</HxBadge>
+                                                break;
+                                            case "Pilot":
+                                                <HxBadge CssClass="w-100" Color="ThemeColor.Info">PILOT</HxBadge>
                                                 break;
                                             default:
                                                 <HxBadge CssClass="w-100" Color="ThemeColor.Secondary">UNKNOWN</HxBadge>
