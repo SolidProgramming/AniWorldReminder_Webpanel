@@ -365,3 +365,5 @@ FodyWeavers.xsd
 /AniWorldReminder_Webpanel/appdata/settings.json
 /AniWorldReminder_Webpanel/wwwroot/binaries/*
 /AniWorldReminder_Webpanel/appdata/binaries/*
+/AniWorldReminder_Webpanel/wwwroot/sitemap.xml
+/AniWorldReminder_Webpanel/wwwroot/robots.txt
