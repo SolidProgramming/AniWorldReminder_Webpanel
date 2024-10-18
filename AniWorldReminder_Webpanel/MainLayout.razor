@@ -35,6 +35,12 @@
         if (firstRender)
         {
             await CheckLogin();
+
+            if (NavManager.Uri.Contains(Routes.Index) && LoggedIn)
+            {
+                NavManager.NavigateTo(Routes.Dashboard);
+            }
+            
         }
     }
 
