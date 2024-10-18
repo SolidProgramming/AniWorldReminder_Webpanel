@@ -7,7 +7,7 @@
 <EditForm Model="@SeriesSearch" OnValidSubmit="@(() => SearchSeries())">
     <DataAnnotationsValidator />
     <div class="container">
-        <div class="row justify-content-center">
+        <div class="row justify-content-center mb-4">
             <div class="col-md-6">
                 <HxInputText Label="Serien Name" @bind-Value="@SeriesSearch.SeriesName" Placeholder="Jujutsu Kaisen" />
             </div>
@@ -17,6 +17,7 @@
         </div>
         @if (SearchResults is not null && SearchResults.Any())
         {
+            <h4>Aktuell beliebt</h4>
             <SeriesSearchResultsComponent SearchResults="@SearchResults"></SeriesSearchResultsComponent>
         }
     </div>
@@ -26,6 +27,27 @@
 
     private SeriesSearchModel SeriesSearch = new();
     private List<SearchResultModel>? SearchResults;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            Loading = true;
+            StateHasChanged();
+
+            List<SearchResultModel>? popularSeries = await ApiService.GetAsync<List<SearchResultModel>?>("getPopular");
+
+            if (popularSeries is null || !popularSeries.Any())
+                return;
+
+            SearchResults = popularSeries;
+
+            Loading = false;
+            StateHasChanged();
+
+        }
+    }
+
 
     private async Task SearchSeries()
     {
@@ -39,7 +61,7 @@
                                                    new() {
                                                         { "seriesName", SeriesSearch.SeriesName.ToLower() },
                                                         { "mediaType", MediaType.Series.ToString() }
-                                                                                   });
+                                                                                               });
 
         Loading = false;
         StateHasChanged();
