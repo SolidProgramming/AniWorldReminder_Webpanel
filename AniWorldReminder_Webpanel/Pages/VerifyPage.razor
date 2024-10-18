@@ -4,48 +4,50 @@
 @inject IApiService ApiService
 @inject IAuthenticationService AuthenticationService
 
-<PageTitle>Verifizierung</PageTitle>
+<PageTitle>Verifizierung: Lege deinen Account an</PageTitle>
 
-<div class="container w-50">
-    <HxAlert Color="ThemeColor.Info">
-        <HxIcon Icon="@BootstrapIcon.InfoCircle" />
-        <span class="ms-2">Um einen Registrierungstoken zu erhalten wird ein Telegramm Account benötigt.</span>
-    </HxAlert>
-</div>
-<div class="container w-50 mt-5">
-    <h3 class="text-center">Verifizierung</h3>
-    <EditForm Model="@VerifyRequest" OnValidSubmit="@(() => Verify())">
-        <DataAnnotationsValidator />
-
-        <HxInputText Label="Benutzername" @bind-Value="@VerifyRequest.Username" />
-        <HxInputText Label="Passwort" @bind-Value="@VerifyRequest.Password" Type="InputType.Password" />
-        <HxInputText Label="Passwort" @bind-Value="@RetypePassword" Type="InputType.Password" />
-        <HxInputText Label="Token" @bind-Value="@VerifyRequest.VerifyToken" />
-        <HxSubmit Color="ThemeColor.Primary" CssClass="w-100" Spinner="@Loading" Enabled="@(!Loading)">@ButtonText</HxSubmit>
-    </EditForm>
-    @if (ShowError)
-    {
-        <HxAlert Color="ThemeColor.Danger" CssClass="mt-3">
-            <HxIcon Icon="@BootstrapIcon.ExclamationCircleFill" />
-            Fehler beim verifizieren! Bitte überprüfen Sie ihre Daten!
-        </HxAlert>      
-    }
-    @if (ShowSuccess)
-    {
-        <HxAlert Color="ThemeColor.Success" CssClass="mt-3">
-            <HxIcon Icon="@BootstrapIcon.Check" />
-            Danke fürs verifizieren, @VerifyRequest.Username! Du wirst gleich eingeloggt!
+<div class="row">
+    <div class="col-sm-2 col-md-3 col-lg-4"></div>
+    <div class="col-12 col-sm-8 col-md-6 col-lg-4">
+        <HxAlert Color="ThemeColor.Info">
+            <HxIcon Icon="@BootstrapIcon.InfoCircle" />
+            <span class="ms-2">Um einen Registrierungstoken zu erhalten wird ein Telegramm Account benötigt.</span>
         </HxAlert>
-    }
-</div>
-<div class="container w-50">
-    <HxAlert Color="ThemeColor.Success" CssClass="mt-5">
-        <HxIcon Icon="@BootstrapIcon.Check2Circle" />
-        <span class="ms-2">Verifiziere dich über den <a target="_blank" href="https://t.me/AniWorldReminderBot">Telegram Bot</a></span>
-        <br />
-        <HxIcon Icon="@BootstrapIcon.Check2Circle" />
-        <span class="ms-2">Verwende das "<span class="text-info">/verify</span>" Command und folge den Anweisungen im Chat</span>
-    </HxAlert>
+        <div class="mt-5">
+            <h3 class="text-center">Verifizierung</h3>
+            <EditForm Model="@VerifyRequest" OnValidSubmit="@(() => Verify())">
+                <DataAnnotationsValidator />
+
+                <HxInputText Label="Benutzername" @bind-Value="@VerifyRequest.Username" />
+                <HxInputText Label="Passwort" @bind-Value="@VerifyRequest.Password" Type="InputType.Password" />
+                <HxInputText Label="Passwort" @bind-Value="@RetypePassword" Type="InputType.Password" />
+                <HxInputText Label="Token" @bind-Value="@VerifyRequest.VerifyToken" />
+                <HxSubmit Color="ThemeColor.Primary" CssClass="w-100" Spinner="@Loading" Enabled="@(!Loading)">@ButtonText</HxSubmit>
+            </EditForm>
+            @if (ShowError)
+            {
+                <HxAlert Color="ThemeColor.Danger" CssClass="mt-3">
+                    <HxIcon Icon="@BootstrapIcon.ExclamationCircleFill" />
+                    Fehler beim verifizieren! Bitte überprüfen Sie ihre Daten!
+                </HxAlert>
+            }
+            @if (ShowSuccess)
+            {
+                <HxAlert Color="ThemeColor.Success" CssClass="mt-3">
+                    <HxIcon Icon="@BootstrapIcon.Check" />
+                    Danke fürs verifizieren, @VerifyRequest.Username! Du wirst gleich eingeloggt!
+                </HxAlert>
+            }
+        </div>
+        <HxAlert Color="ThemeColor.Success" CssClass="mt-5">
+            <HxIcon Icon="@BootstrapIcon.Check2Circle" />
+            <span class="ms-2">Verifiziere dich über den <a target="_blank" href="https://t.me/AniWorldReminderBot">Telegram Bot</a></span>
+            <br />
+            <HxIcon Icon="@BootstrapIcon.Check2Circle" />
+            <span class="ms-2">Verwende das "<span class="text-info">/verify</span>" Command und folge den Anweisungen im Chat</span>
+        </HxAlert>
+    </div>
+    <div class="col-sm-2 col-md-3 col-lg-4"></div>
 </div>
 
 @code {
