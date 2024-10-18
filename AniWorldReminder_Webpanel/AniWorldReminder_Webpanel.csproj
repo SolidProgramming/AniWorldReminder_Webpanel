@@ -9,6 +9,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="wwwroot\robots.txt" />
+    <Content Remove="wwwroot\sitemap.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="BlazorDownloadFile" Version="2.4.0.2" />
     <PackageReference Include="Havit.Blazor.Components.Web.Bootstrap" Version="4.6.12" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
@@ -18,6 +23,15 @@
   <ItemGroup>
     <Folder Include="appdata\binaries\" />
     <Folder Include="wwwroot\binaries\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\robots.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\sitemap.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
