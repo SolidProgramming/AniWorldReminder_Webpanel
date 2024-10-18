@@ -2,12 +2,12 @@
 
 namespace AniWorldReminder_Webpanel.Models
 {
-    public class ReminderModel
+    public class SeriesSearchModel
     {
         [Required(ErrorMessage = "Bitte Serien Namen eingeben")]
-        public string SeriesName { get; set; }
+        public string? SeriesName { get; set; }
 
-        public List<string> Languages { get; set; } = new ();
+        public List<string> Languages { get; set; } = [];
 
     }
 }

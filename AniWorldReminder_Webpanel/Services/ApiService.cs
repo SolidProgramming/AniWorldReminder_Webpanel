@@ -104,7 +104,7 @@ namespace AniWorldReminder_Webpanel.Services
                 // auto logout on 401 response
                 if (response.StatusCode == HttpStatusCode.Unauthorized)
                 {
-                    NavigationManager.NavigateTo("login");
+                    NavigationManager.NavigateTo(Routes.Login);
                     return default;
                 }
 

@@ -1,16 +1,15 @@
-﻿@attribute [Route(Routes.Search)]
-@attribute [Route(Routes.Search + "/{SeriesSearchName}")]
+﻿@attribute [Route(Routes.Index)]
 @inject IApiService ApiService
 @inject NavigationManager NavigationManager
 
+<PageTitle>Suche deine lieblings Serien</PageTitle>
 
-<EditForm Model="@Reminder" OnValidSubmit="@(() => SearchSeries())">
+<EditForm Model="@SeriesSearch" OnValidSubmit="@(() => SearchSeries())">
     <DataAnnotationsValidator />
     <div class="container">
-        <h3>Reminder hinzufügen</h3>
-        <div class="row justify-content-center mt-5">
+        <div class="row justify-content-center">
             <div class="col-md-6">
-                <HxInputText Label="Serien Name" @bind-Value="@Reminder.SeriesName" Placeholder="Jujutsu Kaisen" />
+                <HxInputText Label="Serien Name" @bind-Value="@SeriesSearch.SeriesName" Placeholder="Jujutsu Kaisen" />
             </div>
             <div class="col-md-2" style="margin-top: 26px;">
                 <HxSubmit Color="ThemeColor.Primary" CssClass="w-100" Spinner="Loading" Enabled="@(!Loading)">Serie suchen</HxSubmit>
@@ -22,31 +21,25 @@
         }
     </div>
 </EditForm>
-@code {    
-
-    [Parameter]
-    public string? SeriesSearchName { get; set; }
-
+@code {
     private bool Loading { get; set; }
 
-    private ReminderModel Reminder = new();
+    private SeriesSearchModel SeriesSearch = new();
     private List<SearchResultModel>? SearchResults;
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender && !string.IsNullOrEmpty(SeriesSearchName))
-        {
-            Reminder.SeriesName = SeriesSearchName;
-            await SearchSeries();
-        }
-    }
 
     private async Task SearchSeries()
     {
+        if (string.IsNullOrWhiteSpace(SeriesSearch.SeriesName))
+            return;
+
         Loading = true;
         StateHasChanged();
 
-        List<SearchResultModel>? searchResults = await ApiService.GetAsync<List<SearchResultModel>?>("getSeries", new() { { "seriesName", Reminder.SeriesName } });
+        List<SearchResultModel>? searchResults = await ApiService.GetAsync<List<SearchResultModel>?>("getSeries",
+                                                   new() {
+                                                        { "seriesName", SeriesSearch.SeriesName.ToLower() },
+                                                        { "mediaType", MediaType.Series.ToString() }
+                                                                                   });
 
         Loading = false;
         StateHasChanged();

@@ -2,7 +2,7 @@
 @inject NavigationManager NavManager
 @inject IHxMessengerService ToastService
 @inject IApiService ApiService
-@inject IAuthenticationService AuthService
+@inject NavigationManager NavigationManager
 
 <div class="row justify-content-center pb-2">
     @foreach (SearchResultModel searchResult in SearchResults)
@@ -10,9 +10,8 @@
         <HxCard ImageAlt=""
                 ImageSrc="@searchResult.CoverArtUrl"
                 ImageHeight="330"
-                ImageWidth="220"
-                style="width: 256px;"
-                CssClass="pt-2 mt-4 mx-2 rounded bg-transparent"
+                style="width: 245px;"
+                CssClass="mt-3 mx-2 px-2 rounded glass border-0"
                 HeaderCssClass="bg-transparent border border-0">
             <HeaderTemplate>
                 @switch (searchResult.StreamingPortal)
@@ -31,11 +30,10 @@
                 }
             </HeaderTemplate>
             <BodyTemplate>
-                <HxCardTitle>@searchResult.Title</HxCardTitle>
-                <HxCardText>@searchResult.Description</HxCardText>
-                <HxCardSubtitle>                    
-                    <HxButton @onclick="@(() => NavigateToSeriesDetail(searchResult.Path))" Color="ThemeColor.Primary" CssClass="w-100">Auswählen</HxButton>                   
-                </HxCardSubtitle>                
+                <HxCardTitle CssClass="text-center">@searchResult.Name</HxCardTitle>
+                <HxCardSubtitle CssClass="mt-2">
+                    <HxButton OnClick="@(() => NavigateToDetail(searchResult))" Spinner="@Loading" Enabled="@(!Loading)" Color="ThemeColor.Primary" Icon="BootstrapIcon.Forward" CssClass="w-100 mt-2">Anzeigen</HxButton>                    
+                </HxCardSubtitle>
             </BodyTemplate>
         </HxCard>
     }
@@ -47,9 +45,8 @@
 
     private bool Loading { get; set; }
 
-
-    private void NavigateToSeriesDetail(string seriesName)
+    private void NavigateToDetail(SearchResultModel searchResult)
     {
-        NavManager.NavigateTo($"{Routes.MediaDetail}{seriesName}");
+        NavigationManager.NavigateTo(Routes.MediaDetail + $"{searchResult.Path}?referer={Routes.Index}&hoster={searchResult.StreamingPortal}");
     }
 }

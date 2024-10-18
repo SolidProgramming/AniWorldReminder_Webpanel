@@ -203,23 +203,33 @@
                                 }
                             </HxCardText>
                             <HxCardSubtitle>
-                                @if (SeriesInfo is not null && SeriesInfo.StreamingPortal != StreamingPortal.MegaKino)
+                                @if (AuthService.User is not null)
                                 {
-                                    @if (UserSeries is null && !AddSuccess)
+                                    @if (SeriesInfo is not null && SeriesInfo.StreamingPortal != StreamingPortal.MegaKino)
                                     {
-                                        <HxButton OnClick="@AddReminder" Outline="true" Color="ThemeColor.Success" Icon="BootstrapIcon.PlusCircleFill" Spinner="@Loading" Enabled="@(!Loading)" CssClass="w-100 mt-2">Hinzufügen</HxButton>
+                                        @if (UserSeries is null && !AddSuccess)
+                                        {
+                                            <HxButton OnClick="@AddReminder" Outline="true" Color="ThemeColor.Success" Icon="BootstrapIcon.PlusCircleFill" Spinner="@Loading" Enabled="@(!Loading)" CssClass="w-100 mt-2">Hinzufügen</HxButton>
+                                        }
+                                        else
+                                        {
+                                            <HxButton Color="ThemeColor.Success" Icon="BootstrapIcon.Check" Enabled="false" CssClass="w-100 mt-2">Hinzugefügt</HxButton>
+                                            <HxButton OnClick="@RemoveReminder" Spinner="@Loading" Enabled="@(!Loading)" Color="ThemeColor.Warning" Outline="true" Icon="BootstrapIcon.XCircleFill" CssClass="w-100 mt-2">Entfernen</HxButton>
+                                        }
                                     }
                                     else
                                     {
-                                        <HxButton Color="ThemeColor.Success" Icon="BootstrapIcon.Check" Enabled="false" CssClass="w-100 mt-2">Hinzugefügt</HxButton>
-                                        <HxButton OnClick="@RemoveReminder" Spinner="@Loading" Enabled="@(!Loading)" Color="ThemeColor.Warning" Outline="true" Icon="BootstrapIcon.XCircleFill" CssClass="w-100 mt-2">Entfernen</HxButton>
+                                        <HxButton OnClick="@AddMovieDownload" Outline="true" Color="ThemeColor.Success" Icon="BootstrapIcon.Download"
+                                                  Spinner="@Loading" Enabled="@(!Loading)" CssClass="w-100">
+                                            Herunterladen
+                                        </HxButton>
                                     }
                                 }
                                 else
                                 {
-                                    <HxButton OnClick="@AddMovieDownload" Outline="true" Color="ThemeColor.Success" Icon="BootstrapIcon.Download"
-                                              Spinner="@Loading" Enabled="@(!Loading)" CssClass="w-100">
-                                        Herunterladen
+                                    <HxButton Outline="true" Color="ThemeColor.Secondary" Icon="BootstrapIcon.Download"
+                                              Spinner="@Loading" Enabled="false" CssClass="w-100">
+                                        Hinzufügen
                                     </HxButton>
                                 }
                             </HxCardSubtitle>
@@ -245,85 +255,91 @@
                 </div>
                 @if (SeriesInfo is not null && SeriesInfo.StreamingPortal != StreamingPortal.MegaKino)
                 {
-                    <div class="row">
-                        <div class="col-12 col-xl-6 mt-4">
-                            <div class="px-3 py-2 border rounded">
-                                <div class="my-2">
-                                    <HxIcon CssClass="d-inline fs-5 text-primary" Icon="BootstrapIcon.Translate"></HxIcon>
-                                    <h5 class="d-inline px-2">Sprache:</h5>
-                                </div>
-                                <HxCheckbox Enabled="@(UserSeries is null)" TextCssClass="text-warning" Inline="true" @bind-Value="GerDub" Text="Deutsch" />
-                                <HxCheckbox Enabled="@(UserSeries is null)" TextCssClass="text-warning" Inline="true" @bind-Value="GerSub" CssClass="mt-2" Text="Deutsch Untertitel" />
-                                <HxCheckbox Enabled="@(UserSeries is null)" TextCssClass="text-warning" Inline="true" @bind-Value="EngDub" CssClass="mt-2" Text="Englisch" />
-                                <HxCheckbox Enabled="@(UserSeries is null)" TextCssClass="text-warning" Inline="true" @bind-Value="EngSub" CssClass="mt-2" Text="Englisch Untertitel" />
-                                <HxCheckbox Enabled="@(UserSeries is null)" TextCssClass="text-warning" Inline="true" @bind-Value="EngDubGerSub" CssClass="mt-2" Text="Englisch - Deutsch Untertitel" />
-                                @if (ShowLanguageError)
-                                {
-                                    <HxAlert Color="ThemeColor.Danger" CssClass="mt-3 mb-2">
-                                        <HxIcon Icon="@BootstrapIcon.ExclamationCircleFill" />
-                                        Es muss mindestens eine Sprachoption gewählt werden!
-                                    </HxAlert>
-                                }
-                            </div>
-                        </div>
-                        <div class="col-12 col-xl-6 mt-4">
-                            <div class="px-3 border rounded">
-                                <div class="my-2">
-                                    <HxIcon CssClass="d-inline fs-5 text-primary" Icon="BootstrapIcon.Download"></HxIcon>
-                                    <h5 class="d-inline px-2">Download:</h5>
-                                    @if (SeriesInfo is not null)
+                    <HxAlert Color="ThemeColor.Danger" CssClass="mt-3 mb-2">
+                        <div class="row">
+                            <div class="col-12 col-xl-6">
+                                <div class="px-3 py-2 border rounded">
+                                    <div class="my-2">
+                                        <HxIcon CssClass="d-inline fs-5" Icon="BootstrapIcon.Translate"></HxIcon>
+                                        <h5 class="d-inline px-2 @(AuthService.User is null ? "text-secondary" : "text-white")">Sprache:</h5>
+                                    </div>
+                                    <HxCheckbox Enabled="@(UserSeries is null)" TextCssClass="text-warning" Inline="true" @bind-Value="GerDub" Text="Deutsch" />
+                                    <HxCheckbox Enabled="@(UserSeries is null)" TextCssClass="text-warning" Inline="true" @bind-Value="GerSub" CssClass="mt-2" Text="Deutsch Untertitel" />
+                                    <HxCheckbox Enabled="@(UserSeries is null)" TextCssClass="text-warning" Inline="true" @bind-Value="EngDub" CssClass="mt-2" Text="Englisch" />
+                                    <HxCheckbox Enabled="@(UserSeries is null)" TextCssClass="text-warning" Inline="true" @bind-Value="EngSub" CssClass="mt-2" Text="Englisch Untertitel" />
+                                    <HxCheckbox Enabled="@(UserSeries is null)" TextCssClass="text-warning" Inline="true" @bind-Value="EngDubGerSub" CssClass="mt-2" Text="Englisch - Deutsch Untertitel" />
+                                    @if (ShowLanguageError)
                                     {
-                                        @if (UserSeries is not null)
-                                        {
-                                            <HxTabPanel ActiveTabIdChanged="DownloadsTabChanged" CssClass="">
-                                                <h5 class="mt-3 px-2">Staffeln:</h5>
-                                                <HxCheckbox @oninput="ToggleDownloadAllSeasonsCheckboxes" CssClass="m-2" TextCssClass="text-info" Text="Alle Staffeln" @bind-Value="ToggleDownloadAllSeasons"></HxCheckbox>
-                                                @foreach (SeasonModel season in SeriesInfo.Seasons)
-                                                {
-                                                    <HxTab Title="@season.Id.ToString()" Id="@season.Id.ToString()" ContentCssClass="mb-3">
-                                                        <Content>
-                                                            <HxCheckbox @oninput="ToggleDownloadCheckboxes" CssClass="mt-2" TextCssClass="text-info" Text="Alle" @bind-Value="ToggleDownloadSeasonCheckboxes"></HxCheckbox>
-                                                            <HxCheckboxList ItemTextCssClass="text-warning"
-                                                                            LabelCssClass="d-flex text-light"
-                                                                            Inline="false"
-                                                                            CssClass="mt-3"
-                                                                            TItem="EpisodeModel"
-                                                                            TValue="EpisodeModel"
-                                                                            Label="Episoden"
-                                                                            Data="@season.Episodes.Take(ShowEpisodeCount)"
-                                                                            ItemSortKeySelector="@(episode => episode.Episode)"
-                                                                            ItemTextSelector="@(episode => episode.Name)"
-                                                                            ItemValueSelector="@(episode => episode)"
-                                                                            @bind-Value="SelectedDownloadEpisodes" />
-                                                            @if (season.Episodes.Count > ShowEpisodeCount)
-                                                            {
-                                                                <p class="mt-3 ms-2 pb-0 cursor-pointer text-primary text-decoration-underline" @onclick="() => ShowAllEpisodes(season.Episodes.Count)">@($"Alle {season.Episodes.Count} Episoden anzeigen")</p>
-                                                            }
-                                                            else if (season.Episodes.Count == ShowEpisodeCount && ShowEpisodeCount > ShowMaxEpisodeCount)
-                                                            {
-                                                                <p class="mt-3 ms-2 pb-0 cursor-pointer text-primary text-decoration-underline" @onclick="ShowMaxEpisodes">@($"Weniger anzeigen")</p>
-                                                            }
-                                                        </Content>
-                                                    </HxTab>
-                                                }
-                                            </HxTabPanel>
-                                            <HxButton OnClick="@AddDownloads" Outline="true" Color="ThemeColor.Success" Icon="BootstrapIcon.Download"
-                                                      Spinner="@Loading" Enabled="@(!Loading && UserSeries is not null)" CssClass="w-100 mb-2">
-                                                Hinzufügen
-                                            </HxButton>
-                                        }
-                                        else
-                                        {
-                                            <HxAlert Color="ThemeColor.Secondary" CssClass="mt-3">
-                                                <HxIcon Icon="@BootstrapIcon.ExclamationCircle" />
-                                                <span class="ms-2">Füge erst die Serie zu deinen Remindern hinzu!</span>
-                                            </HxAlert>
-                                        }
+                                        <HxAlert Color="ThemeColor.Danger" CssClass="mt-3 mb-2">
+                                            <HxIcon Icon="@BootstrapIcon.ExclamationCircleFill" />
+                                            Es muss mindestens eine Sprachoption gewählt werden!
+                                        </HxAlert>
                                     }
                                 </div>
                             </div>
+                            <div class="col-12 col-xl-6">
+                                <div class="px-3 border rounded">
+                                    <div class="my-2">
+                                        <HxIcon CssClass="d-inline fs-5" Icon="BootstrapIcon.Download"></HxIcon>
+                                        <h5 class="d-inline px-2 @(AuthService.User is null ? "text-secondary" : "text-white")">Download:</h5>
+                                        @if (SeriesInfo is not null)
+                                        {
+                                            @if (UserSeries is not null)
+                                            {
+                                                <HxTabPanel ActiveTabIdChanged="DownloadsTabChanged" CssClass="">
+                                                    <h5 class="mt-3 px-2">Staffeln:</h5>
+                                                    <HxCheckbox @oninput="ToggleDownloadAllSeasonsCheckboxes" CssClass="m-2" TextCssClass="text-info" Text="Alle Staffeln" @bind-Value="ToggleDownloadAllSeasons"></HxCheckbox>
+                                                    @foreach (SeasonModel season in SeriesInfo.Seasons)
+                                                    {
+                                                        <HxTab Title="@season.Id.ToString()" Id="@season.Id.ToString()" ContentCssClass="mb-3">
+                                                            <Content>
+                                                                <HxCheckbox @oninput="ToggleDownloadCheckboxes" CssClass="mt-2" TextCssClass="text-info" Text="Alle" @bind-Value="ToggleDownloadSeasonCheckboxes"></HxCheckbox>
+                                                                <HxCheckboxList ItemTextCssClass="text-warning"
+                                                                                LabelCssClass="d-flex text-light"
+                                                                                Inline="false"
+                                                                                CssClass="mt-3"
+                                                                                TItem="EpisodeModel"
+                                                                                TValue="EpisodeModel"
+                                                                                Label="Episoden"
+                                                                                Data="@season.Episodes.Take(ShowEpisodeCount)"
+                                                                                ItemSortKeySelector="@(episode => episode.Episode)"
+                                                                                ItemTextSelector="@(episode => episode.Name)"
+                                                                                ItemValueSelector="@(episode => episode)"
+                                                                                @bind-Value="SelectedDownloadEpisodes" />
+                                                                @if (season.Episodes.Count > ShowEpisodeCount)
+                                                                {
+                                                                    <p class="mt-3 ms-2 pb-0 cursor-pointer text-primary text-decoration-underline" @onclick="() => ShowAllEpisodes(season.Episodes.Count)">@($"Alle {season.Episodes.Count} Episoden anzeigen")</p>
+                                                                }
+                                                                else if (season.Episodes.Count == ShowEpisodeCount && ShowEpisodeCount > ShowMaxEpisodeCount)
+                                                                {
+                                                                    <p class="mt-3 ms-2 pb-0 cursor-pointer text-primary text-decoration-underline" @onclick="ShowMaxEpisodes">@($"Weniger anzeigen")</p>
+                                                                }
+                                                            </Content>
+                                                        </HxTab>
+                                                    }
+                                                </HxTabPanel>
+                                                <HxButton OnClick="@AddDownloads" Outline="true" Color="ThemeColor.Success" Icon="BootstrapIcon.Download"
+                                                          Spinner="@Loading" Enabled="@(!Loading && UserSeries is not null)" CssClass="w-100 mb-2">
+                                                    Hinzufügen
+                                                </HxButton>
+                                            }
+                                            else
+                                            {
+                                                <HxAlert Color="ThemeColor.Secondary" CssClass="mt-3">
+                                                    <HxIcon Icon="@BootstrapIcon.ExclamationCircle" />
+                                                    <span class="ms-2">Füge erst die Serie zu deinen Remindern hinzu!</span>
+                                                </HxAlert>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                        <div class="mt-3">
+                            <HxIcon Icon="@BootstrapIcon.ExclamationCircleFill" CssClass="ms-1 me-1"/>
+                            Um Reminder hinzuzufügen und Episoden herunterzuladen musst du zuerst einen Account verifizieren!
+                        </div>
+                    </HxAlert>
                 }
             </div>
         </div>
@@ -395,10 +411,6 @@
 
     private HxModal? LanguageSelectionModal;
 
-    private string? QuickSearchSeriesName { get; set; }
-
-    private ReminderModel Reminder = new();
-
     private bool GerDub { get; set; }
     private bool GerSub { get; set; }
     private bool EngDub { get; set; }
@@ -432,7 +444,16 @@
     protected override void OnParametersSet()
     {
         if (string.IsNullOrEmpty(SeriesUrlPath))
-            NavigationManager.NavigateTo("");
+        {
+            if (AuthService.User is null)
+            {
+                NavigationManager.NavigateTo(Routes.Index);
+            }
+            else
+            {
+                NavigationManager.NavigateTo(Routes.Dashboard);
+            }
+        }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -453,11 +474,14 @@
                 return;
             }
 
-            UserSeries = await ApiService.GetAsync<SeriesModel?>("getUserSeries", new() { { "seriesPath", SeriesUrlPath! } });
-
-            if (UserSeries is not null)
+            if (AuthService.User is not null)
             {
-                SetLanguages(UserSeries);
+                UserSeries = await ApiService.GetAsync<SeriesModel?>("getUserSeries", new() { { "seriesPath", SeriesUrlPath! } });
+
+                if (UserSeries is not null)
+                {
+                    SetLanguages(UserSeries);
+                }
             }
 
             LoadingInfo = false;
@@ -466,14 +490,6 @@
 
 
         await base.OnAfterRenderAsync(firstRender);
-    }
-
-    private void Quicksearch()
-    {
-        if (string.IsNullOrWhiteSpace(QuickSearchSeriesName))
-            return;
-
-        NavigationManager.NavigateTo($"{Routes.Search}/{QuickSearchSeriesName}");
     }
 
     private Language GetLanguages()

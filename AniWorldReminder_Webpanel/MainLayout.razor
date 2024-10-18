@@ -3,9 +3,7 @@
 @inject NavigationManager NavManager
 @inject IHxMessengerService ToastService
 
-<div class="d-md-flex min-vh-100">
-    @if (!NavManager.Uri.Contains(Routes.Login) && !NavManager.Uri.Contains(Routes.Verify))
-    {
+<div class="d-md-flex min-vh-100">   
         @if (LoggedIn)
         {
             <AuthorizedNavComponent></AuthorizedNavComponent>
@@ -13,8 +11,7 @@
         else
         {
             <UnauthorizedNavComponent InProgress="@InProgress"></UnauthorizedNavComponent>
-        }
-    }
+        }    
     <HxMessenger CssClass="mx-3 my-3" Position="ToastContainerPosition.BottomEnd" />
     <div class="main px-4 flex-grow-1 overflow-hidden">
         <div class="d-none d-md-block pt-4"></div>
@@ -49,7 +46,7 @@
 
     private async Task CheckLogin()
     {
-        if (NavManager.Uri.Contains("/verify"))
+        if (NavManager.Uri.Contains(Routes.Verify))
             return;
 
         InProgress = true;

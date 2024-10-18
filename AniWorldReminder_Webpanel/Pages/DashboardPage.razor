@@ -1,5 +1,4 @@
 ﻿@attribute [Route(Routes.Dashboard)]
-@attribute [Route(Routes.Index)]
 @inject IHxMessengerService ToastService
 @inject IApiService ApiService
 @inject IAuthenticationService AuthService
@@ -7,9 +6,9 @@
 @inject ILocalStorageService LocalStorageService
 @using System.Diagnostics
 
-<PageTitle>Dashboard: Verwalte deine Serien Reminder</PageTitle>
+<PageTitle>Dashboard: Verwalte deine Serien</PageTitle>
 <div class="container">
-    <EditForm Model="@Reminder" OnValidSubmit="@(() => SearchSeriesDashboard())">
+    <EditForm Model="@SeriesSearch" OnValidSubmit="@(() => SearchSeriesDashboard())">
         <div class="row">
             <div class="col-12 col-md-8">
                 <HxInputText Label="Serien Name" @bind-Value="@SearchSeriesName" Placeholder="Jujutsu Kaisen" />
@@ -120,7 +119,7 @@
 
     private bool Loading { get; set; }
 
-    private ReminderModel Reminder = new();
+    private SeriesSearchModel SeriesSearch = new();
 
     private TimeSpan RequestDuration { get; set; } = TimeSpan.Zero;
 
@@ -221,7 +220,7 @@
 
         UserSeries?.Clear();
 
-        if (string.IsNullOrEmpty(SearchSeriesName))
+        if (string.IsNullOrWhiteSpace(SearchSeriesName))
         {
             Loading = true;
             StateHasChanged();
@@ -261,7 +260,7 @@
         {
             SeriesModel series = new()
                 {
-                    Name = searchResult.Title,
+                    Name = searchResult.Name,
                     CoverArtUrl = searchResult.CoverArtUrl,
                     IsSearchResult = true,
                     Link = searchResult.Link,
