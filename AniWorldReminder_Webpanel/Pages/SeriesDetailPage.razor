@@ -271,11 +271,11 @@
                                     <HxIcon CssClass="d-inline fs-5" Icon="BootstrapIcon.Translate"></HxIcon>
                                     <h5 class="d-inline px-2 @(AuthService.User is null ? "text-secondary" : "text-white")">Sprache:</h5>
                                 </div>
-                                <HxCheckbox Enabled="@(AuthService.User is null)" TextCssClass="text-warning" Inline="true" @bind-Value="GerDub" Text="Deutsch" />
-                                <HxCheckbox Enabled="@(AuthService.User is null)" TextCssClass="text-warning" Inline="true" @bind-Value="GerSub" CssClass="mt-2" Text="Deutsch Untertitel" />
-                                <HxCheckbox Enabled="@(AuthService.User is null)" TextCssClass="text-warning" Inline="true" @bind-Value="EngDub" CssClass="mt-2" Text="Englisch" />
-                                <HxCheckbox Enabled="@(AuthService.User is null)" TextCssClass="text-warning" Inline="true" @bind-Value="EngSub" CssClass="mt-2" Text="Englisch Untertitel" />
-                                <HxCheckbox Enabled="@(AuthService.User is null)" TextCssClass="text-warning" Inline="true" @bind-Value="EngDubGerSub" CssClass="mt-2" Text="Englisch - Deutsch Untertitel" />
+                                <HxCheckbox Enabled="@(AuthService.User is not null)" TextCssClass="text-warning" Inline="true" @bind-Value="GerDub" Text="Deutsch" />
+                                <HxCheckbox Enabled="@(AuthService.User is not null)" TextCssClass="text-warning" Inline="true" @bind-Value="GerSub" CssClass="mt-2" Text="Deutsch Untertitel" />
+                                <HxCheckbox Enabled="@(AuthService.User is not null)" TextCssClass="text-warning" Inline="true" @bind-Value="EngDub" CssClass="mt-2" Text="Englisch" />
+                                <HxCheckbox Enabled="@(AuthService.User is not null)" TextCssClass="text-warning" Inline="true" @bind-Value="EngSub" CssClass="mt-2" Text="Englisch Untertitel" />
+                                <HxCheckbox Enabled="@(AuthService.User is not null)" TextCssClass="text-warning" Inline="true" @bind-Value="EngDubGerSub" CssClass="mt-2" Text="Englisch - Deutsch Untertitel" />
                                 @if (ShowLanguageError)
                                 {
                                     <HxAlert Color="ThemeColor.Danger" CssClass="mt-3 mb-2">
