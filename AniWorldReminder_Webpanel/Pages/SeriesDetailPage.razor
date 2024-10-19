@@ -237,27 +237,29 @@
                     </BodyTemplate>
                 </HxCard>
             </div>
-            <div class="d-none d-md-block col-sm-7 col-md-7 col-lg-8 col-xl-9 col-xxl-9 mt-3">
-                <div class="border rounded">
-                    @if (LoadingInfo)
-                    {
-                        <div class="text-center my-4">
-                            <HxSpinner CssClass="text-center" Size="SpinnerSize.Regular"></HxSpinner>
-                        </div>
-                    }
-                    else
-                    {
-                        if (SeriesInfo is not null && !string.IsNullOrWhiteSpace(SeriesInfo.DirectLink))
+            <div class="col-sm-7 col-md-7 col-lg-8 col-xl-9 col-xxl-9">
+                <div class="mt-3 mb-2">
+                    <div class="d-none d-md-block border rounded">
+                        @if (LoadingInfo)
                         {
-                            <p class="p-3 pb-0">@SeriesInfo.Description<a target="_blank" href="@SeriesInfo.DirectLink" class="text-primary d-inline mx-2">mehr anzeigen</a></p>
+                            <div class="text-center my-4">
+                                <HxSpinner CssClass="text-center" Size="SpinnerSize.Regular"></HxSpinner>
+                            </div>
                         }
-                    }
+                        else
+                        {
+                            if (SeriesInfo is not null && !string.IsNullOrWhiteSpace(SeriesInfo.DirectLink))
+                            {
+                                <p class="p-3 pb-0">@SeriesInfo.Description<a target="_blank" href="@SeriesInfo.DirectLink" class="text-primary d-inline mx-2">mehr anzeigen</a></p>
+                            }
+                        }
+                    </div>
                 </div>
                 @if (SeriesInfo is not null && SeriesInfo.StreamingPortal != StreamingPortal.MegaKino)
                 {
                     @if (AuthService.User is null)
                     {
-                        <HxAlert Color="ThemeColor.Danger" CssClass="mt-2 mb-0">
+                        <HxAlert Color="ThemeColor.Danger" CssClass="mb-0">
                             <HxIcon Icon="@BootstrapIcon.ExclamationCircleFill" CssClass="ms-1 me-1" />
                             Um Reminder hinzuzufügen und Episoden herunterzuladen musst du zuerst einen Account verifizieren!
                         </HxAlert>
