@@ -18,7 +18,7 @@
         @if (SearchResults is not null && SearchResults.Any())
         {
             <h4>Aktuell beliebt</h4>
-            <SeriesSearchResultsComponent SearchResults="@SearchResults"></SeriesSearchResultsComponent>
+            <SeriesSearchResultsComponent SearchResults="@SearchResults" Referer="@Routes.Index"></SeriesSearchResultsComponent>
         }
     </div>
 </EditForm>

@@ -11,19 +11,19 @@
                 ImageSrc="@searchResult.CoverArtUrl"
                 ImageHeight="330"
                 style="width: 245px;"
-                CssClass="mt-3 mx-2 px-2 rounded glass border-0"
+                CssClass="mt-3 mx-2 px-2 rounded glassPopular border-0"
                 HeaderCssClass="bg-transparent border border-0">
             <HeaderTemplate>
                 @switch (searchResult.StreamingPortal)
                 {
                     case StreamingPortal.AniWorld:
-                        <div class="text-warning fw-light text-center" style="font-family: 'Roboto', sans-serif;"><HxIcon CssClass="px-2 fs-4 align-middle" Icon="BootstrapIcon.Cloud"></HxIcon>AniWorld</div>
+                        <div class="text-warning fw-light text-center" style="font-family: 'Roboto', sans-serif;"><HxIcon CssClass="px-2 fs-4 align-middle" Icon="BootstrapIcon.Heart"></HxIcon>AniWorld</div>
                         break;
                     case StreamingPortal.STO:
-                        <div class="text-warning fw-light text-center" style="font-family: 'Roboto', sans-serif;"><HxIcon CssClass="px-2 fs-4 align-middle" Icon="BootstrapIcon.Cloud"></HxIcon>S.TO</div>
+                        <div class="text-warning fw-light text-center" style="font-family: 'Roboto', sans-serif;"><HxIcon CssClass="px-2 fs-4 align-middle" Icon="BootstrapIcon.Heart"></HxIcon>S.TO</div>
                         break;
                     case StreamingPortal.MegaKino:
-                        <div class="text-warning fw-light text-center" style="font-family: 'Roboto', sans-serif;"><HxIcon CssClass="px-2 fs-4 align-middle" Icon="BootstrapIcon.Cloud"></HxIcon>MegaKino</div>
+                        <div class="text-warning fw-light text-center" style="font-family: 'Roboto', sans-serif;"><HxIcon CssClass="px-2 fs-4 align-middle" Icon="BootstrapIcon.Heart"></HxIcon>MegaKino</div>
                         break;
                     default:
                         break;
@@ -43,10 +43,13 @@
     [Parameter]
     public List<SearchResultModel> SearchResults { get; set; }
 
+    [Parameter]
+    public string Referer { get; set; }
+
     private bool Loading { get; set; }
 
     private void NavigateToDetail(SearchResultModel searchResult)
     {
-        NavigationManager.NavigateTo(Routes.MediaDetail + $"{searchResult.Path}?referer={Routes.Index}&hoster={searchResult.StreamingPortal}");
+        NavigationManager.NavigateTo(Routes.MediaDetail + $"{searchResult.Path}?referer={Referer}&hoster={searchResult.StreamingPortal}");
     }
 }

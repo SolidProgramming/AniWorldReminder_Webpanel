@@ -7,37 +7,48 @@
 @using System.Diagnostics
 
 <PageTitle>Dashboard: Verwalte deine Serien</PageTitle>
+
 <div class="container">
-    <EditForm Model="@SeriesSearch" OnValidSubmit="@(() => SearchSeriesDashboard())">
-        <div class="row">
-            <div class="col-12 col-md-8">
-                <HxInputText Label="Serien Name" @bind-Value="@SearchSeriesName" Placeholder="Jujutsu Kaisen" />
-            </div>
-            <div class="col-12 col-md-4 d-flex align-items-center">                
-                <div>
-                    <div class="mt-4 d-none d-md-block"></div>
-                    <div class="mt-3 d-sm-block"></div>
-                    <input id="chbSearchSeries" type="checkbox" class="form-check-input" @bind-value=SearchSeries checked=@SearchSeries />
-                    <label for="chbSearchSeries" class="ps-1">Serien</label>
-                    <input id="chbSearchFilms" type="checkbox" class="form-check-input ms-2" @bind-value=SearchFilms checked=@SearchFilms />
-                    <label for="chbSearchFilms" class="ps-1">Filme</label>
+    <div class="mb-3">
+        <EditForm Model="@SeriesSearch" OnValidSubmit="@(() => SearchSeriesDashboard())">
+            <div class="row">
+                <div class="col-12 col-md-8">
+                    <HxInputText Label="Serien Name" @bind-Value="@SearchSeriesName" Placeholder="Jujutsu Kaisen" />
+                </div>
+                <div class="col-12 col-md-4 d-flex align-items-center">
+                    <div>
+                        <div class="mt-4 d-none d-md-block"></div>
+                        <div class="mt-3 d-sm-block"></div>
+                        <input id="chbSearchSeries" type="checkbox" class="form-check-input" @bind-value=SearchSeries checked=@SearchSeries />
+                        <label for="chbSearchSeries" class="ps-1">Serien</label>
+                        <input id="chbSearchFilms" type="checkbox" class="form-check-input ms-2" @bind-value=SearchFilms checked=@SearchFilms />
+                        <label for="chbSearchFilms" class="ps-1">Filme</label>
+                    </div>
                 </div>
             </div>
-        </div>
-        <HxSubmit Color="ThemeColor.Primary" CssClass="w-100 mb-5" Spinner="Loading" Enabled="@(!Loading)">Serie suchen</HxSubmit>
-    </EditForm>
-
+            <HxSubmit Color="ThemeColor.Primary" CssClass="w-100" Spinner="Loading" Enabled="@(!Loading)">Serie suchen</HxSubmit>
+        </EditForm>
+    </div>
     @if (UserSeries is not null && !Loading)
     {
-        <div class="row justify-content-around">
-            <div class="col-sm-6 col-md-5 col-lg-6 pb-2 d-none d-sm-block">
+        <div class="row justify-content-between">
+            <div class="col-sm-6 col-md-6 col-lg-4 pb-2 d-none d-sm-block">
                 <h3 class="d-inline">Dashboard</h3>
-                <HxBadge CssClass="ms-3 d-none d-md-inline-block" Color="ThemeColor.Success">@(UserSeries.Count)x</HxBadge>
-                <HxIcon CssClass="ms-2 opacity-25 d-none d-lg-inline-block" Icon="BootstrapIcon.Stopwatch"></HxIcon>
-                <small class="opacity-25 d-none d-lg-inline-block">@($"{RequestDuration:s\\.fff}s")</small>
+                <HxBadge CssClass="ms-3 d-none d-md-inline-block me-2" Color="ThemeColor.Success">@(UserSeries.Count)x</HxBadge>
+                <div class="d-none d-lg-inline-block">
+                    <HxIcon CssClass="opacity-25" Icon="BootstrapIcon.Stopwatch"></HxIcon>
+                    <small class="opacity-25">@($"{RequestDuration:s\\.fff}s")</small>
+                </div>
             </div>
-            <div class="col-12 col-sm-6 col-md-5 col-lg-6 text-center">
-                <div class="d-inline float-sm-end">
+            <div class="col-12 col-sm-6 col-lg-3 text-center">               
+                <div class="d-inline">
+                    <HxButton CssClass="d-inline" @onclick="@(() => ShowPopularSeries = !ShowPopularSeries)" Spinner="@LoadingPopularSeries" Enabled="@(!Loading)" Color="ThemeColor.Dark" Icon="@(ShowPopularSeries ? BootstrapIcon.XLg : BootstrapIcon.App)">Beliebte Serien und Anime</HxButton>
+                </div>
+                <div class="d-block d-lg-none mb-2">
+                </div>
+            </div>
+            <div class="col-12 col-lg-4 text-center">
+                <div class="d-inline float-lg-end">
                     <HxButton Size="ButtonSize.Small" OnClick="SelectDateSorting" CssClass="d-inline" Color="@(SortingDateSelected ? ThemeColor.Warning : ThemeColor.Secondary)">Datum</HxButton>
                     <span class="d-inline">|</span>
                     <HxButton Size="ButtonSize.Small" OnClick="SelectNameSorting" CssClass="d-inline" Color="@(SortingNameSelected ? ThemeColor.Warning : ThemeColor.Secondary)">Name</HxButton>
@@ -53,6 +64,10 @@
             <HxIcon Icon="@BootstrapIcon.ExclamationCircleFill" />
             Es sieht so aus als hättest du noch keine Serien hinzugefügt! Starte eine Suche und füge deine erste Serie hinzu!
         </HxAlert>
+    }
+    @if (ShowPopularSeries)
+    {
+        <SeriesSearchResultsComponent SearchResults="@PopularSeries" Referer="@Routes.Dashboard"></SeriesSearchResultsComponent>
     }
     <div class="row justify-content-center">
         @if (UserSeries is not null)
@@ -118,12 +133,16 @@
     private List<SeriesModel>? UserSeries { get; set; }
 
     private bool Loading { get; set; }
+    private bool LoadingPopularSeries { get; set; }
 
     private SeriesSearchModel SeriesSearch = new();
+    private List<SearchResultModel> PopularSeries = new();
 
     private TimeSpan RequestDuration { get; set; } = TimeSpan.Zero;
 
     private string? SearchSeriesName;
+
+    private bool ShowPopularSeries { get; set; }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -160,6 +179,8 @@
 
             Loading = false;
             StateHasChanged();
+
+            await LoadPopularSeries();
         }
 
         MediaSearchOptionsModel mediaSearchOptionsNew = new()
@@ -254,7 +275,7 @@
                                                     new() {
                                                         { "seriesName", SearchSeriesName.ToLower() },
                                                         { "mediaType", searchMediaType.ToString() }
-                                                                                });
+                                                                                                                            });
 
         foreach (SearchResultModel searchResult in apiSearchResults)
         {
@@ -267,7 +288,7 @@
                     Path = searchResult.Path,
                     StreamingPortal = searchResult.StreamingPortal
                 };
-          
+
             allResults.Add(series);
         }
 
@@ -310,6 +331,17 @@
 
         UserSeries = UserSeries.OrderByDescending(_ => _.Added).ThenByDescending(_ => _.Id).ToList();
 
+        StateHasChanged();
+    }
+
+    private async Task LoadPopularSeries()
+    {
+        LoadingPopularSeries = true;
+        StateHasChanged();
+
+        PopularSeries = await ApiService.GetAsync<List<SearchResultModel>?>("getPopular");
+
+        LoadingPopularSeries = false;
         StateHasChanged();
     }
 }
