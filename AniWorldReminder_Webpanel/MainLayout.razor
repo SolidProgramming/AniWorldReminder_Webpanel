@@ -66,7 +66,7 @@
         await AuthService.Initialize();
 
         InProgress = false;
-        if (AuthService.User is null || string.IsNullOrEmpty(AuthService.User.Username))
+        if (AuthService.User is null)
         {
             LoggedIn = false;
         }

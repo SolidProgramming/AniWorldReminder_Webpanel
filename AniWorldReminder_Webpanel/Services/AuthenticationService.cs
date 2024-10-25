@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Components;
-
+﻿
 namespace AniWorldReminder_Webpanel.Services
 {
     public class AuthenticationService(IApiService apiService, ILocalStorageService localStorageService) : IAuthenticationService
