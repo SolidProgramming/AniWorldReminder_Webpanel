@@ -311,7 +311,7 @@
                                                                             Label="Episoden"
                                                                             Data="@season.Episodes.Take(ShowEpisodeCount)"
                                                                             ItemSortKeySelector="@(episode => episode.Episode)"
-                                                                            ItemTextSelector="@(episode => episode.Name)"
+                                                                            ItemTextSelector="@(episode => $"[{episode.Episode}] {episode.Name}")"
                                                                             ItemValueSelector="@(episode => episode)"
                                                                             @bind-Value="SelectedDownloadEpisodes" />
                                                             @if (season.Episodes.Count > ShowEpisodeCount)
