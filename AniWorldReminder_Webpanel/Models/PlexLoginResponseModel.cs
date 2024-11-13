@@ -3,79 +3,79 @@ namespace AniWorldReminder_Webpanel.Models
 {
     public class Roles
     {
-        [JsonProperty("roles")]
+        [JsonPropertyName("roles")]
         public List<string> Role { get; set; }
     }
 
     public class PlexLoginResponseModel
     {
-        [JsonProperty("user")]
+        [JsonPropertyName("user")]
         public User User { get; set; }
     }
 
     public class Subscription
     {
-        [JsonProperty("active")]
+        [JsonPropertyName("active")]
         public bool Active { get; set; }
 
-        [JsonProperty("status")]
+        [JsonPropertyName("status")]
         public string Status { get; set; }
 
-        [JsonProperty("plan")]
+        [JsonPropertyName("plan")]
         public string Plan { get; set; }
 
-        [JsonProperty("features")]
+        [JsonPropertyName("features")]
         public List<string> Features { get; set; }
     }
 
     public class User
     {
-        [JsonProperty("id")]
+        [JsonPropertyName("id")]
         public int Id { get; set; }
 
-        [JsonProperty("uuid")]
+        [JsonPropertyName("uuid")]
         public string Uuid { get; set; }
 
-        [JsonProperty("email")]
+        [JsonPropertyName("email")]
         public string Email { get; set; }
 
-        [JsonProperty("joined_at")]
+        [JsonPropertyName("joined_at")]
         public DateTime JoinedAt { get; set; }
 
-        [JsonProperty("username")]
+        [JsonPropertyName("username")]
         public string Username { get; set; }
 
-        [JsonProperty("title")]
+        [JsonPropertyName("title")]
         public string Title { get; set; }
 
-        [JsonProperty("thumb")]
+        [JsonPropertyName("thumb")]
         public string Thumb { get; set; }
 
-        [JsonProperty("hasPassword")]
+        [JsonPropertyName("hasPassword")]
         public bool HasPassword { get; set; }
 
-        [JsonProperty("authToken")]
+        [JsonPropertyName("authToken")]
         public string AuthToken { get; set; }
 
-        [JsonProperty("authentication_token")]
+        [JsonPropertyName("authentication_token")]
         public string AuthenticationToken { get; set; }
 
-        [JsonProperty("subscription")]
+        [JsonPropertyName("subscription")]
         public Subscription Subscription { get; set; }
 
-        [JsonProperty("roles")]
+        [JsonPropertyName("roles")]
         public Roles Roles { get; set; }
 
-        [JsonProperty("entitlements")]
+        [JsonPropertyName("entitlements")]
         public List<string> Entitlements { get; set; }
 
-        [JsonProperty("confirmedAt")]
+        [JsonPropertyName("confirmedAt")]
         public DateTime ConfirmedAt { get; set; }
 
-        [JsonProperty("forumId")]
+        [JsonPropertyName("forumId")]
         public object ForumId { get; set; }
 
-        [JsonProperty("rememberMe")]
+        [JsonPropertyName("rememberMe")]
         public bool RememberMe { get; set; }
     }
 

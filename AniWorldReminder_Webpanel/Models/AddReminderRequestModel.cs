@@ -2,7 +2,7 @@
 
 namespace AniWorldReminder_Webpanel.Models
 {
-     public class AddReminderRequestModel
+    public class AddReminderRequestModel
     {
         [JsonPropertyName("seriesPath")]
         public string? SeriesPath { get; set; }

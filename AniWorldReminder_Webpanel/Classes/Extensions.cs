@@ -25,7 +25,7 @@ namespace AniWorldReminder_Webpanel.Classes
 
         public static string? HtmlDecode(this string? text)
         {
-            return (string.IsNullOrEmpty(text) ? default : HttpUtility.HtmlDecode(text));
+            return ( string.IsNullOrEmpty(text) ? default : HttpUtility.HtmlDecode(text) );
         }
     }
 }

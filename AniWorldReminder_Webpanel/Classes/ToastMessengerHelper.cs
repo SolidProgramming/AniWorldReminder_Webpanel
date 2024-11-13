@@ -1,7 +1,7 @@
-﻿using Havit.Blazor.Components.Web.Bootstrap;
-using Havit.Blazor.Components.Web;
-using Microsoft.AspNetCore.Components.Rendering;
+﻿using Havit.Blazor.Components.Web;
+using Havit.Blazor.Components.Web.Bootstrap;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Rendering;
 using System.Net;
 
 namespace AniWorldReminder_Webpanel.Classes

@@ -1,7 +1,8 @@
 ﻿namespace AniWorldReminder_Webpanel.Models
 {
     public class OverseerrLoginResponseModel
-    {        public int permissions { get; set; }
+    {
+        public int permissions { get; set; }
         public int id { get; set; }
         public string email { get; set; }
         public string plexUsername { get; set; }

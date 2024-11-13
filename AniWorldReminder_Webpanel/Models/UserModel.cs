@@ -8,7 +8,7 @@ namespace AniWorldReminder_Webpanel.Models
         public string? Username { get; set; }
 
         [Required(ErrorMessage = "Passwort fehlt!")]
-        public string? Password { get; set; } 
+        public string? Password { get; set; }
         public string? Token { get; set; }
     }
 }

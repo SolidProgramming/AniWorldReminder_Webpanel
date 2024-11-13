@@ -4,16 +4,16 @@
 @inject IAuthenticationService AuthService
 @inject NavigationManager NavigationManager
 @inject ILocalStorageService LocalStorageService
+@inject ICacheHelperService CacheHelperService
 @using System.Diagnostics
 
 <PageTitle>Dashboard: Verwalte deine Serien</PageTitle>
-
 <div class="container">
     <div class="mb-3">
         <EditForm Model="@SeriesSearch" OnValidSubmit="@(() => SearchSeriesDashboard())">
             <div class="row">
                 <div class="col-12 col-md-8">
-                    <HxInputText Label="Serien Name" @bind-Value="@SearchSeriesName" Placeholder="Jujutsu Kaisen" />
+                    <HxInputText @ref="@SearchInput" Label="Serien Name" @bind-Value="@SearchSeriesName" Placeholder="Jujutsu Kaisen" />
                 </div>
                 <div class="col-12 col-md-4 d-flex align-items-center">
                     <div>
@@ -109,7 +109,7 @@
                 </HxCard>
             }
         }
-        else
+        else if (UserSeries is null && Loading)
         {
             <div class="mt-4 d-flex align-items-center justify-content-center text-secondary">
                 <HxSpinner Size="SpinnerSize.Regular"></HxSpinner>
@@ -125,7 +125,7 @@
     private bool SortingDateSelected { get; set; } = true;
 
     private bool SearchSeries { get; set; } = true;
-    private bool SearchFilms { get; set; } = true;
+    private bool SearchFilms { get; set; } = false;
     private bool ShowEmptyDashboardInfo { get; set; }
 
     private bool IsSearchView { get; set; } = false;
@@ -144,32 +144,54 @@
 
     private bool ShowPopularSeries { get; set; }
 
+    private HxInputText? SearchInput;
+
+    private bool CacheUpdateNeeded { get; set; } = true;
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        Stopwatch stopwatch = Stopwatch.StartNew();
+        await SearchInput!.FocusAsync();
 
         await AuthService.Initialize();
 
+        if (AuthService.User is null)
+        {
+            NavigationManager.NavigateTo(Routes.Index);
+            return;
+        }
+
         if (firstRender)
         {
+            Stopwatch stopwatch = Stopwatch.StartNew();
+
             Loading = true;
             StateHasChanged();
 
             await LoadPopularSeries();
 
-            MediaSearchOptionsModel? mediaSearchOptions = await LocalStorageService.GetItem<MediaSearchOptionsModel>("MediaSearchOptions");
+            // MediaSearchOptionsModel? mediaSearchOptions = await LocalStorageService.GetItem<MediaSearchOptionsModel>("MediaSearchOptions");
 
-            if (mediaSearchOptions is not null)
+            // if (mediaSearchOptions is not null)
+            // {
+            //     SearchSeries = mediaSearchOptions.SearchSeries;
+            //     SearchFilms = mediaSearchOptions.SearchFilms;
+            // }
+
+            string cachePath = $"UserSeries@{AuthService.User.Token}";
+            UserSeries = await CacheHelperService.GetCacheAsync<List<SeriesModel>>(cachePath);
+
+            if (UserSeries is null)
             {
-                SearchSeries = mediaSearchOptions.SearchSeries;
-                SearchFilms = mediaSearchOptions.SearchFilms;
-            }
+                UserSeries = await ApiService.GetAsync<List<SeriesModel>?>("getAllUserSeries");
+                await CacheHelperService.SetCacheAsync(cachePath, UserSeries, 30);
 
-            UserSeries = await ApiService.GetAsync<List<SeriesModel>?>("getAllUserSeries");
+                CacheUpdateNeeded = false;
+            }
 
             if (UserSeries is not null)
             {
                 UserSeries = UserSeries.OrderByDescending(_ => _.Added).ThenByDescending(_ => _.Id).ToList();
+                CacheUpdateNeeded = true;
             }
             else
             {
@@ -181,6 +203,8 @@
 
             Loading = false;
             StateHasChanged();
+
+            UpdateUserSeriesCache();
         }
 
         MediaSearchOptionsModel mediaSearchOptionsNew = new()
@@ -189,9 +213,39 @@
                 SearchSeries = this.SearchSeries
             };
 
-        await LocalStorageService.SetItem("MediaSearchOptions", mediaSearchOptionsNew);
+        //await LocalStorageService.SetItem("MediaSearchOptions", mediaSearchOptionsNew);
+    }
 
-        await base.OnAfterRenderAsync(firstRender);
+    private async Task UpdateUserSeriesCache()
+    {
+        if (!CacheUpdateNeeded || AuthService.User is null)
+            return;
+
+        string cachePath = $"UserSeries@{AuthService.User.Token}";
+
+        List<SeriesModel> updatedUserSeries = await ApiService.GetAsync<List<SeriesModel>?>("getAllUserSeries");
+
+        List<SeriesModel> diffUserSeries1 = UserSeries.Except(updatedUserSeries, new SeriesEqualityComparer()).ToList();
+        List<SeriesModel> diffUserSeries2 = updatedUserSeries.Except(UserSeries, new SeriesEqualityComparer()).ToList();
+
+        if (diffUserSeries1.Count > 0)
+        {
+            foreach (SeriesModel series in diffUserSeries1)
+            {
+                UserSeries.Remove(series);
+            }
+        }
+
+        if (diffUserSeries2.Count > 0)
+        {
+            UserSeries.AddRange(diffUserSeries2);
+        }
+
+        await CacheHelperService.SetCacheAsync(cachePath, UserSeries, 10);
+
+        UserSeries = UserSeries.OrderByDescending(_ => _.Added).ThenByDescending(_ => _.Id).ToList();
+
+        StateHasChanged();
     }
 
     private async Task RemoveReminder(string seriesPath)
@@ -268,14 +322,13 @@
         Loading = true;
         StateHasChanged();
 
-        MediaType searchMediaType = ( SearchSeries ? MediaType.Series : MediaType.Undefined ) |
-                                    ( SearchFilms ? MediaType.Films : MediaType.Undefined );
+        MediaType searchMediaType = (SearchSeries ? MediaType.Series : MediaType.Undefined); // | (SearchFilms ? MediaType.Films : MediaType.Undefined)
 
         List<SearchResultModel>? apiSearchResults = await ApiService.GetAsync<List<SearchResultModel>?>("getSeries",
                                                     new() {
                                                         { "seriesName", SearchSeriesName.ToLower() },
                                                         { "mediaType", searchMediaType.ToString() }
-                                                                                                                                    });
+                                                                                                                                                        });
 
         foreach (SearchResultModel searchResult in apiSearchResults)
         {
@@ -339,7 +392,17 @@
         LoadingPopularSeries = true;
         StateHasChanged();
 
-        PopularSeries = await ApiService.GetAsync<List<SearchResultModel>?>("getPopular");
+        List<SearchResultModel>? cachedPopularSeries = await CacheHelperService.GetCacheAsync<List<SearchResultModel>>(nameof(PopularSeries));
+
+        if (cachedPopularSeries is not null && cachedPopularSeries.Count > 0)
+        {
+            PopularSeries = cachedPopularSeries;
+        }
+        else
+        {
+            PopularSeries = await ApiService.GetAsync<List<SearchResultModel>?>("getPopular");
+            await CacheHelperService.SetCacheAsync(nameof(PopularSeries), PopularSeries, 30);
+        }
 
         LoadingPopularSeries = false;
         StateHasChanged();

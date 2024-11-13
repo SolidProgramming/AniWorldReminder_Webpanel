@@ -224,7 +224,7 @@ namespace AniWorldReminder_Webpanel.Models
         public object? PosterPath { get; set; }
 
         [JsonPropertyName("season_number")]
-        public int?  SeasonNumber { get; set; }
+        public int? SeasonNumber { get; set; }
 
         [JsonPropertyName("vote_average")]
         public decimal? VoteAverage { get; set; }

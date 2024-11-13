@@ -1,4 +1,4 @@
-﻿namespace AniWorldReminder_Webpanel.Classes
+﻿namespace AniWorldReminder_Webpanel.Models
 {
     public class SeriesInfoModel
     {

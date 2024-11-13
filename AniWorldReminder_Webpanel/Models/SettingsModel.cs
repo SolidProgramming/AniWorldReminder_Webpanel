@@ -2,7 +2,7 @@
 {
     public class SettingsModel
     {
-        [JsonProperty("ApiUrl")]
+        [JsonPropertyName("ApiUrl")]
         public string ApiUrl { get; set; } = default!;
     }
 }

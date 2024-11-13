@@ -7,7 +7,7 @@ namespace AniWorldReminder_Webpanel.Services
 
         public async Task Initialize()
         {
-            User = await localStorageService.GetItem<UserModel>("user");            
+            User = await localStorageService.GetItemAsync<UserModel>(nameof(User));
         }
 
         public async Task Login(string username, string password)
@@ -21,18 +21,18 @@ namespace AniWorldReminder_Webpanel.Services
             }
 
             User = new UserModel()
-            { 
+            {
                 Token = jwtResponse.Token,
                 Username = username
             };
 
-            await localStorageService.SetItem("user", User);
+            await localStorageService.SetItemAsync(nameof(User), User);
         }
 
         public async Task Logout()
         {
             User = null;
-            await localStorageService.RemoveItem("user");
+            await localStorageService.RemoveItemAsync(nameof(User));
         }
 
         public async Task<string?> GetAPIKey()
