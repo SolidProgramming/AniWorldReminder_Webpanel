@@ -74,12 +74,11 @@
         {
             foreach (SeriesModel series in UserSeries)
             {
-                <HxCard ImageAlt=""
-                        ImageSrc="@series.CoverArtUrl"
-                        ImageHeight="330"
+                <HxCard 
                         style="width: 245px;"
-                        CssClass="mt-3 mx-2 px-2 rounded glass border-0"
-                        HeaderCssClass="bg-transparent border border-0">
+                        CssClass="mt-3 mx-2 glass border-0 px-2"
+                        HeaderCssClass="bg-transparent border border-0"
+                BodyCssClass="p-0">
                     <HeaderTemplate>
                         @switch (series.StreamingPortal)
                         {
@@ -94,17 +93,20 @@
                                 break;
                             default:
                                 break;
-                        }
+                        }                        
                     </HeaderTemplate>
                     <BodyTemplate>
-                        <HxCardTitle CssClass="text-center">@series.Name</HxCardTitle>
-                        <HxCardSubtitle CssClass="mt-2">
-                            <HxButton OnClick="@(() => NavigateToDetail(series))" Spinner="@Loading" Enabled="@(!Loading)" Color="ThemeColor.Primary" Icon="BootstrapIcon.Forward" CssClass="w-100 mt-2">Anzeigen</HxButton>
-                            @if (!series.IsSearchResult)
-                            {
-                                <HxButton OnClick="@(() => RemoveReminder(series.Path))" Spinner="@Loading" Enabled="@(!Loading)" Color="ThemeColor.Warning" Outline="true" Icon="BootstrapIcon.XCircleFill" CssClass="w-100 mt-2">Entfernen</HxButton>
-                            }
-                        </HxCardSubtitle>
+                        <img loading="lazy" src="@series.CoverArtUrl" style="width: 100%" class="rounded" />
+                        <div class="pt-3 pb-3">
+                            <HxCardTitle CssClass="text-center py-2">@series.Name</HxCardTitle>
+                            <HxCardSubtitle CssClass="mt-2">
+                                <HxButton OnClick="@(() => NavigateToDetail(series))" Spinner="@Loading" Enabled="@(!Loading)" Color="ThemeColor.Primary" Icon="BootstrapIcon.Forward" CssClass="w-100 mt-2">Anzeigen</HxButton>
+                                @if (!series.IsSearchResult)
+                                {
+                                    <HxButton OnClick="@(() => RemoveReminder(series.Path))" Spinner="@Loading" Enabled="@(!Loading)" Color="ThemeColor.Warning" Outline="true" Icon="BootstrapIcon.XCircleFill" CssClass="w-100 mt-2">Entfernen</HxButton>
+                                }
+                            </HxCardSubtitle>
+                        </div>
                     </BodyTemplate>
                 </HxCard>
             }
