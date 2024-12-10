@@ -13,7 +13,7 @@
         <EditForm Model="@SeriesSearch" OnValidSubmit="@(() => SearchSeriesDashboard())">
             <div class="row">
                 <div class="col-12 col-md-8">
-                    <HxInputText @ref="@SearchInput" Label="Serien Name" @bind-Value="@SearchSeriesName" Placeholder="Jujutsu Kaisen" />
+                    <HxInputText Label="Serien Name" @bind-Value="@SearchSeriesName" Placeholder="Jujutsu Kaisen" />
                 </div>
                 <div class="col-12 col-md-4 d-flex align-items-center">
                     <div>
@@ -98,7 +98,9 @@
                     <BodyTemplate>
                         <img loading="lazy" src="@series.CoverArtUrl" style="width: 100%; height: 330px;" class="rounded" />
                         <div class="px-2 pt-3 pb-3">
-                            <HxCardTitle CssClass="text-center">@series.Name</HxCardTitle>
+                            <div style="min-height: 50px">
+                                <HxCardTitle CssClass="text-center">@series.Name</HxCardTitle>
+                            </div>
                             <HxCardSubtitle CssClass="mt-2">
                                 <HxButton OnClick="@(() => NavigateToDetail(series))" Spinner="@Loading" Enabled="@(!Loading)" Color="ThemeColor.Primary" Icon="BootstrapIcon.Forward" CssClass="w-100 mt-2">Anzeigen</HxButton>
                                 @if (!series.IsSearchResult)
@@ -146,14 +148,10 @@
 
     private bool ShowPopularSeries { get; set; }
 
-    private HxInputText? SearchInput;
-
     private bool CacheUpdateNeeded { get; set; } = true;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        await SearchInput!.FocusAsync();
-
+    {       
         await AuthService.Initialize();
 
         if (AuthService.User is null)
