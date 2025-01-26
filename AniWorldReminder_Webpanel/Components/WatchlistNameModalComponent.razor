@@ -1,0 +1,40 @@
+﻿@using System.ComponentModel.DataAnnotations;
+@inject IApiService ApiService
+
+<div class="container mt-2">
+    <EditForm Model="WatchlistModel" OnValidSubmit="CreateWatchlist">
+        <DataAnnotationsValidator />
+
+        <HxInputText @bind-Value="WatchlistModel.WatchlistName" Placeholder="Meine Favoriten"></HxInputText>
+
+        <HxSubmit Spinner="Loading" CssClass="w-100 mt-3" Color="ThemeColor.Success">Erstellen</HxSubmit>
+    </EditForm>
+</div>
+
+@code {
+    [EditorRequired]
+    [Parameter] public List<SeriesModel> Watchlist { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> OnSubmit { get; set; }
+
+    private WatchlistNameModel WatchlistModel = new();
+
+    private bool Loading { get; set; }
+
+    private async Task CreateWatchlist()
+    {
+        if (Watchlist is null || Watchlist.Count == 0)
+            return;
+
+        Loading = true;
+        StateHasChanged();
+
+        bool success = await ApiService.PostAsync<bool>("createWatchlist", new() { { "watchlistName", WatchlistModel.WatchlistName! } }, Watchlist);
+
+        Loading = false;
+        StateHasChanged();
+
+        await OnSubmit.InvokeAsync(success);
+    }
+}

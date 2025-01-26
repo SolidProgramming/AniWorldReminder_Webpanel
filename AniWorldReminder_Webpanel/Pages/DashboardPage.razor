@@ -8,6 +8,11 @@
 
 <PageTitle>Dashboard: Verwalte deine Serien</PageTitle>
 
+<HxModal Size="ModalSize.Regular" @ref="WatchlistNameModal" Title="Watchlist erstellen" Centered="true">
+    <BodyTemplate>
+        <WatchlistNameModalComponent Watchlist="Watchlist" onsubmit="OnWatchlistModalSubmit"></WatchlistNameModalComponent>
+    </BodyTemplate>
+</HxModal>
 <div class="container">
     <div class="mb-3">
         <EditForm Model="@SeriesSearch" OnValidSubmit="@(() => SearchSeriesDashboard())">
@@ -69,32 +74,71 @@
     {
         <SeriesSearchResultsComponent SearchResults="@PopularSeries" Referer="@Routes.Dashboard"></SeriesSearchResultsComponent>
     }
+    @if (Watchlist.Count > 0)
+    {
+        <div class="row mt-3">
+            <div class="col"></div>
+            <HxButton CssClass="col w-100" Color="ThemeColor.Success" Icon="BootstrapIcon.PlusLg" OnClick="(() => ShowWatchlistModal())">
+                Watchlist erstellen mit @(Watchlist.Count) Serien
+            </HxButton>
+            <div class="col"></div>
+        </div>
+    }
     <div class="row justify-content-center">
         @if (UserSeries is not null)
         {
             foreach (SeriesModel series in UserSeries)
             {
                 <HxCard ImageAlt=""
-                        ImageSrc="@series.CoverArtUrl"
-                        ImageHeight="330"
-                        style="width: 245px;"
-                        CssClass="mt-3 mx-2 px-2 rounded glass border-0"
-                        HeaderCssClass="bg-transparent border border-0">
+                ImageSrc="@series.CoverArtUrl"
+                ImageHeight="330"
+                style="width: 245px;"
+                CssClass="mt-3 mx-2 px-2 rounded glass border-0"
+                HeaderCssClass="bg-transparent border border-0 p-0 m-0">
                     <HeaderTemplate>
-                        @switch (series.StreamingPortal)
-                        {
-                            case StreamingPortal.AniWorld:
-                                <div class="text-warning fw-light text-center" style="font-family: 'Roboto', sans-serif;"><HxIcon CssClass="px-2 fs-4 align-middle" Icon="BootstrapIcon.Cloud"></HxIcon>AniWorld</div>
-                                break;
-                            case StreamingPortal.STO:
-                                <div class="text-warning fw-light text-center" style="font-family: 'Roboto', sans-serif;"><HxIcon CssClass="px-2 fs-4 align-middle" Icon="BootstrapIcon.Cloud"></HxIcon>S.TO</div>
-                                break;
-                            case StreamingPortal.MegaKino:
-                                <div class="text-warning fw-light text-center" style="font-family: 'Roboto', sans-serif;"><HxIcon CssClass="px-2 fs-4 align-middle" Icon="BootstrapIcon.Cloud"></HxIcon>MegaKino</div>
-                                break;
-                            default:
-                                break;
-                        }
+                        <div class="pt-2 pb-1">
+                            <div class="d-inline-flex">
+                                @if (Watchlist.Contains(series))
+                                {
+                                    <HxButton CssClass="px-1 m-0" Size="ButtonSize.Small" Color="ThemeColor.Secondary" OnClick="@(() => RemoveFromWatchlist(series))">
+                                        <HxIcon Icon="BootstrapIcon.Eye"></HxIcon>
+                                        <HxIcon Icon="BootstrapIcon.DashLg"></HxIcon>
+                                    </HxButton>
+                                }
+                                else
+                                {
+                                    <HxButton CssClass="px-1 m-0" Size="ButtonSize.Small" Color="ThemeColor.Success" OnClick="@(() => AddToWatchlist(series))">
+                                        <HxIcon Icon="BootstrapIcon.Eye"></HxIcon>
+                                        <HxIcon Icon="BootstrapIcon.PlusLg"></HxIcon>
+                                    </HxButton>
+                                }
+                            </div>
+                            <div class="d-inline-flex">
+                                @switch (series.StreamingPortal)
+                                {
+                                    case StreamingPortal.AniWorld:
+                                        <div class="ms-3 text-warning fw-light text-center" style="font-family: 'Roboto', sans-serif;">
+                                            <HxIcon CssClass="px-2 fs-4 align-middle" Icon="BootstrapIcon.Cloud"></HxIcon>
+                                            AniWorld
+                                        </div>
+                                        break;
+                                    case StreamingPortal.STO:
+                                        <div class="ms-4 text-warning fw-light text-center" style="font-family: 'Roboto', sans-serif;">
+                                            <HxIcon CssClass="px-2 fs-4 align-middle" Icon="BootstrapIcon.Cloud"></HxIcon>
+                                            S.TO
+                                        </div>
+                                        break;
+                                    case StreamingPortal.MegaKino:
+                                        <div class="ms-3 text-warning fw-light text-center" style="font-family: 'Roboto', sans-serif;">
+                                            <HxIcon CssClass="px-2 fs-4 align-middle" Icon="BootstrapIcon.Cloud"></HxIcon>
+                                            MegaKino
+                                        </div>
+                                        break;
+                                    default:
+                                        break;
+                                }
+                            </div>
+                        </div>
                     </HeaderTemplate>
                     <BodyTemplate>
                         <HxCardTitle CssClass="text-center">@series.Name</HxCardTitle>
@@ -143,6 +187,9 @@
     private string? SearchSeriesName;
 
     private bool ShowPopularSeries { get; set; }
+
+    private List<SeriesModel> Watchlist = [];
+    private HxModal WatchlistNameModal = new();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -268,14 +315,14 @@
         Loading = true;
         StateHasChanged();
 
-        MediaType searchMediaType = ( SearchSeries ? MediaType.Series : MediaType.Undefined ) |
-                                    ( SearchFilms ? MediaType.Films : MediaType.Undefined );
+        MediaType searchMediaType = (SearchSeries ? MediaType.Series : MediaType.Undefined) |
+                                    (SearchFilms ? MediaType.Films : MediaType.Undefined);
 
         List<SearchResultModel>? apiSearchResults = await ApiService.GetAsync<List<SearchResultModel>?>("getSeries",
                                                     new() {
                                                         { "seriesName", SearchSeriesName.ToLower() },
                                                         { "mediaType", searchMediaType.ToString() }
-                                                                                                                                    });
+                                                                                                                                                                                        });
 
         foreach (SearchResultModel searchResult in apiSearchResults)
         {
@@ -343,6 +390,36 @@
 
         LoadingPopularSeries = false;
         StateHasChanged();
+    }
+
+    private void AddToWatchlist(SeriesModel series)
+    {
+        Watchlist.Add(series);
+    }
+
+    private void RemoveFromWatchlist(SeriesModel series)
+    {
+        Watchlist.Remove(series);
+    }
+
+    private async void ShowWatchlistModal()
+    {
+        await WatchlistNameModal.ShowAsync();
+    }
+
+    private async void OnWatchlistModalSubmit(bool success)
+    {
+        await WatchlistNameModal.HideAsync();
+
+        if (success)
+        {
+            Watchlist.Clear();
+            StateHasChanged();
+
+            ToastService.AddMessage("Watchlist erfolgreich erstellt", MessageType.Success);
+        }else{
+            ToastService.AddMessage("Watchlist konnte nicht erstellt werden!", MessageType.Error);
+        }        
     }
 }
 

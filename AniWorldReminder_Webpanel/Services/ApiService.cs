@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.WebUtilities;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
-using Microsoft.AspNetCore.WebUtilities;
 using System.Xml.Serialization;
 
 namespace AniWorldReminder_Webpanel.Services
@@ -74,6 +74,14 @@ namespace AniWorldReminder_Webpanel.Services
             };
             return await SendRequest<bool>(request);
         }
+        public async Task<T?> PostAsync<T>(string uri, Dictionary<string, string> queryData, object body)
+        {
+            HttpRequestMessage request = new(HttpMethod.Post, new Uri(QueryHelpers.AddQueryString(HttpClient.BaseAddress + uri, queryData!)))
+            {
+                Content = new StringContent(System.Text.Json.JsonSerializer.Serialize(body), Encoding.UTF8, "application/json")
+            };
+            return await SendRequest<T>(request);
+        }
         public async Task<T?> PostAsyncWithPlexClientIndentifier<T>(string uri, PlexUserModel user)
         {
             HttpRequestMessage request = new(HttpMethod.Post, uri);
@@ -123,7 +131,7 @@ namespace AniWorldReminder_Webpanel.Services
 
                 return await response.Content.ReadFromJsonAsync<T?>();
             }
-            catch(TaskCanceledException)
+            catch (TaskCanceledException)
             {
                 return default;
             }
@@ -131,7 +139,7 @@ namespace AniWorldReminder_Webpanel.Services
             {
 
                 throw;
-            }  
+            }
         }
         private async Task<T?> SendRequestWithPlexClientIndentifier<T>(HttpRequestMessage request)
         {
@@ -167,7 +175,7 @@ namespace AniWorldReminder_Webpanel.Services
 
                 return await response.Content.ReadFromJsonAsync<T?>();
             }
-            catch(TaskCanceledException)
+            catch (TaskCanceledException)
             {
                 return default;
             }
@@ -175,7 +183,7 @@ namespace AniWorldReminder_Webpanel.Services
             {
 
                 throw;
-            }            
+            }
         }
     }
 }

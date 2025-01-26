@@ -13,5 +13,6 @@
         public const string CreateDownloader = "/createDownloader";
         public const string Downloads = "/downloads";
         public const string ThirdPartyApps = "/apps";
+        public const string Watchlists = "/watchlists";
     }
 }

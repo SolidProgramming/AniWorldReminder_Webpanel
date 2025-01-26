@@ -1,0 +1,18 @@
+﻿@attribute [Route(Routes.Watchlists)]
+@inject IHxMessengerService ToastService
+@inject IApiService ApiService
+@inject IAuthenticationService AuthService
+@inject NavigationManager NavigationManager
+@inject ILocalStorageService LocalStorageService
+
+
+<PageTitle>Verwalte deine Watchlists</PageTitle>
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        List<WatchlistModel>? watchlists = await ApiService.GetAsync<List<WatchlistModel>?>("getUserWatchlists");
+
+
+    }
+}

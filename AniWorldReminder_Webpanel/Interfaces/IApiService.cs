@@ -9,6 +9,7 @@
         Task<T?> GetAsync<T>(string uri, Dictionary<string, string> queryData, object body);
         Task<T?> GetAsync<T>(string uri, Dictionary<string, string> queryData);
         Task<T?> PostAsync<T>(string uri, object value);
+        Task<T?> PostAsync<T>(string uri, Dictionary<string, string> queryData, object body);
         Task<T?> PostAsyncWithPlexClientIndentifier<T>(string uri, PlexUserModel user);
         Task<bool> PostAsync(string uri, object value);
     }

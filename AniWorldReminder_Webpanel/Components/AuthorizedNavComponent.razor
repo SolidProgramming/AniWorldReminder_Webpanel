@@ -15,11 +15,16 @@
                 Dashboard
             </ContentTemplate>
         </HxSidebarItem>
+        <HxSidebarItem Icon="BootstrapIcon.ListCheck" Href="@Routes.Watchlists">
+            <ContentTemplate>
+                Watchlists
+            </ContentTemplate>
+        </HxSidebarItem>
         <HxSidebarItem Icon="BootstrapIcon.BoxSeam" Href="@Routes.CreateDownloader">
             <ContentTemplate>
                 Downloader
             </ContentTemplate>
-        </HxSidebarItem>
+        </HxSidebarItem>        
         @* <HxSidebarItem Icon="BootstrapIcon.DatabaseAdd" Href="@Routes.ThirdPartyApps" CssClass="pt-2 text-warning">
             <ContentTemplate>
                 Apps
@@ -32,6 +37,12 @@
                 {
                     <HxBadge Color="ThemeColor.Secondary" CssClass="ms-2">
                         @UserSeries.Count
+                    </HxBadge>
+                }
+                else if (UserSeries is not null && UserSeries.Count == 0)
+                {
+                    <HxBadge Color="ThemeColor.Secondary" CssClass="ms-2 text-dark">
+                        0
                     </HxBadge>
                 }
                 else
@@ -47,6 +58,11 @@
                 {
                     <HxBadge Color="ThemeColor.Warning" CssClass="ms-2 text-dark">
                         @DownloadCount
+                    </HxBadge>
+                }
+                else if (UserSeries is not null && UserSeries.Count == 0){
+                    <HxBadge Color="ThemeColor.Warning" CssClass="ms-2 text-dark">
+                        0
                     </HxBadge>
                 }
                 else
