@@ -90,11 +90,11 @@
             foreach (SeriesModel series in UserSeries)
             {
                 <HxCard ImageAlt=""
-                ImageSrc="@series.CoverArtUrl"
-                ImageHeight="330"
-                style="width: 245px;"
-                CssClass="mt-3 mx-2 px-2 rounded glass border-0"
-                HeaderCssClass="bg-transparent border border-0 p-0 m-0">
+                        ImageSrc="@series.CoverArtUrl"
+                        ImageHeight="330"
+                        style="width: 245px;"
+                        CssClass="mt-3 mx-2 px-2 rounded glass border-0"
+                        HeaderCssClass="bg-transparent border border-0 p-0 m-0">
                     <HeaderTemplate>
                         <div class="pt-2 pb-1">
                             <div class="d-inline-flex">
@@ -322,7 +322,7 @@
                                                     new() {
                                                         { "seriesName", SearchSeriesName.ToLower() },
                                                         { "mediaType", searchMediaType.ToString() }
-                                                                                                                                                                                        });
+                                                                                                                                                                                                        });
 
         foreach (SearchResultModel searchResult in apiSearchResults)
         {
@@ -417,9 +417,11 @@
             StateHasChanged();
 
             ToastService.AddMessage("Watchlist erfolgreich erstellt", MessageType.Success);
-        }else{
+        }
+        else
+        {
             ToastService.AddMessage("Watchlist konnte nicht erstellt werden!", MessageType.Error);
-        }        
+        }
     }
 }
 

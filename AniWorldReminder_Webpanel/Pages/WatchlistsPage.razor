@@ -8,11 +8,63 @@
 
 <PageTitle>Verwalte deine Watchlists</PageTitle>
 
+@if (Loading)
+{
+    <div class="position-absolute top-50 start-50 translate-middle">
+        <div class="d-flex align-items-center justify-content-center text-secondary">
+            <HxSpinner Size="SpinnerSize.Regular"></HxSpinner>
+            <span class="d-none d-sm-block ps-3 fs-5">Watchlist Daten abrufen...</span>
+        </div>
+    </div>
+}
+
+@if (watchlists is not null && watchlists.Count > 0)
+{
+    @foreach (WatchlistModel watchlist in watchlists)
+    {
+        <div class="p-2 border rounded">
+            <div class="text-center">
+                <h4>
+                    @watchlist.Name
+                    <HxBadge CssClass="" Color="ThemeColor.Success">@watchlist.Series.Count</HxBadge>
+                </h4>
+            </div>
+            @foreach (SeriesModel series in watchlist.Series)
+            {
+                <div class="row mt-2">
+                    <div class="d-inline">
+                        <img class="d-inline-block" src="@series.CoverArtUrl" style="height: 150px;" />
+                        <div class="ms-2 d-inline-block">
+                            <h5 class="d-block">@series.Name</h5>
+                            <span class="d-inline-block">Staffeln: <b>@series.SeasonCount</b></span>
+                            <span class="d-inline-block">Episoden: <b>@series.EpisodeCount</b></span>
+                            <HxButton Size="ButtonSize.Small" CssClass="ms-2" Icon="BootstrapIcon.ShareFill" Color="ThemeColor.Info"></HxButton>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+}
+
 @code {
+    private bool Loading { get; set; }
+
+    List<WatchlistModel>? watchlists;
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        List<WatchlistModel>? watchlists = await ApiService.GetAsync<List<WatchlistModel>?>("getUserWatchlists");
+        if (firstRender)
+        {
+            Loading = true;
+            StateHasChanged();
 
+            watchlists = await ApiService.GetAsync<List<WatchlistModel>?>("getUserWatchlists");
 
+            var grouped = watchlists.GroupBy(_ => _.Ident);
+
+            Loading = false;
+            StateHasChanged();
+        }
     }
 }
