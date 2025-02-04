@@ -94,7 +94,9 @@
                         ImageHeight="330"
                         style="width: 245px;"
                         CssClass="mt-3 mx-2 px-2 rounded glass border-0"
-                        HeaderCssClass="bg-transparent border border-0 p-0 m-0">
+                        HeaderCssClass="bg-transparent border border-0 p-0 m-0"
+                        FooterCssClass="border-0 bg-transparent mb-2"
+                        BodyCssClass="m-0 px-2">
                     <HeaderTemplate>
                         <div class="pt-2 pb-1">
                             <div class="d-inline-flex">
@@ -142,14 +144,14 @@
                     </HeaderTemplate>
                     <BodyTemplate>
                         <HxCardTitle CssClass="text-center">@series.Name</HxCardTitle>
-                        <HxCardSubtitle CssClass="mt-2">
-                            <HxButton OnClick="@(() => NavigateToDetail(series))" Spinner="@Loading" Enabled="@(!Loading)" Color="ThemeColor.Primary" Icon="BootstrapIcon.Forward" CssClass="w-100 mt-2">Anzeigen</HxButton>
-                            @if (!series.IsSearchResult)
-                            {
-                                <HxButton OnClick="@(() => RemoveReminder(series.Path))" Spinner="@Loading" Enabled="@(!Loading)" Color="ThemeColor.Warning" Outline="true" Icon="BootstrapIcon.XCircleFill" CssClass="w-100 mt-2">Entfernen</HxButton>
-                            }
-                        </HxCardSubtitle>
                     </BodyTemplate>
+                    <FooterTemplate>
+                        <HxButton OnClick="@(() => NavigateToDetail(series))" Spinner="@Loading" Enabled="@(!Loading)" Color="ThemeColor.Primary" Icon="BootstrapIcon.Forward" CssClass="w-100 mt-2">Anzeigen</HxButton>
+                        @if (!series.IsSearchResult)
+                        {
+                            <HxButton OnClick="@(() => RemoveReminder(series.Path))" Spinner="@Loading" Enabled="@(!Loading)" Color="ThemeColor.Warning" Outline="true" Icon="BootstrapIcon.XCircleFill" CssClass="w-100 mt-2">Entfernen</HxButton>
+                        }
+                    </FooterTemplate>
                 </HxCard>
             }
         }

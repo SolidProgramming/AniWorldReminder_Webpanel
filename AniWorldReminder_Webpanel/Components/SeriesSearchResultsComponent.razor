@@ -12,7 +12,9 @@
                 ImageHeight="330"
                 style="width: 245px;"
                 CssClass="mt-3 mx-2 px-2 rounded glassPopular border-0"
-                HeaderCssClass="bg-transparent border border-0">
+                HeaderCssClass="bg-transparent border border-0" 
+                FooterCssClass="border-0 bg-transparent mb-2"
+                BodyCssClass="m-0 px-2">
             <HeaderTemplate>
                 @switch (searchResult.StreamingPortal)
                 {
@@ -31,10 +33,10 @@
             </HeaderTemplate>
             <BodyTemplate>
                 <HxCardTitle CssClass="text-center">@searchResult.Name</HxCardTitle>
-                <HxCardSubtitle CssClass="mt-2">
-                    <HxButton OnClick="@(() => NavigateToDetail(searchResult))" Spinner="@Loading" Enabled="@(!Loading)" Color="ThemeColor.Primary" Icon="BootstrapIcon.Forward" CssClass="w-100 mt-2">Anzeigen</HxButton>                    
-                </HxCardSubtitle>
             </BodyTemplate>
+            <FooterTemplate>
+                <HxButton OnClick="@(() => NavigateToDetail(searchResult))" Spinner="@Loading" Enabled="@(!Loading)" Color="ThemeColor.Primary" Icon="BootstrapIcon.Forward" CssClass="w-100 mt-2">Anzeigen</HxButton>
+            </FooterTemplate>
         </HxCard>
     }
 </div>

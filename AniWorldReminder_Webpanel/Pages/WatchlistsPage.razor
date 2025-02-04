@@ -1,9 +1,11 @@
 ﻿@attribute [Route(Routes.Watchlists)]
+@attribute [Route(Routes.Watchlists + "/{WatchlistId}")]
 @inject IHxMessengerService ToastService
 @inject IApiService ApiService
 @inject IAuthenticationService AuthService
 @inject NavigationManager NavigationManager
 @inject ILocalStorageService LocalStorageService
+@inject IJSRuntime JSRuntime
 
 
 <PageTitle>Verwalte deine Watchlists</PageTitle>
@@ -26,28 +28,46 @@
             <div class="text-center">
                 <h4>
                     @watchlist.Name
-                    <HxBadge CssClass="" Color="ThemeColor.Success">@watchlist.Series.Count</HxBadge>
+                    <HxBadge Color="ThemeColor.Success">@watchlist.Series.Count</HxBadge>
+                    <HxButton OnClick="@(() => CopyShareLink(watchlist.Ident))" CssClass="mb-1" Size="ButtonSize.Small" Icon="BootstrapIcon.ShareFill" Color="ThemeColor.Dark"></HxButton>
                 </h4>
             </div>
-            @foreach (SeriesModel series in watchlist.Series)
-            {
-                <div class="row mt-2">
-                    <div class="d-inline">
-                        <img class="d-inline-block" src="@series.CoverArtUrl" style="height: 150px;" />
-                        <div class="ms-2 d-inline-block">
-                            <h5 class="d-block">@series.Name</h5>
-                            <span class="d-inline-block">Staffeln: <b>@series.SeasonCount</b></span>
-                            <span class="d-inline-block">Episoden: <b>@series.EpisodeCount</b></span>
-                            <HxButton Size="ButtonSize.Small" CssClass="ms-2" Icon="BootstrapIcon.ShareFill" Color="ThemeColor.Info"></HxButton>
-                        </div>
-                    </div>
-                </div>
-            }
+            <div class="row justify-content-center">
+                @foreach (SeriesModel series in watchlist.Series)
+                {
+                    <HxCard ImageAlt=""
+                    ImageSrc="@series.CoverArtUrl"
+                    ImageHeight="330"
+                    style="width: 245px;"
+                    CssClass="mt-3 mx-2 px-2 rounded glass border-0"
+                    HeaderCssClass="bg-transparent border border-0 p-0 m-0"
+                    FooterCssClass="border-0 bg-transparent mb-2">
+                        <HeaderTemplate>
+                            <div class="pt-2 pb-1" />
+                        </HeaderTemplate>
+                        <BodyTemplate>
+                            <HxCardTitle CssClass="text-center">@series.Name</HxCardTitle>
+                            <HxCardText CssClass="mt-2 text-center">
+                                <div class="pt-3">
+                                    <span class="d-block">Staffeln: <b>@series.SeasonCount</b></span>
+                                    <span class="d-block">Episoden: <b>@series.EpisodeCount</b></span>
+                                </div>
+                            </HxCardText>
+                        </BodyTemplate>
+                        <FooterTemplate>
+                            <HxButton Spinner="@Loading" Enabled="@(!Loading)" Color="ThemeColor.Warning" Outline="true" Icon="BootstrapIcon.XCircleFill" CssClass="w-100 mt-2">Entfernen</HxButton>
+                        </FooterTemplate>
+                    </HxCard>
+                }
+            </div>
         </div>
     }
 }
 
 @code {
+    [Parameter]
+    public string? WatchlistId { get; set; }
+
     private bool Loading { get; set; }
 
     List<WatchlistModel>? watchlists;
@@ -66,5 +86,14 @@
             Loading = false;
             StateHasChanged();
         }
+    }
+
+    private async Task CopyShareLink(string link)
+    {
+        link = $"{NavigationManager.BaseUri}{Routes.Watchlists.TrimStart('/')}/{link}";
+
+        await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", link);
+
+        ToastService.AddMessage("Link wurde in die Zwischenablage kopiert!", MessageType.Secondary);
     }
 }
