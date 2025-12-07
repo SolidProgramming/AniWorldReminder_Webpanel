@@ -2,220 +2,220 @@
 {
     public class KnownFor
     {
-        [JsonProperty("id")]
+        [JsonPropertyName("id")]
         public int Id { get; set; }
 
-        [JsonProperty("mediaType")]
+        [JsonPropertyName("mediaType")]
         public string MediaType { get; set; }
 
-        [JsonProperty("adult")]
+        [JsonPropertyName("adult")]
         public bool Adult { get; set; }
 
-        [JsonProperty("genreIds")]
+        [JsonPropertyName("genreIds")]
         public List<int> GenreIds { get; set; }
 
-        [JsonProperty("originalLanguage")]
+        [JsonPropertyName("originalLanguage")]
         public string OriginalLanguage { get; set; }
 
-        [JsonProperty("originalTitle")]
+        [JsonPropertyName("originalTitle")]
         public string OriginalTitle { get; set; }
 
-        [JsonProperty("overview")]
+        [JsonPropertyName("overview")]
         public string Overview { get; set; }
 
-        [JsonProperty("popularity")]
+        [JsonPropertyName("popularity")]
         public double Popularity { get; set; }
 
-        [JsonProperty("releaseDate")]
+        [JsonPropertyName("releaseDate")]
         public string ReleaseDate { get; set; }
 
-        [JsonProperty("title")]
+        [JsonPropertyName("title")]
         public string Title { get; set; }
 
-        [JsonProperty("video")]
+        [JsonPropertyName("video")]
         public bool Video { get; set; }
 
-        [JsonProperty("voteAverage")]
+        [JsonPropertyName("voteAverage")]
         public double VoteAverage { get; set; }
 
-        [JsonProperty("voteCount")]
+        [JsonPropertyName("voteCount")]
         public int VoteCount { get; set; }
 
-        [JsonProperty("backdropPath")]
+        [JsonPropertyName("backdropPath")]
         public string BackdropPath { get; set; }
 
-        [JsonProperty("posterPath")]
+        [JsonPropertyName("posterPath")]
         public string PosterPath { get; set; }
 
-        [JsonProperty("firstAirDate")]
+        [JsonPropertyName("firstAirDate")]
         public string FirstAirDate { get; set; }
 
-        [JsonProperty("name")]
+        [JsonPropertyName("name")]
         public string Name { get; set; }
 
-        [JsonProperty("originCountry")]
+        [JsonPropertyName("originCountry")]
         public List<string> OriginCountry { get; set; }
 
-        [JsonProperty("originalName")]
+        [JsonPropertyName("originalName")]
         public string OriginalName { get; set; }
     }
 
     public class MediaInfo
     {
-        [JsonProperty("downloadStatus")]
+        [JsonPropertyName("downloadStatus")]
         public List<object> DownloadStatus { get; set; }
 
-        [JsonProperty("downloadStatus4k")]
+        [JsonPropertyName("downloadStatus4k")]
         public List<object> DownloadStatus4k { get; set; }
 
-        [JsonProperty("id")]
+        [JsonPropertyName("id")]
         public int Id { get; set; }
 
-        [JsonProperty("mediaType")]
+        [JsonPropertyName("mediaType")]
         public string MediaType { get; set; }
 
-        [JsonProperty("tmdbId")]
+        [JsonPropertyName("tmdbId")]
         public int TmdbId { get; set; }
 
-        [JsonProperty("tvdbId")]
+        [JsonPropertyName("tvdbId")]
         public object TvdbId { get; set; }
 
-        [JsonProperty("imdbId")]
+        [JsonPropertyName("imdbId")]
         public object ImdbId { get; set; }
 
-        [JsonProperty("status")]
+        [JsonPropertyName("status")]
         public int Status { get; set; }
 
-        [JsonProperty("status4k")]
+        [JsonPropertyName("status4k")]
         public int Status4k { get; set; }
 
-        [JsonProperty("createdAt")]
+        [JsonPropertyName("createdAt")]
         public DateTime CreatedAt { get; set; }
 
-        [JsonProperty("updatedAt")]
+        [JsonPropertyName("updatedAt")]
         public DateTime UpdatedAt { get; set; }
 
-        [JsonProperty("lastSeasonChange")]
+        [JsonPropertyName("lastSeasonChange")]
         public DateTime LastSeasonChange { get; set; }
 
-        [JsonProperty("mediaAddedAt")]
+        [JsonPropertyName("mediaAddedAt")]
         public DateTime? MediaAddedAt { get; set; }
 
-        [JsonProperty("serviceId")]
+        [JsonPropertyName("serviceId")]
         public object ServiceId { get; set; }
 
-        [JsonProperty("serviceId4k")]
+        [JsonPropertyName("serviceId4k")]
         public object ServiceId4k { get; set; }
 
-        [JsonProperty("externalServiceId")]
+        [JsonPropertyName("externalServiceId")]
         public object ExternalServiceId { get; set; }
 
-        [JsonProperty("externalServiceId4k")]
+        [JsonPropertyName("externalServiceId4k")]
         public object ExternalServiceId4k { get; set; }
 
-        [JsonProperty("externalServiceSlug")]
+        [JsonPropertyName("externalServiceSlug")]
         public object ExternalServiceSlug { get; set; }
 
-        [JsonProperty("externalServiceSlug4k")]
+        [JsonPropertyName("externalServiceSlug4k")]
         public object ExternalServiceSlug4k { get; set; }
 
-        [JsonProperty("ratingKey")]
+        [JsonPropertyName("ratingKey")]
         public string RatingKey { get; set; }
 
-        [JsonProperty("ratingKey4k")]
+        [JsonPropertyName("ratingKey4k")]
         public object RatingKey4k { get; set; }
 
-        [JsonProperty("seasons")]
+        [JsonPropertyName("seasons")]
         public List<object> Seasons { get; set; }
 
-        [JsonProperty("plexUrl")]
+        [JsonPropertyName("plexUrl")]
         public string PlexUrl { get; set; }
 
-        [JsonProperty("iOSPlexUrl")]
+        [JsonPropertyName("iOSPlexUrl")]
         public string IOSPlexUrl { get; set; }
     }
 
     public class OverseerrResult
     {
-        [JsonProperty("id")]
+        [JsonPropertyName("id")]
         public int Id { get; set; }
 
-        [JsonProperty("mediaType")]
+        [JsonPropertyName("mediaType")]
         public string MediaType { get; set; }
 
-        [JsonProperty("adult")]
+        [JsonPropertyName("adult")]
         public bool Adult { get; set; }
 
-        [JsonProperty("genreIds")]
+        [JsonPropertyName("genreIds")]
         public List<int> GenreIds { get; set; }
 
-        [JsonProperty("originalLanguage")]
+        [JsonPropertyName("originalLanguage")]
         public string OriginalLanguage { get; set; }
 
-        [JsonProperty("originalTitle")]
+        [JsonPropertyName("originalTitle")]
         public string OriginalTitle { get; set; }
 
-        [JsonProperty("overview")]
+        [JsonPropertyName("overview")]
         public string Overview { get; set; }
 
-        [JsonProperty("popularity")]
+        [JsonPropertyName("popularity")]
         public double Popularity { get; set; }
 
-        [JsonProperty("releaseDate")]
+        [JsonPropertyName("releaseDate")]
         public string ReleaseDate { get; set; }
 
-        [JsonProperty("title")]
+        [JsonPropertyName("title")]
         public string Title { get; set; }
 
-        [JsonProperty("video")]
+        [JsonPropertyName("video")]
         public bool Video { get; set; }
 
-        [JsonProperty("voteAverage")]
+        [JsonPropertyName("voteAverage")]
         public double VoteAverage { get; set; }
 
-        [JsonProperty("voteCount")]
+        [JsonPropertyName("voteCount")]
         public int VoteCount { get; set; }
 
-        [JsonProperty("backdropPath")]
+        [JsonPropertyName("backdropPath")]
         public string BackdropPath { get; set; }
 
-        [JsonProperty("posterPath")]
+        [JsonPropertyName("posterPath")]
         public string PosterPath { get; set; }
 
-        [JsonProperty("mediaInfo")]
+        [JsonPropertyName("mediaInfo")]
         public MediaInfo MediaInfo { get; set; }
 
-        [JsonProperty("firstAirDate")]
+        [JsonPropertyName("firstAirDate")]
         public string FirstAirDate { get; set; }
 
-        [JsonProperty("name")]
+        [JsonPropertyName("name")]
         public string Name { get; set; }
 
-        [JsonProperty("originCountry")]
+        [JsonPropertyName("originCountry")]
         public List<string> OriginCountry { get; set; }
 
-        [JsonProperty("originalName")]
+        [JsonPropertyName("originalName")]
         public string OriginalName { get; set; }
 
-        [JsonProperty("profilePath")]
+        [JsonPropertyName("profilePath")]
         public string ProfilePath { get; set; }
 
-        [JsonProperty("knownFor")]
+        [JsonPropertyName("knownFor")]
         public List<KnownFor> KnownFor { get; set; }
     }
 
     public class OverseerrSearchResultModel
     {
-        [JsonProperty("page")]
+        [JsonPropertyName("page")]
         public int Page { get; set; }
 
-        [JsonProperty("totalPages")]
+        [JsonPropertyName("totalPages")]
         public int TotalPages { get; set; }
 
-        [JsonProperty("totalResults")]
+        [JsonPropertyName("totalResults")]
         public int TotalResults { get; set; }
 
-        [JsonProperty("results")]
+        [JsonPropertyName("results")]
         public List<OverseerrResult> Results { get; set; }
     }
 

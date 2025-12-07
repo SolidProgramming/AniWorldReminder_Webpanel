@@ -3,8 +3,8 @@ global using AniWorldReminder_Webpanel.Classes;
 global using AniWorldReminder_Webpanel.Services;
 global using AniWorldReminder_Webpanel.Models;
 global using AniWorldReminder_Webpanel.Interfaces;
-global using Newtonsoft.Json;
 global using BlazorDownloadFile;
+global using System.Text.Json.Serialization;
 using Havit.Blazor.Components.Web;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -41,10 +41,9 @@ var app = builder.Build();
 
 app.UseHsts();
 app.UseHttpsRedirection();
-
 app.UseStaticFiles();
-
 app.UseRouting();
+
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
 

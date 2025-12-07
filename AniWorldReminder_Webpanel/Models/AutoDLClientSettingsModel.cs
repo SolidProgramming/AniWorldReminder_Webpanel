@@ -2,13 +2,13 @@
 {
     public class AutoDLClientSettingsModel
     {
-        [JsonProperty("ApiUrl")]
+        [JsonPropertyName("ApiUrl")]
         public string ApiUrl { get; set; } = default!;
 
-        [JsonProperty("APIKey")]
+        [JsonPropertyName("APIKey")]
         public string? ApiKey { get; set; }
 
-        [JsonProperty("DownloadPath")]
+        [JsonPropertyName("DownloadPath")]
         public string? DownloadPath { get; set; } = default!;
     }
 }
