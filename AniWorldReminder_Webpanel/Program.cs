@@ -20,7 +20,6 @@ builder.Services.AddHxServices();
 builder.Services.AddHxMessenger();
 
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
-builder.Services.AddScoped<IApiService, ApiService>();
 builder.Services.AddScoped<ILocalStorageService, LocalStorageService>();
 builder.Services.AddBlazorDownloadFile(ServiceLifetime.Scoped);
 
@@ -32,9 +31,10 @@ if(settings is null)
     return;
 }
 
-builder.Services.AddScoped(_ =>
+builder.Services.AddHttpClient<IApiService, ApiService>(client =>
 {
-   return new HttpClient() { BaseAddress = new Uri(settings.ApiUrl), Timeout = TimeSpan.FromSeconds(60) };
+    client.BaseAddress = new Uri(settings.ApiUrl);
+    client.Timeout = TimeSpan.FromSeconds(60);
 });
 
 var app = builder.Build();

@@ -7,15 +7,22 @@ using System.Xml.Serialization;
 
 namespace AniWorldReminder_Webpanel.Services
 {
-    public class ApiService(HttpClient httpClient, NavigationManager navigationManager, ILocalStorageService localStorageService) : IApiService
+    public class ApiService : IApiService
     {
-        private readonly HttpClient? HttpClient = httpClient;
-        private NavigationManager? NavigationManager = navigationManager;
-        private ILocalStorageService? LocalStorageService = localStorageService;
+        private readonly HttpClient _httpClient;
+        private readonly NavigationManager _navigationManager;
+        private readonly ILocalStorageService _localStorageService;
+
+        public ApiService(HttpClient httpClient, NavigationManager navigationManager, ILocalStorageService localStorageService)
+        {
+            _httpClient = httpClient;
+            _navigationManager = navigationManager;
+            _localStorageService = localStorageService;
+        }
 
         public async Task<(bool success, string? errorMessage)> VerifyAsync(VerifyRequestModel verifyRequest)
         {
-            using HttpResponseMessage response = await HttpClient.PostAsJsonAsync("verify", verifyRequest);
+            using HttpResponseMessage response = await _httpClient.PostAsJsonAsync("verify", verifyRequest);
 
             if (!response.IsSuccessStatusCode)
                 return (false, $"Server returned {response.StatusCode}");
@@ -47,7 +54,7 @@ namespace AniWorldReminder_Webpanel.Services
         }
         public async Task<T?> GetAsync<T>(string uri, Dictionary<string, string> queryData, object body)
         {
-            HttpRequestMessage request = new(HttpMethod.Get, new Uri(QueryHelpers.AddQueryString(HttpClient.BaseAddress + uri, queryData!)))
+            HttpRequestMessage request = new(HttpMethod.Get, new Uri(QueryHelpers.AddQueryString(_httpClient.BaseAddress + uri, queryData!)))
             {
                 Content = new StringContent(System.Text.Json.JsonSerializer.Serialize(body), Encoding.UTF8, "application/json")
             };
@@ -55,7 +62,7 @@ namespace AniWorldReminder_Webpanel.Services
         }
         public async Task<T?> GetAsync<T>(string uri, Dictionary<string, string> queryData)
         {
-            HttpRequestMessage request = new(HttpMethod.Get, new Uri(QueryHelpers.AddQueryString(HttpClient.BaseAddress + uri, queryData!)));
+            HttpRequestMessage request = new(HttpMethod.Get, new Uri(QueryHelpers.AddQueryString(_httpClient.BaseAddress + uri, queryData!)));
             return await SendRequest<T>(request);
         }
         public async Task<T?> PostAsync<T>(string uri, object value)
@@ -76,7 +83,7 @@ namespace AniWorldReminder_Webpanel.Services
         }
         public async Task<T?> PostAsync<T>(string uri, Dictionary<string, string> queryData, object body)
         {
-            HttpRequestMessage request = new(HttpMethod.Post, new Uri(QueryHelpers.AddQueryString(HttpClient.BaseAddress + uri, queryData!)))
+            HttpRequestMessage request = new(HttpMethod.Post, new Uri(QueryHelpers.AddQueryString(_httpClient.BaseAddress + uri, queryData!)))
             {
                 Content = new StringContent(System.Text.Json.JsonSerializer.Serialize(body), Encoding.UTF8, "application/json")
             };
@@ -100,20 +107,20 @@ namespace AniWorldReminder_Webpanel.Services
         }
         private async Task<T?> SendRequest<T>(HttpRequestMessage request, bool addThirdPartyApiKey = false)
         {
-            UserModel? user = await LocalStorageService.GetItem<UserModel>("user");
+            UserModel? user = await _localStorageService.GetItem<UserModel>("user");
 
             if (user != null && !string.IsNullOrEmpty(user.Token) && !addThirdPartyApiKey)
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", user.Token);
 
             try
             {
-                using HttpResponseMessage? response = await HttpClient.SendAsync(request);
+                using HttpResponseMessage? response = await _httpClient.SendAsync(request);
 
                 // auto logout on 401 response
                 if (response.StatusCode == HttpStatusCode.Unauthorized)
                 {
-                    await LocalStorageService.RemoveItem("user");
-                    NavigationManager.NavigateTo(Routes.Login);
+                    await _localStorageService.RemoveItem("user");
+                    _navigationManager.NavigateTo(Routes.Login);
                     return default;
                 }
 
@@ -145,7 +152,7 @@ namespace AniWorldReminder_Webpanel.Services
         {
             try
             {
-                using HttpResponseMessage? response = await HttpClient.SendAsync(request);
+                using HttpResponseMessage? response = await _httpClient.SendAsync(request);
 
                 // auto logout on 401 response
                 if (response.StatusCode == HttpStatusCode.Unauthorized)

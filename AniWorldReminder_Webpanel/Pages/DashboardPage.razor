@@ -216,7 +216,7 @@
 
             UserSeries = await ApiService.GetAsync<List<SeriesModel>?>("getAllUserSeries");
 
-            if (UserSeries is not null)
+            if (UserSeries is not null && UserSeries.Count > 0)
             {
                 UserSeries = UserSeries.OrderByDescending(_ => _.Added).ThenByDescending(_ => _.Id).ToList();
             }
