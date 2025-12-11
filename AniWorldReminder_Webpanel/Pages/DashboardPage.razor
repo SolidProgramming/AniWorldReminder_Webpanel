@@ -322,12 +322,12 @@
         Stopwatch stopwatch = Stopwatch.StartNew();
         List<SeriesModel> allResults = new();
 
-        if (!string.IsNullOrEmpty(SearchSeriesName))
+        if (!string.IsNullOrEmpty(SearchSeriesName) && UserSeries is not null)
         {
-            allResults.AddRange(UserSeries.Where(_ => _.Name.ToLower().Contains(SearchSeriesName.ToLower())).ToList());
+            allResults.AddRange(UserSeries.Where(_ => !string.IsNullOrEmpty(_.Name) && _.Name.ToLower().Contains(SearchSeriesName.ToLower())).ToList());
         }
 
-        UserSeries?.Clear();
+        UserSeries?.Clear();        
 
         if (string.IsNullOrWhiteSpace(SearchSeriesName))
         {
@@ -344,14 +344,19 @@
             Loading = false;
 
             IsSearchView = false;
+            ShowPopularSeries = true;
             SelectDateSorting();
 
             return;
         }
 
+        ShowPopularSeries = false;
         IsSearchView = true;
 
-        allResults.AddRange(UserSeries.Where(_ => _.Name.ToLower().Contains(SearchSeriesName.ToLower())).ToList());
+        if (UserSeries is not null)
+        {
+            allResults.AddRange(UserSeries.Where(_ => !string.IsNullOrEmpty(_.Name) && _.Name.ToLower().Contains(SearchSeriesName.ToLower())).ToList());
+        }
 
         Loading = true;
         StateHasChanged();
@@ -365,19 +370,22 @@
                                                         { "mediaType", searchMediaType.ToString() }
                                                                                                                                                                                                         });
 
-        foreach (SearchResultModel searchResult in apiSearchResults)
+        if (apiSearchResults is not null && apiSearchResults.Count > 0)
         {
-            SeriesModel series = new()
+            foreach (SearchResultModel searchResult in apiSearchResults)
             {
-                Name = searchResult.Name,
-                CoverArtUrl = searchResult.CoverArtUrl,
-                IsSearchResult = true,
-                Link = searchResult.Link,
-                Path = searchResult.Path,
-                StreamingPortal = searchResult.StreamingPortal
-            };
+                SeriesModel series = new()
+                {
+                    Name = searchResult.Name,
+                    CoverArtUrl = searchResult.CoverArtUrl,
+                    IsSearchResult = true,
+                    Link = searchResult.Link,
+                    Path = searchResult.Path,
+                    StreamingPortal = searchResult.StreamingPortal
+                };
 
-            allResults.Add(series);
+                allResults.Add(series);
+            }
         }
 
         UserSeries = allResults.DistinctBy(_ => _.Name.ToLower()).ToList();
