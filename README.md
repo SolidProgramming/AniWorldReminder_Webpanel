@@ -3,7 +3,7 @@
 
 ## [Video](https://vimeo.com/921474892)
 ## [Website](https://proxymov.xyz)
-## Verify @[Telegram](@AniWorldReminder_Bot)
+## Verify @[Telegram](https://t.me/AniWorldReminder_Bot)
 ## [Docker Image for Downloader](https://hub.docker.com/repository/docker/solidprogramming/proxymovdownloadserver/general)
 
 ## Dashboard
