@@ -144,8 +144,7 @@ namespace AniWorldReminder_Webpanel.Services
             }
             catch (Exception)
             {
-
-                throw;
+                return default;
             }
         }
         private async Task<T?> SendRequestWithPlexClientIndentifier<T>(HttpRequestMessage request)
@@ -188,8 +187,7 @@ namespace AniWorldReminder_Webpanel.Services
             }
             catch (Exception)
             {
-
-                throw;
+                return default;
             }
         }
     }

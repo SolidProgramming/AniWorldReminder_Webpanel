@@ -15,7 +15,7 @@
 </HxModal>
 <div class="container">
     <div class="mb-3">
-        <EditForm Model="@SeriesSearch" OnValidSubmit="@(() => SearchSeriesDashboard())">
+        <EditForm Model="@SeriesSearch" OnValidSubmit="@(async () => await SearchSeriesDashboard())">
             <div class="row">
                 <div class="col-12 col-md-8">
                     <HxInputText Label="Serien Name" @bind-Value="@SearchSeriesName" Placeholder="Jujutsu Kaisen" />
@@ -48,18 +48,25 @@
         </div>
         <div class="col-12 col-sm-6 col-lg-3 text-center">
             <div class="d-inline">
-                <HxButton CssClass="d-inline" @onclick="@(() => ShowPopularSeries = !ShowPopularSeries)" Spinner="@LoadingPopularSeries" Enabled="@(!Loading)" Color="ThemeColor.Dark" Icon="@(ShowPopularSeries ? BootstrapIcon.XLg : BootstrapIcon.App)">Beliebte Serien und Anime</HxButton>
+                @if (ShowPopularSeriesButton && !PopularSeriesError)
+                {
+                    <HxButton CssClass="d-inline" @onclick="@(() => ShowPopularSeries = !ShowPopularSeries)" Spinner="@LoadingPopularSeries" Enabled="@(!Loading && !LoadingPopularSeries)" Color="ThemeColor.Dark" Icon="@(ShowPopularSeries? BootstrapIcon.XLg: BootstrapIcon.App)">Beliebte Serien und Anime</HxButton>
+                }
+                else if (ShowPopularSeriesButton && PopularSeriesError)
+                {
+                    <HxButton CssClass="d-inline" @onclick="@(async () => await LoadPopularSeries())" Spinner="@LoadingPopularSeries" Enabled="@(!Loading && !LoadingPopularSeries)" Color="ThemeColor.Danger" Icon="BootstrapIcon.Exclamation" Outline="true">Neu laden</HxButton>
+                }
             </div>
             <div class="d-block d-lg-none mb-2">
             </div>
         </div>
         <div class="col-12 col-lg-4 text-center">
             <div class="d-inline float-lg-end">
-                <HxButton Size="ButtonSize.Small" OnClick="SelectDateSorting" CssClass="d-inline" Color="@(SortingDateSelected ? ThemeColor.Warning : ThemeColor.Secondary)">Datum</HxButton>
+                <HxButton Size="ButtonSize.Small" OnClick="SelectDateSorting" CssClass="d-inline" Color="@(SortingDateSelected? ThemeColor.Warning: ThemeColor.Secondary)">Datum</HxButton>
                 <span class="d-inline">|</span>
-                <HxButton Size="ButtonSize.Small" OnClick="SelectNameSorting" CssClass="d-inline" Color="@(SortingNameSelected ? ThemeColor.Warning : ThemeColor.Secondary)">Name</HxButton>
+                <HxButton Size="ButtonSize.Small" OnClick="SelectNameSorting" CssClass="d-inline" Color="@(SortingNameSelected? ThemeColor.Warning: ThemeColor.Secondary)">Name</HxButton>
                 <span class="d-inline">|</span>
-                <HxButton Size="ButtonSize.Small" OnClick="SelectHosterSorting" CssClass="d-inline" Color="@(SortingHosterSelected ? ThemeColor.Warning : ThemeColor.Secondary)">Hoster</HxButton>
+                <HxButton Size="ButtonSize.Small" OnClick="SelectHosterSorting" CssClass="d-inline" Color="@(SortingHosterSelected? ThemeColor.Warning: ThemeColor.Secondary)">Hoster</HxButton>
             </div>
         </div>
     </div>
@@ -70,7 +77,7 @@
             Es sieht so aus als hättest du noch keine Serien hinzugefügt! Starte eine Suche und füge deine erste Serie hinzu!
         </HxAlert>
     }
-    @if (ShowPopularSeries)
+    @if (PopularSeries is not null && ShowPopularSeries)
     {
         <SeriesSearchResultsComponent SearchResults="@PopularSeries" Referer="@Routes.Dashboard"></SeriesSearchResultsComponent>
     }
@@ -155,12 +162,19 @@
                 </HxCard>
             }
         }
-        else
+        else if (UserSeries is null && Loading)
         {
             <div class="mt-4 d-flex align-items-center justify-content-center text-secondary">
                 <HxSpinner Size="SpinnerSize.Regular"></HxSpinner>
                 <span class="ps-3 fs-5">Reminder Daten abrufen...</span>
             </div>
+        }
+        @if (ShowDashboardError)
+        {
+            <HxAlert Color="ThemeColor.Danger" CssClass="mt-3">
+                <HxIcon Icon="@BootstrapIcon.ExclamationCircleFill" />
+                Beim abrufen deines Dashboards ist ein Fehler aufgetreten! Laden Sie die Seite neu oder versuchen Sie es später erneut.
+            </HxAlert>
         }
     </div>
 </div>
@@ -173,6 +187,8 @@
     private bool SearchSeries { get; set; } = true;
     private bool SearchFilms { get; set; } = true;
     private bool ShowEmptyDashboardInfo { get; set; }
+    private bool ShowDashboardError { get; set; }
+    private bool PopularSeriesError { get; set; }
 
     private bool IsSearchView { get; set; } = false;
 
@@ -189,6 +205,7 @@
     private string? SearchSeriesName;
 
     private bool ShowPopularSeries { get; set; }
+    private bool ShowPopularSeriesButton { get; set; } = true;
 
     private List<SeriesModel> Watchlist = [];
     private HxModal WatchlistNameModal = new();
@@ -202,6 +219,8 @@
         if (firstRender)
         {
             Loading = true;
+            ShowDashboardError = false;
+
             StateHasChanged();
 
             await LoadPopularSeries();
@@ -220,9 +239,19 @@
             {
                 UserSeries = UserSeries.OrderByDescending(_ => _.Added).ThenByDescending(_ => _.Id).ToList();
             }
+            else if (UserSeries is null)
+            {
+                ShowDashboardError = true;
+                ToastService.AddMessage("Beim abrufen deines Dashboards ist ein Fehler aufgetreten!", MessageType.Error);
+            }
             else
             {
                 ShowEmptyDashboardInfo = true;
+
+                if (PopularSeries is not null && PopularSeries.Count > 0)
+                {
+                    ShowPopularSeries = true;
+                }
             }
 
             stopwatch.Stop();
@@ -233,10 +262,10 @@
         }
 
         MediaSearchOptionsModel mediaSearchOptionsNew = new()
-            {
-                SearchFilms = this.SearchFilms,
-                SearchSeries = this.SearchSeries
-            };
+        {
+            SearchFilms = this.SearchFilms,
+            SearchSeries = this.SearchSeries
+        };
 
         await LocalStorageService.SetItem("MediaSearchOptions", mediaSearchOptionsNew);
 
@@ -267,6 +296,16 @@
         else
         {
             ToastService.AddMessage("Beim löschen des Reminders ist ein Fehler aufgetreten und konnte nicht gelöscht werden!", MessageType.Error);
+        }
+
+        if (UserSeries is not null && UserSeries.Count == 0)
+        {
+            ShowEmptyDashboardInfo = true;
+
+            if (PopularSeries is not null && PopularSeries.Count > 0)
+            {
+                ShowPopularSeries = true;
+            }
         }
 
         Loading = false;
@@ -329,14 +368,14 @@
         foreach (SearchResultModel searchResult in apiSearchResults)
         {
             SeriesModel series = new()
-                {
-                    Name = searchResult.Name,
-                    CoverArtUrl = searchResult.CoverArtUrl,
-                    IsSearchResult = true,
-                    Link = searchResult.Link,
-                    Path = searchResult.Path,
-                    StreamingPortal = searchResult.StreamingPortal
-                };
+            {
+                Name = searchResult.Name,
+                CoverArtUrl = searchResult.CoverArtUrl,
+                IsSearchResult = true,
+                Link = searchResult.Link,
+                Path = searchResult.Path,
+                StreamingPortal = searchResult.StreamingPortal
+            };
 
             allResults.Add(series);
         }
@@ -378,17 +417,23 @@
         SortingHosterSelected = false;
         SortingDateSelected = true;
 
-        UserSeries = UserSeries.OrderByDescending(_ => _.Added).ThenByDescending(_ => _.Id).ToList();
+        UserSeries = UserSeries?.OrderByDescending(_ => _.Added).ThenByDescending(_ => _.Id).ToList();
 
         StateHasChanged();
     }
 
     private async Task LoadPopularSeries()
     {
+        PopularSeriesError = false;
         LoadingPopularSeries = true;
         StateHasChanged();
 
         PopularSeries = await ApiService.GetAsync<List<SearchResultModel>?>("getPopular");
+
+        if (PopularSeries is null)
+        {
+            PopularSeriesError = true;
+        }
 
         LoadingPopularSeries = false;
         StateHasChanged();

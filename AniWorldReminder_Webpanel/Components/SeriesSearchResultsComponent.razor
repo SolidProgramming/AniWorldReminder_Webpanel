@@ -5,48 +5,51 @@
 @inject NavigationManager NavigationManager
 
 <div class="row justify-content-center pb-2">
-    @foreach (SearchResultModel searchResult in SearchResults)
+    @if (SearchResults is not null)
     {
-        <HxCard ImageAlt=""
-                ImageSrc="@searchResult.CoverArtUrl"
-                ImageHeight="330"
-                style="width: 245px;"
-                CssClass="mt-3 mx-2 px-2 rounded glassPopular border-0"
-                HeaderCssClass="bg-transparent border border-0" 
-                FooterCssClass="border-0 bg-transparent mb-2"
-                BodyCssClass="m-0 px-2">
-            <HeaderTemplate>
-                @switch (searchResult.StreamingPortal)
-                {
-                    case StreamingPortal.AniWorld:
-                        <div class="text-warning fw-light text-center" style="font-family: 'Roboto', sans-serif;"><HxIcon CssClass="px-2 fs-4 align-middle" Icon="BootstrapIcon.Heart"></HxIcon>AniWorld</div>
-                        break;
-                    case StreamingPortal.STO:
-                        <div class="text-warning fw-light text-center" style="font-family: 'Roboto', sans-serif;"><HxIcon CssClass="px-2 fs-4 align-middle" Icon="BootstrapIcon.Heart"></HxIcon>S.TO</div>
-                        break;
-                    case StreamingPortal.MegaKino:
-                        <div class="text-warning fw-light text-center" style="font-family: 'Roboto', sans-serif;"><HxIcon CssClass="px-2 fs-4 align-middle" Icon="BootstrapIcon.Heart"></HxIcon>MegaKino</div>
-                        break;
-                    default:
-                        break;
-                }
-            </HeaderTemplate>
-            <BodyTemplate>
-                <HxCardTitle CssClass="text-center">@searchResult.Name</HxCardTitle>
-            </BodyTemplate>
-            <FooterTemplate>
-                <HxButton OnClick="@(() => NavigateToDetail(searchResult))" Spinner="@Loading" Enabled="@(!Loading)" Color="ThemeColor.Primary" Icon="BootstrapIcon.Forward" CssClass="w-100 mt-2">Anzeigen</HxButton>
-            </FooterTemplate>
-        </HxCard>
+        @foreach (SearchResultModel searchResult in SearchResults)
+        {
+            <HxCard ImageAlt=""
+                    ImageSrc="@searchResult.CoverArtUrl"
+                    ImageHeight="330"
+                    style="width: 245px;"
+                    CssClass="mt-3 mx-2 px-2 rounded glassPopular border-0"
+                    HeaderCssClass="bg-transparent border border-0"
+                    FooterCssClass="border-0 bg-transparent mb-2"
+                    BodyCssClass="m-0 px-2">
+                <HeaderTemplate>
+                    @switch (searchResult.StreamingPortal)
+                    {
+                        case StreamingPortal.AniWorld:
+                            <div class="text-warning fw-light text-center" style="font-family: 'Roboto', sans-serif;"><HxIcon CssClass="px-2 fs-4 align-middle" Icon="BootstrapIcon.Heart"></HxIcon>AniWorld</div>
+                            break;
+                        case StreamingPortal.STO:
+                            <div class="text-warning fw-light text-center" style="font-family: 'Roboto', sans-serif;"><HxIcon CssClass="px-2 fs-4 align-middle" Icon="BootstrapIcon.Heart"></HxIcon>S.TO</div>
+                            break;
+                        case StreamingPortal.MegaKino:
+                            <div class="text-warning fw-light text-center" style="font-family: 'Roboto', sans-serif;"><HxIcon CssClass="px-2 fs-4 align-middle" Icon="BootstrapIcon.Heart"></HxIcon>MegaKino</div>
+                            break;
+                        default:
+                            break;
+                    }
+                </HeaderTemplate>
+                <BodyTemplate>
+                    <HxCardTitle CssClass="text-center">@searchResult.Name</HxCardTitle>
+                </BodyTemplate>
+                <FooterTemplate>
+                    <HxButton OnClick="@(() => NavigateToDetail(searchResult))" Spinner="@Loading" Enabled="@(!Loading)" Color="ThemeColor.Primary" Icon="BootstrapIcon.Forward" CssClass="w-100 mt-2">Anzeigen</HxButton>
+                </FooterTemplate>
+            </HxCard>
+        }
     }
 </div>
 
 @code {
     [Parameter]
-    public List<SearchResultModel> SearchResults { get; set; }
+    required public List<SearchResultModel> SearchResults { get; set; }
 
     [Parameter]
-    public string Referer { get; set; }
+    required public string Referer { get; set; }
 
     private bool Loading { get; set; }
 
