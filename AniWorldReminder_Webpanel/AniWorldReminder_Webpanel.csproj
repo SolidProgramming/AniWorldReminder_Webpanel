@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <Folder Include="appdata\binaries\" />
+    <Folder Include="wwwroot\binaries\" />
   </ItemGroup>
 
   <ItemGroup>
